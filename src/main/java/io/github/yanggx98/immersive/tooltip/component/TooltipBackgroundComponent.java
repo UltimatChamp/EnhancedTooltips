@@ -1,6 +1,5 @@
 package io.github.yanggx98.immersive.tooltip.component;
 
-
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
@@ -8,7 +7,7 @@ import net.minecraft.client.gui.tooltip.TooltipComponent;
 public class TooltipBackgroundComponent implements TooltipComponent {
     protected static final int INNER_PADDING = 4;
 
-    public void render(DrawContext context, int x, int y, int width, int height, int z, int page) {
+    public void render(DrawContext context, int x, int y, int width, int height, int z, int page) throws Exception {
         int i = x - INNER_PADDING;
         int j = y - INNER_PADDING;
         int k = width + INNER_PADDING * 2;
@@ -48,7 +47,7 @@ public class TooltipBackgroundComponent implements TooltipComponent {
     }
 
     @Override
-    public int getHeight() {
+    public int getHeight(TextRenderer textRenderer) {
         return 0;
     }
 

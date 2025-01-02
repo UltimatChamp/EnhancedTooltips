@@ -2,13 +2,10 @@ package io.github.yanggx98.immersive.tooltip.component;
 
 import net.minecraft.client.gui.DrawContext;
 
-
 public class ColorBorderComponent extends TooltipBackgroundComponent {
-
     private final int color;
 
     public ColorBorderComponent(int color) {
-
         this.color = color;
     }
 

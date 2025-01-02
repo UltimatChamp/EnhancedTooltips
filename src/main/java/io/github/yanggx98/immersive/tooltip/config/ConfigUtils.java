@@ -10,25 +10,24 @@ import java.nio.charset.StandardCharsets;
 
 public class ConfigUtils {
     private final static String SUFFIX = ".toml";
-    public static Toml initConfiguration(String fileName, ConfigurationInitCallback callback) throws Exception{
+
+    public static Toml initConfiguration(String fileName, ConfigurationInitCallback callback) throws Exception {
         File configFile = new File(FabricLoader.getInstance().getConfigDir().toString(), fileName + SUFFIX);
         boolean ret = checkFileExists(configFile);
         Toml toml = Toml.parse(configFile);
         if (!ret) {
-            callback.init(configFile,toml);
+            callback.init(configFile, toml);
         }
         return toml;
     }
 
     private static boolean checkFileExists(File file) {
-        if (!file.exists())
-        {
-            if(file.getParentFile().mkdirs())
-            {
+        if (!file.exists()) {
+            if (file.getParentFile().mkdirs()) {
                 System.out.println("[ConfigUtils] Creating config directory");
             }
             try {
-                if (file.createNewFile()){
+                if (file.createNewFile()) {
                     System.out.println("[ConfigUtils] Created config file");
                 }
             } catch (IOException e) {
@@ -39,7 +38,7 @@ public class ConfigUtils {
         return true;
     }
 
-    public static void write(File file,String config) {
+    public static void write(File file, String config) {
         try {
             FileOutputStream fos = new FileOutputStream(file);
             fos.write(config.getBytes(StandardCharsets.UTF_8));
@@ -49,8 +48,7 @@ public class ConfigUtils {
         }
     }
 
-
-    public interface ConfigurationInitCallback{
+    public interface ConfigurationInitCallback {
         void init(File file, Toml toml);
     }
 }

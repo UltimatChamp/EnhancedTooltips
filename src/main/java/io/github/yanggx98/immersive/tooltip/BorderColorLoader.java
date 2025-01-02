@@ -1,6 +1,5 @@
 package io.github.yanggx98.immersive.tooltip;
 
-
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.*;
 import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
@@ -17,13 +16,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class BorderColorLoader extends SinglePreparationResourceReloader<Map<String,Integer>> implements IdentifiableResourceReloadListener {
+public class BorderColorLoader extends SinglePreparationResourceReloader<Map<String, Integer>> implements IdentifiableResourceReloadListener {
     public static final BorderColorLoader INSTANCE = new BorderColorLoader();
     private static final Gson GSON = (new GsonBuilder()).setPrettyPrinting().disableHtmlEscaping().create();
-    private static final int FILE_SUFFIX_LENGTH = ".json".length();
     private Map<String, Integer> borderColorMap = new HashMap<>();
 
     static final Identifier ID = Identifier.of(ImmersiveTooltip.MOD_ID, "border");
+
     @Override
     public Identifier getFabricId() {
         return ID;
@@ -42,11 +41,11 @@ public class BorderColorLoader extends SinglePreparationResourceReloader<Map<Str
                         JsonObject jsonObject = JsonHelper.deserialize(GSON, reader, JsonObject.class);
 
                         if (jsonObject != null) {
-                            jsonObject.entrySet().stream().forEach(e -> {
+                            jsonObject.entrySet().forEach(e -> {
                                 try {
                                     Integer color = e.getValue().getAsInt();
-                                    map.put(e.getKey(),color);
-                                }catch (Exception ignored){
+                                    map.put(e.getKey(), color);
+                                } catch (Exception ignored) {
                                 }
                             });
                         }
@@ -63,6 +62,7 @@ public class BorderColorLoader extends SinglePreparationResourceReloader<Map<Str
     protected void apply(Map<String, Integer> prepared, ResourceManager manager, Profiler profiler) {
         this.borderColorMap = prepared;
     }
+
     public Map<String, Integer> getBorderColorMap() {
         return ImmutableMap.copyOf(this.borderColorMap);
     }
