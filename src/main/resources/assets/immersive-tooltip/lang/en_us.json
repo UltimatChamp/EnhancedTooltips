@@ -1,8 +1,0 @@
-{
-  "immersive-tooltip.rarity.common": "Common",
-  "immersive-tooltip.rarity.uncommon": "Uncommon",
-  "immersive-tooltip.rarity.rare": "Rare",
-  "immersive-tooltip.rarity.epic": "Epic",
-  "immersive-tooltip.tooltip.hunger": "Recovers %d Hunger",
-  "immersive-tooltip.tooltip.saturation": "+ %d%% Saturation"
-}

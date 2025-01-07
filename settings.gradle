@@ -1,10 +1,27 @@
 pluginManagement {
     repositories {
-        maven {
-            name = 'Fabric'
-            url = 'https://maven.fabricmc.net/'
-        }
-        mavenCentral()
         gradlePluginPortal()
+        maven { url "https://maven.fabricmc.net" }
+        maven { url "https://maven.kikugie.dev/snapshots" }
     }
 }
+
+plugins {
+    id "dev.kikugie.stonecutter" version "0.5"
+}
+
+stonecutter {
+    create(rootProject) {
+        vers("1.21.4", "1.21.4")
+        vers("1.21.3", "1.21.3")
+        vers("1.21.1", "1.21.1")
+        vers("1.20.6", "1.20.6")
+        vers("1.20.4", "1.20.4")
+        vers("1.20.2", "1.20.2")
+        vers("1.20.1", "1.20.1")
+
+        vcsVersion = "1.21.4"
+    }
+}
+
+rootProject.name = "EnhancedTooltips"

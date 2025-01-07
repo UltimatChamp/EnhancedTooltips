@@ -1,34 +1,47 @@
 {
   "schemaVersion": 1,
-  "id": "immersive-tooltip",
-  "version": "${version}",
-  "name": "Immersive:Tooltip",
-  "description": "",
+  "id": "${mod_id}",
+  "version": "${mod_version}",
+  "name": "${mod_name}",
+  "description": "${mod_description}",
   "authors": [
-    "yanggx98"
+    "${mod_authors}"
   ],
   "contact": {
+    "homepage": "https://github.com/UltimatChamp/EnhancedTooltips",
+    "issues": "https://github.com/UltimatChamp/EnhancedTooltips/issues"
   },
-  "license": "CC0-1.0",
-  "icon": "assets/immersive-tooltip/icon.png",
+  "license": "${mod_license}",
+  "icon": "assets/enhancedtooltips/icon.png",
   "environment": "client",
   "entrypoints": {
     "client": [
-      "io.github.yanggx98.immersive.tooltip.ImmersiveTooltip"
+      "dev.ultimatchamp.enhancedtooltips.EnhancedTooltips"
+    ],
+    "modmenu": [
+      "dev.ultimatchamp.enhancedtooltips.config.ModMenuAPIImpl"
     ]
   },
-  "accessWidener": "immersive-tooltip.accesswidener",
+  "accessWidener": "enhancedtooltips.accesswidener",
   "mixins": [
-    "immersive-tooltip.mixins.json"
+    "enhancedtooltips.mixins.json"
   ],
   "depends": {
-    "fabricloader": ">=0.15.11",
-    "minecraft": "~1.21-beta.4",
-    "java": ">=17",
-    "fabric-api": "*",
-    "kaleido": ">=1.21-1.1.1"
+    "minecraft": "${minecraft_range}",
+    "fabricloader": "*",
+    "fabric": "*"
   },
-  "suggests": {
-    "another-mod": "*"
+  "recommends": {
+    "yet_another_config_lib_v3": "*"
+  },
+  "custom": {
+    "modmenu": {
+      "links": {
+        "modmenu.modrinth": "https://modrinth.com/mod/EnhanedTooltips",
+        "modmenu.curseforge": "https://www.curseforge.com/minecraft/mc-mods/enhancedtooltips",
+        "modmenu.discord": "https://discord.gg/kfKjjhv3pn"
+      },
+      "update_checker": true
+    }
   }
 }

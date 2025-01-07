@@ -1,0 +1,7 @@
+accessWidener v2 named
+
+accessible method net/minecraft/client/render/entity/EntityRenderDispatcher render (Lnet/minecraft/entity/Entity;DDDFLnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;ILnet/minecraft/client/render/entity/EntityRenderer;)V
+accessible field net/minecraft/client/gui/DrawContext vertexConsumers Lnet/minecraft/client/render/VertexConsumerProvider$Immediate;
+accessible field net/minecraft/item/EntityBucketItem entityType Lnet/minecraft/entity/EntityType;
+accessible field net/minecraft/item/SpawnEggItem type Lnet/minecraft/entity/EntityType;
+accessible field net/minecraft/client/gui/tooltip/OrderedTextTooltipComponent text Lnet/minecraft/text/OrderedText;

@@ -1,19 +1,23 @@
 plugins {
-    id 'fabric-loom' version '1.9-SNAPSHOT'
-    id 'maven-publish'
+    id "fabric-loom" version "1.9-SNAPSHOT"
+    id "me.modmuss50.mod-publish-plugin" version "0.8.3"
 }
 
-version = project.mod_version
+def isSnapshot = false
+def mcVer = property("deps.minecraft_version")
+if (mcVer.contains("-") || mcVer.contains("w")) {
+    isSnapshot = true
+    mcVer.replace("-", "")
+}
+
+version = project.mod_version + "+fabric" + "." + mcVer
 group = project.maven_group
 
 base {
-    archivesName = project.archives_base_name
+    archivesName = project.mod_name
 }
 
 repositories {
-    flatDir {
-        dirs '../Kaleido/build/devLibs'
-    }
     exclusiveContent {
         forRepository {
             maven {
@@ -25,47 +29,69 @@ repositories {
             includeGroup "maven.modrinth"
         }
     }
-}
-
-
-dependencies {
-    // To change the versions see the gradle.properties file
-    minecraft "com.mojang:minecraft:${project.minecraft_version}"
-    mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
-    modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
-
-    // Fabric API. This is technically optional, but you probably want it anyway.
-    modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
-    include(modImplementation files("jar/kaleido-1.21-1.1.4.jar"))
-//	modLocalRuntime "maven.modrinth:jei:NsbSea5x"
-//	implementation name: 'kaleido-1.1.0-dev'
-    include(implementation 'me.grison:jtoml:1.0.0')
+    maven { url "https://maven.isxander.dev/releases" }
+    mavenCentral()
 }
 
 loom {
-    accessWidenerPath = file("src/main/resources/immersive-tooltip.accesswidener")
+    runConfigs.all {
+        ideConfigGenerated true
+        runDir "../../run"
+    }
+
+    accessWidenerPath = file("../../src/main/resources/enhancedtooltips.accesswidener")
 }
 
-processResources {
-    inputs.property "version", project.version
+dependencies {
+    minecraft "com.mojang:minecraft:${property("deps.minecraft_version")}"
+    mappings "net.fabricmc:yarn:${property("deps.yarn_mappings")}:v2"
 
-    filesMatching("fabric.mod.json") {
-        expand "version": project.version
+    modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+    modImplementation "net.fabricmc.fabric-api:fabric-api:${property("deps.fapi_version")}"
+
+    modImplementation "maven.modrinth:modmenu:${property("deps.modmenu_version")}"
+    include(modImplementation("blue.endless:jankson:${property("deps.jankson_version")}"))
+
+    if (property("deps.minecraft_version") != "1.20.2") {
+        modImplementation "dev.isxander:yet-another-config-lib:${property("deps.yacl_version")}"
+    } else {
+        modImplementation "dev.isxander.yacl:yet-another-config-lib-fabric:${property("deps.yacl_version")}"
     }
 }
 
-tasks.withType(JavaCompile).configureEach {
-    it.options.release = 17
+if (stonecutter.current.isActive) {
+    rootProject.tasks.register("buildActive") {
+        group = "project"
+        dependsOn(tasks.named("build"))
+        dependsOn(tasks.named("publishMods"))
+    }
+}
+
+processResources {
+    var replaceProperties = [
+            minecraft_range: project.property("deps.mc_range"),
+            mod_id         : mod_id,
+            mod_name       : mod_name,
+            mod_license    : mod_license,
+            mod_version    : project.version,
+            mod_authors    : mod_authors,
+            mod_description: mod_description
+    ]
+    replaceProperties.each { key, value -> inputs.property(key, value) }
+
+    filesMatching("fabric.mod.json") {
+        expand replaceProperties
+    }
 }
 
 java {
-    // Loom will automatically attach sourcesJar to a RemapSourcesJar task and to the "build" task
-    // if it is present.
-    // If you remove this line, sources will not be generated.
     withSourcesJar()
 
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
+    def java = stonecutter.eval(project.property("deps.minecraft_version"), ">=1.20.5")
+            ? JavaVersion.VERSION_21 : JavaVersion.VERSION_17
+
+    sourceCompatibility = java
+    targetCompatibility = java
 }
 
 jar {
@@ -74,20 +100,189 @@ jar {
     }
 }
 
-// configure the maven publication
-publishing {
-    publications {
-        create("mavenJava", MavenPublication) {
-            artifactId = project.archives_base_name
-            from components.java
+publishMods {
+    if (mod_version.contains("alpha")) {
+        type = ALPHA
+    } else if (mod_version.contains("beta") || mod_version.contains("rc") || isSnapshot) {
+        type = BETA
+    } else {
+        type = STABLE
+    }
+
+    changelog = "# ${project.version}\n" + file("../../CHANGELOG.md").text
+    file = remapJar.archiveFile
+    displayName = "EnhancedTooltips ${project.version}"
+
+    modLoaders.addAll("fabric", "quilt")
+
+    def mrOptions = modrinthOptions {
+        projectId = ""
+        accessToken = providers.environmentVariable("MODRINTH_TOKEN")
+
+        requires("fabric-api")
+        optional("yacl")
+
+        // Discord
+        announcementTitle = "Download from Modrinth"
+    }
+
+    def cfOptions = curseforgeOptions {
+        projectId = ""
+        accessToken = providers.environmentVariable("CURSEFORGE_API_KEY")
+
+        requires("fabric-api")
+        optional("yacl")
+
+        // Discord
+        announcementTitle = "Download from CurseForge"
+        projectSlug = ""
+    }
+
+    if (project.property("deps.minecraft_version") == "1.20.1") {
+        modrinth("m1.20.1") {
+            from mrOptions
+
+            minecraftVersionRange {
+                start = "1.20"
+                end = "1.20.1"
+            }
+        }
+
+        curseforge("c1.20.1") {
+            from cfOptions
+
+            minecraftVersionRange {
+                start = "1.20"
+                end = "1.20.1"
+            }
         }
     }
 
-    // See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
-    repositories {
-        // Add repositories to publish to here.
-        // Notice: This block does NOT have the same function as the block in the top level.
-        // The repositories here will be used for publishing your artifact, not for
-        // retrieving dependencies.
+    if (project.property("deps.minecraft_version") == "1.20.2") {
+        modrinth("m1.20.2") {
+            from mrOptions
+
+            minecraftVersions.add("1.20.2")
+        }
+
+        curseforge("c1.20.2") {
+            from cfOptions
+
+            minecraftVersions.add("1.20.2")
+        }
+    }
+
+    if (project.property("deps.minecraft_version") == "1.20.4") {
+        modrinth("m1.20.4") {
+            from mrOptions
+
+            minecraftVersionRange {
+                start = "1.20.3"
+                end = "1.20.4"
+            }
+        }
+
+        curseforge("c1.20.4") {
+            from cfOptions
+
+            minecraftVersionRange {
+                start = "1.20.3"
+                end = "1.20.4"
+            }
+        }
+    }
+
+    if (project.property("deps.minecraft_version") == "1.20.6") {
+        modrinth("m1.20.6") {
+            from mrOptions
+
+            minecraftVersionRange {
+                start = "1.20.5"
+                end = "1.20.6"
+            }
+        }
+
+        curseforge("c1.20.6") {
+            from cfOptions
+
+            minecraftVersionRange {
+                start = "1.20.5"
+                end = "1.20.6"
+            }
+        }
+    }
+
+    if (project.property("deps.minecraft_version") == "1.21.1") {
+        modrinth("m1.21.1") {
+            from mrOptions
+
+            minecraftVersionRange {
+                start = "1.21"
+                end = "1.21.1"
+            }
+        }
+
+        curseforge("c1.21.1") {
+            from cfOptions
+
+            minecraftVersionRange {
+                start = "1.21"
+                end = "1.21.1"
+            }
+        }
+    }
+
+    if (project.property("deps.minecraft_version") == "1.21.3") {
+        modrinth("m1.21.3") {
+            from mrOptions
+
+            minecraftVersionRange {
+                start = "1.21.2"
+                end = "1.21.3"
+            }
+        }
+
+        curseforge("c1.21.3") {
+            from cfOptions
+
+            minecraftVersionRange {
+                start = "1.21.2"
+                end = "1.21.3"
+            }
+        }
+    }
+
+    if (project.property("deps.minecraft_version") == "1.21.4") {
+        modrinth("m1.21.4") {
+            from mrOptions
+
+            minecraftVersions.add("1.21.4")
+        }
+
+        curseforge("c1.21.4") {
+            from cfOptions
+
+            minecraftVersions.add("1.21.4")
+        }
+    }
+
+    github {
+        accessToken = providers.environmentVariable("GITHUB_TOKEN")
+        repository = "UltimatChamp/EnhancedTooltips"
+        commitish = "main"
+
+        // Discord
+        announcementTitle = "Download from GitHub"
+    }
+
+    discord {
+        webhookUrl = providers.environmentVariable("DISCORD_WEBHOOK")
+        username = "EnhnacedTooltips Releases"
+        avatarUrl = ""
+
+        style {
+            look = "MODERN"
+            thumbnailUrl = ""
+        }
     }
 }
