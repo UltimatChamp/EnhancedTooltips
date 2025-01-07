@@ -1,0 +1,48 @@
+name: Gradle Release
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: 21
+          distribution: 'temurin'
+
+      - name: Initialize caches
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/loom-cache
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-build-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
+
+      - name: Build and Publish with Gradle
+        run: ./gradlew chiseledReleaseMod
+        env:
+          CURSEFORGE_API_KEY: ${{ secrets.CURSEFORGE_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: Artifacts
+          path: versions/*/build/libs/*.jar

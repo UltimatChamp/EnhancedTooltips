@@ -116,7 +116,7 @@ publishMods {
     modLoaders.addAll("fabric", "quilt")
 
     def mrOptions = modrinthOptions {
-        projectId = ""
+        projectId = "8H6RXl2q"
         accessToken = providers.environmentVariable("MODRINTH_TOKEN")
 
         requires("fabric-api")
@@ -127,7 +127,7 @@ publishMods {
     }
 
     def cfOptions = curseforgeOptions {
-        projectId = ""
+        projectId = "1173737"
         accessToken = providers.environmentVariable("CURSEFORGE_API_KEY")
 
         requires("fabric-api")
@@ -135,7 +135,7 @@ publishMods {
 
         // Discord
         announcementTitle = "Download from CurseForge"
-        projectSlug = ""
+        projectSlug = "enhancedtooltips"
     }
 
     if (project.property("deps.minecraft_version") == "1.20.1") {
@@ -278,11 +278,11 @@ publishMods {
     discord {
         webhookUrl = providers.environmentVariable("DISCORD_WEBHOOK")
         username = "EnhnacedTooltips Releases"
-        avatarUrl = ""
+        avatarUrl = "https://cdn.modrinth.com/data/8H6RXl2q/images/5eadf722db0fba952eadb08b8645c186c41e1507.png"
 
         style {
             look = "MODERN"
-            thumbnailUrl = ""
+            thumbnailUrl = "https://cdn.modrinth.com/data/8H6RXl2q/images/e211c73de532ffc1d2c1e78e04d96ee2271dfa61.png"
         }
     }
 }

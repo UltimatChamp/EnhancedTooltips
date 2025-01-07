@@ -8,6 +8,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
+import net.minecraft.util.Colors;
 
 import java.util.Optional;
 
@@ -30,11 +31,7 @@ public class TooltipHelper {
             String markKey = EnhancedTooltips.MOD_ID + ".rarity." + stack.getRarity().name().toLowerCase();
             return Text.translatable(markKey)
                     .setStyle(Style.EMPTY
-                            //? if >1.20.4 {
-                            .withColor(stack.getRarity().getFormatting())
-                            //?} else {
-                            /*.withColor(stack.getRarity().formatting)
-                            *///?}
+                            .withColor(Colors.GRAY)
                             .withItalic(true)
                     );
         }
