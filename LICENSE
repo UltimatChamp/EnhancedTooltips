@@ -19,3 +19,21 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
+
+---
+
+Additional License Information:
+
+This project incorporates code from the following sources:
+
+1. Immersive:Tooltip
+   The original codebase for this project was derived from "Immersive:Tooltip," which is licensed under the MIT License.
+
+2. Kaleido
+   Some portions of this project include code from "Kaleido," which is licensed under the CC0 1.0 Universal license.
+
+Licensing Summary:
+- All original code, as well as code written by UltimatChamp (me) and other contributors through pull requests, is licensed under the MIT License.
+- Portions of the code originating from "Kaleido" are licensed under the CC0 1.0 Universal license.
+
+Users of this software should comply with the terms of both the MIT License and the CC0 1.0 Universal license for the respective portions of the code.
