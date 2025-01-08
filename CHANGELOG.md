@@ -1,4 +1,4 @@
-🗃️**Detailed Changelog: [1.0.0 --> 1.0.0](https://github.com/UltimatChamp/BetterGrassify/compare/1.0.0+fabric.1.21.4...1.0.0+fabric.1.21.4)**
+🗃️**Detailed Changelog: [1.0.0 --> 1.0.0](https://github.com/UltimatChamp/EnhancedTooltips/compare/1.0.0+fabric.1.21.4...1.0.0+fabric.1.21.4)**
 
 <hr>
 
