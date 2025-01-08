@@ -19,7 +19,9 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 //? if >1.21.1 {
 import net.minecraft.util.Identifier;
@@ -35,24 +37,23 @@ public abstract class DrawContextMixin {
     /*@Inject(method = "drawTooltip(Lnet/minecraft/client/font/TextRenderer;Ljava/util/List;IILnet/minecraft/client/gui/tooltip/TooltipPositioner;)V", at = @At("HEAD"), cancellable = true)
     private void injectDrawTooltip(TextRenderer textRenderer, List<TooltipComponent> components, int x, int y, TooltipPositioner positioner, CallbackInfo ci) {
     *///?}
-        TooltipComponent markComponent = null;
-        for (TooltipComponent component : components) {
-            if (component instanceof OrderedTextTooltipComponent) {
-                String content = getContent(((OrderedTextTooltipComponent) component).text);
-                if (EnhancedTooltips.MARK_KEY.equals(content)) {
-                    markComponent = component;
-                }
-            }
-        }
+        List<TooltipComponent> mutableComponents = new ArrayList<>(components);
 
-        if (markComponent != null) {
-            components.remove(markComponent);
+        Optional<TooltipComponent> markComponent = mutableComponents.stream()
+                .filter(component -> component instanceof OrderedTextTooltipComponent)
+                .filter(component -> EnhancedTooltips.MARK_KEY.equals(getContent(((OrderedTextTooltipComponent) component).text)))
+                .findFirst();
+
+        if (markComponent.isPresent()) {
+            mutableComponents.remove(markComponent.get());
+
             ItemStack cacheItemStack = TooltipItemStackCache.getItemStack();
             if (cacheItemStack != null) {
-                TooltipComponentAPI.EVENT.invoker().of(components, cacheItemStack);
+                TooltipComponentAPI.EVENT.invoker().of(mutableComponents, cacheItemStack);
+
                 TooltipDrawerProvider.ITooltipDrawer drawer = TooltipDrawerProvider.getTooltipDrawer();
                 if (drawer != null) {
-                    drawer.drawTooltip((DrawContext) (Object) this, textRenderer, components, x, y, HoveredTooltipPositioner.INSTANCE);
+                    drawer.drawTooltip((DrawContext) (Object) this, textRenderer, mutableComponents, x, y, HoveredTooltipPositioner.INSTANCE);
                     ci.cancel();
                 }
             }
@@ -60,19 +61,26 @@ public abstract class DrawContextMixin {
     }
 
     @Unique
-    public String getContent(OrderedText text) {
+    private String getContent(OrderedText text) {
+        if (text == null) {
+            return "";
+        }
+
         try {
-            Class clazz = text.getClass();
-            Field[] fields = clazz.getDeclaredFields();
+            Field[] fields = text.getClass().getDeclaredFields();
             for (Field field : fields) {
-                field.setAccessible(true);
+                if (!field.canAccess(text)) {
+                    field.setAccessible(true);
+                }
+
                 if (field.get(text) instanceof String content) {
                     return content;
                 }
             }
         } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
+            EnhancedTooltips.LOGGER.error("{}", EnhancedTooltips.MOD_ID, e);
         }
+
         return "";
     }
 }

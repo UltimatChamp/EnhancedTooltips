@@ -277,7 +277,7 @@ publishMods {
 
     discord {
         webhookUrl = providers.environmentVariable("DISCORD_WEBHOOK")
-        username = "EnhnacedTooltips Releases"
+        username = "EnhancedTooltips Releases"
         avatarUrl = "https://cdn.modrinth.com/data/8H6RXl2q/images/5eadf722db0fba952eadb08b8645c186c41e1507.png"
 
         style {
