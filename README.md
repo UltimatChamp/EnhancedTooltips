@@ -57,8 +57,6 @@ A mod that overhauls tooltips, and adds some extra information.
 - **Value**
 - **Percentage**
 
-<hr>
-
 ## Credits!
 
 ### [**Immersive:Tooltip**](https://modrinth.com/mod/immersive-tooltip)
