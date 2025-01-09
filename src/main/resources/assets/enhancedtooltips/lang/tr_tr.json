@@ -1,5 +1,7 @@
 {
   "enhancedtooltips.title": "EnhancedTooltips Konfigürasyonu",
+  "enhancedtooltips.config.itemBadges": "Eşya Rozetleri",
+  "enhancedtooltips.config.itemBadges.desc": "Eşyanın kategorisini alet ipucunda rozet olarak gösterir.",
   "enhancedtooltips.config.rarityTooltip": "Nadirlik Alet İpucu",
   "enhancedtooltips.config.rarityTooltip.desc": "Bir eşyanın nadirliğini alet ipucunda gösterir.",
   "enhancedtooltips.config.effectTooltip": "Etki Alet İpucu",
