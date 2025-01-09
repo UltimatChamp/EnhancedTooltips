@@ -14,6 +14,9 @@ import java.nio.file.Path;
 
 public class EnhancedTooltipsConfig {
     @Comment("(default: true)")
+    public boolean itemBadges = true;
+
+    @Comment("(default: true)")
     public boolean rarityTooltip = true;
 
     @Comment("(default: true)")
