@@ -18,6 +18,18 @@ public class EnhancedTooltipsGui {
                 .category(ConfigCategory.createBuilder()
                         .name(Text.translatable("stat.generalButton"))
                         .option(Option.<Boolean>createBuilder()
+                                .name(Text.translatable("enhancedtooltips.config.itemBadges"))
+                                .description(OptionDescription.createBuilder()
+                                        .text(Text.translatable("enhancedtooltips.config.itemBadges.desc"))
+                                        .build())
+                                .binding(
+                                        true,
+                                        () -> config.itemBadges,
+                                        (value) -> config.itemBadges = value
+                                )
+                                .controller(TickBoxControllerBuilder::create)
+                                .build())
+                        .option(Option.<Boolean>createBuilder()
                                 .name(Text.translatable("enhancedtooltips.config.rarityTooltip"))
                                 .description(OptionDescription.createBuilder()
                                         .text(Text.translatable("enhancedtooltips.config.rarityTooltip.desc"))
