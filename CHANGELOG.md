@@ -1,16 +1,9 @@
-🗃️**Detailed Changelog: [1.0.0 --> 1.0.0](https://github.com/UltimatChamp/EnhancedTooltips/compare/1.0.0+fabric.1.21.4...1.0.0+fabric.1.21.4)**
+🗃️**Detailed Changelog: [1.0.0 --> 1.1.0](https://github.com/UltimatChamp/EnhancedTooltips/compare/1.0.0+fabric.1.21.4...1.1.0+fabric.1.21.4)**
 
 <hr>
 
-- Initial commit.
+### 🛠️Changes
 
-<hr>
-
-### 🛠️Changes from the original mod
-
-- **Axolotl** and **Spawn Egg** preview.
-- Better **item durability** tooltip.
-- Uses **YetAnotherConfigLib**.
-- No separate library needed. **Kaleido** has been merged into the mod itself.
-- Support for all Minecraft versions from **1.20.1**. 
-- A lot of code formatting.
+- Add **item badges**, inspired from [**Tooltips Stylized**](https://modrinth.com/resourcepack/tooltips-stylized).
+  ![Preview](https://github.com/user-attachments/assets/3a604213-b413-4fa7-8b5b-2e06cccb2347)  
+- Fix a potential crash.
