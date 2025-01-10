@@ -47,11 +47,7 @@ public class TooltipBackgroundComponent implements TooltipComponent {
     }
 
     @Override
-    //? if >1.21.1 {
-    public int getHeight(TextRenderer textRenderer) {
-    //?} else {
-    /*public int getHeight() {
-    *///?}
+    public int getHeight(/*? if >1.21.1 {*/TextRenderer textRenderer/*?}*/) {
         return 0;
     }
 
