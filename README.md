@@ -32,27 +32,27 @@ A mod that overhauls tooltips, and adds some extra information.
 
 ## Features
 
-Rarity-based Tooltips
+**Rarity-based Tooltips**
 
 <hr>
 
-Armor Preview
+**Armor Preview**
 
 <hr>
 
-Bucket Entity Preview
+**Bucket Entity Preview**
 
 <hr>
 
-Spawn Egg Preview
+**Spawn Egg Preview**
 
 <hr>
 
-Food Item Effects
+**Food Item Effects**
 
 <hr>
 
-Item Durability
+**Item Durability**
 
 - Value
 - Percentage
