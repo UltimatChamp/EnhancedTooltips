@@ -1,9 +1,11 @@
-🗃️**Detailed Changelog: [1.0.0 --> 1.1.0](https://github.com/UltimatChamp/EnhancedTooltips/compare/1.0.0+fabric.1.21.4...1.1.0+fabric.1.21.4)**
+🗃️**Detailed Changelog: [1.1.0 --> 1.2.0](https://github.com/UltimatChamp/EnhancedTooltips/compare/1.1.0+fabric.1.21.4...1.2.0+fabric.1.21.4)**
 
 <hr>
 
 ### 🛠️Changes
 
-- Add **item badges**, inspired from [**Tooltips Stylized**](https://modrinth.com/resourcepack/tooltips-stylized).
-  ![Preview](https://github.com/user-attachments/assets/3a604213-b413-4fa7-8b5b-2e06cccb2347)  
-- Fix a potential crash.
+- Add **food** and **effect icons** to tooltips.
+
+  <img width="500px" alt="Preview" src="https://github.com/user-attachments/assets/d9cfcc48-2154-4cc3-ba4c-e24b53b82f9b" />
+
+- Fix incorrect saturation shown for 1.20.5+.

@@ -84,9 +84,7 @@ public class EffectsTooltipComponent implements TooltipComponent {
         if (foodComponent != null) {
             //? if >1.20.4 {
             saturation = (int) ((foodComponent.saturation() / (hunger * 2.0)) * 100);
-            //?} else if >1.20.4 {
-            /*saturation = (int) ((foodComponent.saturation() / (hunger * 2.0)) * 100);
-            *///?} else {
+            //?} else {
             /*saturation = (int) (foodComponent.getSaturationModifier() * 100);
             *///?}
         }
