@@ -21,7 +21,7 @@
   "enhancedtooltips.rarity.uncommon": "Uncommon",
   "enhancedtooltips.rarity.rare": "Rare",
   "enhancedtooltips.rarity.epic": "Epic",
-  "enhancedtooltips.tooltip.hunger": "Recovers %d Hunger",
+  "enhancedtooltips.tooltip.hunger": "Recovers",
   "enhancedtooltips.tooltip.saturation": "+ %d%% Saturation",
   "enhancedtooltips.tooltip.durability": "Durability:"
 }

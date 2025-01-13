@@ -63,7 +63,7 @@ public abstract class DrawContextMixin {
     @Unique
     private String getContent(OrderedText text) {
         if (text == null) {
-            return "";
+            return null;
         }
 
         try {
@@ -81,6 +81,6 @@ public abstract class DrawContextMixin {
             EnhancedTooltips.LOGGER.error("{}", EnhancedTooltips.MOD_ID, e);
         }
 
-        return "";
+        return null;
     }
 }

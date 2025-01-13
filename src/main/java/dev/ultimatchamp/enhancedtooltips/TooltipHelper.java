@@ -30,10 +30,7 @@ public class TooltipHelper {
         public Text getRarityName(ItemStack stack) {
             String markKey = EnhancedTooltips.MOD_ID + ".rarity." + stack.getRarity().name().toLowerCase();
             return Text.translatable(markKey)
-                    .setStyle(Style.EMPTY
-                            .withColor(Colors.GRAY)
-                            .withItalic(true)
-                    );
+                    .setStyle(Style.EMPTY.withColor(Colors.GRAY));
         }
     }
 

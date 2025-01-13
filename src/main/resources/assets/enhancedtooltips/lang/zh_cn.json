@@ -21,7 +21,7 @@
   "enhancedtooltips.rarity.uncommon": "高级",
   "enhancedtooltips.rarity.rare": "稀有",
   "enhancedtooltips.rarity.epic": "史诗",
-  "enhancedtooltips.tooltip.hunger": "恢复 %d 饥饿",
+  "enhancedtooltips.tooltip.hunger": "恢复",
   "enhancedtooltips.tooltip.saturation": "+ %d%% 饱食",
   "enhancedtooltips.tooltip.durability": "Durability:"
 }

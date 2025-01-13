@@ -6,14 +6,21 @@ import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
 import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.component.DataComponentTypes;
-import net.minecraft.component.type.ConsumableComponent;
-import net.minecraft.component.type.FoodComponent;
 import net.minecraft.item.*;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
-import net.minecraft.util.Colors;
 import org.joml.Matrix4f;
+
+//? if >1.21.1 {
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.ConsumableComponent;
+import net.minecraft.component.type.FoodComponent;
+//?} else if >1.20.4 {
+/*import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.FoodComponent;
+*///?} else {
+/*import net.minecraft.item.FoodComponent;
+*///?}
 
 public class HeaderTooltipComponent implements TooltipComponent {
     private static final int TEXTURE_SIZE = 24;
@@ -39,7 +46,12 @@ public class HeaderTooltipComponent implements TooltipComponent {
         int badgeWidth = 0;
 
         if (EnhancedTooltipsConfig.load().itemBadges) {
-            if (this.stack.getItem() instanceof ArmorItem || this.stack.getItem() instanceof AnimalArmorItem) {
+            if (this.stack.getItem() instanceof ArmorItem || this.stack.getItem() instanceof
+                    //? if >1.20.4 {
+                    AnimalArmorItem) {
+                    //?} else {
+                    /*HorseArmorItem) {
+                    *///?}
                 badgeWidth = textRenderer.getWidth(Text.translatable("attribute.name.armor")) + SPACING * 3;
             } else if (this.stack.isDamageable()) {
                 badgeWidth = textRenderer.getWidth(Text.translatable("itemGroup.tools")) + SPACING * 3;
@@ -99,8 +111,13 @@ public class HeaderTooltipComponent implements TooltipComponent {
 
         if (!EnhancedTooltipsConfig.load().itemBadges) return;
 
-        if (this.stack.getItem() instanceof ArmorItem || this.stack.getItem() instanceof AnimalArmorItem) {
-            drawBadge(textRenderer, Text.translatable("attribute.name.armor"), x, y, context, Colors.CYAN, 0xffc8ffff, 0xff6ac7be);
+        if (this.stack.getItem() instanceof ArmorItem || this.stack.getItem() instanceof
+                //? if >1.20.4 {
+                AnimalArmorItem) {
+                //?} else {
+                /*HorseArmorItem) {
+                *///?}
+            drawBadge(textRenderer, Text.translatable("attribute.name.armor"), x, y, context, 0xff00ffff, 0xffc8ffff, 0xff6ac7be);
         } else if (this.stack.isDamageable()) {
             drawBadge(textRenderer, Text.translatable("itemGroup.tools"), x, y, context, 0xff57b88c, 0xff6acda4, 0xff4e866f);
         } else if (this.stack.getItem() instanceof EntityBucketItem) {
@@ -146,7 +163,7 @@ public class HeaderTooltipComponent implements TooltipComponent {
                 text,
                 textX,
                 textY,
-                Colors.WHITE,
+                0xffffffff,
                 true
         );
 
