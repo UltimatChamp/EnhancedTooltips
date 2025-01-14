@@ -17,10 +17,10 @@ public class EnhancedTooltipsConfig {
     public boolean itemBadges = true;
 
     @Comment("(default: true)")
-    public boolean rarityTooltip = true;
+    public boolean hungerTooltip = true;
 
     @Comment("(default: true)")
-    public boolean effectTooltip = true;
+    public boolean rarityTooltip = true;
 
     @Comment("(default: true)")
     public boolean armorTooltip = true;
@@ -43,6 +43,31 @@ public class EnhancedTooltipsConfig {
         private final String translationKey;
 
         DurabilityTooltipMode(final int id, final String translationKey) {
+            this.id = id;
+            this.translationKey = translationKey;
+        }
+
+        public int getId() {
+            return this.id;
+        }
+
+        public String getTranslationKey() {
+            return this.translationKey;
+        }
+    }
+
+    @Comment("OFF/WITHOUT_ICONS/WITH_ICONS (default: WITH_ICONS)")
+    public EffectsTooltipMode effectsTooltip = EffectsTooltipMode.WITH_ICONS;
+
+    public enum EffectsTooltipMode implements TranslatableOption {
+        OFF(0, "options.off"),
+        WITHOUT_ICONS(0, "enhancedtooltips.config.effectsTooltip.withoutIcons"),
+        WITH_ICONS(1, "enhancedtooltips.config.effectsTooltip.withIcons");
+
+        private final int id;
+        private final String translationKey;
+
+        EffectsTooltipMode(final int id, final String translationKey) {
             this.id = id;
             this.translationKey = translationKey;
         }

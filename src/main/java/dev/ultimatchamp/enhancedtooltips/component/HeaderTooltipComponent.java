@@ -88,7 +88,7 @@ public class HeaderTooltipComponent implements TooltipComponent {
     @Override
     public void drawText(TextRenderer textRenderer, int x, int y, Matrix4f matrix, VertexConsumerProvider.Immediate vertexConsumers) {
         float startDrawX = (float) x + getTitleOffset();
-        float startDrawY = y;
+        float startDrawY = y + 1;
         textRenderer.draw(this.nameText, startDrawX, startDrawY, -1, true, matrix, vertexConsumers, TextRenderer.TextLayerType.NORMAL, 0, 0xF000F0);
 
         if (EnhancedTooltipsConfig.load().rarityTooltip) {

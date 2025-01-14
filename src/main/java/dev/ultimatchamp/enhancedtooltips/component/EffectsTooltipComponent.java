@@ -95,6 +95,7 @@ public class EffectsTooltipComponent implements TooltipComponent {
     @Override
     public int getHeight(/*? if >1.21.1 {*/TextRenderer textRenderer/*?}*/) {
         int height = 0;
+
         FoodComponent foodComponent = getFoodComponent();
         //? if >1.21.1 {
         ConsumableComponent consumableComponent = getConsumableComponent();
@@ -102,7 +103,10 @@ public class EffectsTooltipComponent implements TooltipComponent {
         //?} else {
         /*if (foodComponent != null) {
         *///?}
-            height = (9 + 1) * 2;
+            if (EnhancedTooltipsConfig.load().hungerTooltip) height += 9 + 1;
+            height += 9 + 1;
+
+            if (EnhancedTooltipsConfig.load().effectsTooltip == EnhancedTooltipsConfig.EffectsTooltipMode.OFF) return height;
 
             //? if >1.21.1 {
             for (ConsumeEffect entry : consumableComponent.onConsumeEffects()) {
@@ -183,41 +187,46 @@ public class EffectsTooltipComponent implements TooltipComponent {
         Text hungerText = Text.translatable(EnhancedTooltips.identifier("tooltip.hunger").toTranslationKey());
         Text saturationText = Text.translatable(EnhancedTooltips.identifier("tooltip.saturation").toTranslationKey(), saturation);
 
-        context.drawText(textRenderer, hungerText, x, y, 0xffffffff, true);
+        var lineY = y;
 
-        Identifier fullHunger = Identifier.of("minecraft", "hud/food_full");
-        Identifier halfHunger = Identifier.of("minecraft", "hud/food_half");
+        if (EnhancedTooltipsConfig.load().hungerTooltip) {
+            context.drawText(textRenderer, hungerText, x, lineY, 0xffffffff, true);
 
-        float fullHungers = hunger / 2f;
-        boolean hasHalfHunger = (hunger % 2) != 0;
+            Identifier fullHunger = Identifier.of("minecraft", "hud/food_full");
+            Identifier halfHunger = Identifier.of("minecraft", "hud/food_half");
 
-        var hungerWidth = textRenderer.getWidth(hungerText) + 1;
+            float fullHungers = hunger / 2f;
+            boolean hasHalfHunger = (hunger % 2) != 0;
 
-        for (int i = 0; i < (int) fullHungers; i++) {
-            //? if >1.21.1 {
-            context.drawGuiTexture(RenderLayer::getGuiTextured, fullHunger, textRenderer.fontHeight, textRenderer.fontHeight, 0, 0, x + hungerWidth, y, textRenderer.fontHeight, textRenderer.fontHeight);
-            //?} else if >1.20.1 {
-            /*context.drawGuiTexture(fullHunger, x + hungerWidth, y, textRenderer.fontHeight, textRenderer.fontHeight);
-            *///?} else {
-            /*context.drawTexture(new Identifier("textures/gui/icons.png"), x + hungerWidth, y, 52, 27, textRenderer.fontHeight, textRenderer.fontHeight, 256, 256);
-            *///?}
-            hungerWidth += textRenderer.fontHeight - 2;
+            var hungerWidth = textRenderer.getWidth(hungerText) + 1;
+
+            for (int i = 0; i < (int) fullHungers; i++) {
+                //? if >1.21.1 {
+                context.drawGuiTexture(RenderLayer::getGuiTextured, fullHunger, textRenderer.fontHeight, textRenderer.fontHeight, 0, 0, x + hungerWidth, lineY, textRenderer.fontHeight, textRenderer.fontHeight);
+                //?} else if >1.20.1 {
+                /*context.drawGuiTexture(fullHunger, x + hungerWidth, lineY, textRenderer.fontHeight, textRenderer.fontHeight);
+                *///?} else {
+                /*context.drawTexture(new Identifier("textures/gui/icons.png"), x + hungerWidth, lineY, 52, 27, textRenderer.fontHeight, textRenderer.fontHeight, 256, 256);
+                *///?}
+                hungerWidth += textRenderer.fontHeight - 2;
+            }
+
+            if (hasHalfHunger) {
+                //? if >1.21.1 {
+                context.drawGuiTexture(RenderLayer::getGuiTextured, halfHunger, textRenderer.fontHeight, textRenderer.fontHeight, 0, 0, x + hungerWidth, lineY, textRenderer.fontHeight, textRenderer.fontHeight);
+                //?} else if >1.20.1 {
+                /*context.drawGuiTexture(halfHunger, x + hungerWidth, lineY, textRenderer.fontHeight, textRenderer.fontHeight);
+                *///?} else {
+                /*context.drawTexture(new Identifier("textures/gui/icons.png"), x + hungerWidth, lineY, 61, 27, textRenderer.fontHeight, textRenderer.fontHeight, 256, 256);
+                *///?}
+            }
+
+            lineY += textRenderer.fontHeight + 1;
         }
 
-        if (hasHalfHunger) {
-            //? if >1.21.1 {
-            context.drawGuiTexture(RenderLayer::getGuiTextured, halfHunger, textRenderer.fontHeight, textRenderer.fontHeight, 0, 0, x + hungerWidth, y, textRenderer.fontHeight, textRenderer.fontHeight);
-            //?} else if >1.20.1 {
-            /*context.drawGuiTexture(halfHunger, x + hungerWidth, y, textRenderer.fontHeight, textRenderer.fontHeight);
-            *///?} else {
-            /*context.drawTexture(new Identifier("textures/gui/icons.png"), x + hungerWidth, y, 61, 27, textRenderer.fontHeight, textRenderer.fontHeight, 256, 256);
-            *///?}
-        }
-
-        var lineY = y + textRenderer.fontHeight + 1;
         context.drawText(textRenderer, saturationText, x, lineY, 0xff00ffff, true);
 
-        if (!EnhancedTooltipsConfig.load().effectTooltip) return;
+        if (EnhancedTooltipsConfig.load().effectsTooltip == EnhancedTooltipsConfig.EffectsTooltipMode.OFF) return;
 
         //? if >1.21.1 {
         for (ConsumeEffect entry : consumableComponent.onConsumeEffects()) {
@@ -249,12 +258,16 @@ public class EffectsTooltipComponent implements TooltipComponent {
 
                 lineY += textRenderer.fontHeight + 1;
 
-                //? if >1.21.1 {
-                context.drawSpriteStretched(RenderLayer::getGuiTextured, effectTexture, x - 2, lineY, textRenderer.fontHeight, textRenderer.fontHeight);
-                //?} else {
-                /*context.drawSprite(x - 2, lineY, 0, textRenderer.fontHeight, textRenderer.fontHeight, effectTexture);
-                *///?}
-                context.drawText(textRenderer, effectText, x + textRenderer.fontHeight + 2, lineY, c, true);
+                if (EnhancedTooltipsConfig.load().effectsTooltip == EnhancedTooltipsConfig.EffectsTooltipMode.WITH_ICONS) {
+                    //? if >1.21.1 {
+                    context.drawSpriteStretched(RenderLayer::getGuiTextured, effectTexture, x - 2, lineY, textRenderer.fontHeight, textRenderer.fontHeight);
+                    //?} else {
+                    /*context.drawSprite(x - 2, lineY, 0, textRenderer.fontHeight, textRenderer.fontHeight, effectTexture);
+                    *///?}
+                    context.drawText(textRenderer, effectText, x + textRenderer.fontHeight + 2, lineY, c, true);
+                } else {
+                    context.drawText(textRenderer, effectText, x, lineY, c, true);
+                }
             }
         //? if >1.21.1 {
         }
