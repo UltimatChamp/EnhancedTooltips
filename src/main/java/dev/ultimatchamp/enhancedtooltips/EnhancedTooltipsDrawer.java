@@ -2,15 +2,18 @@ package dev.ultimatchamp.enhancedtooltips;
 
 import dev.ultimatchamp.enhancedtooltips.component.TooltipBackgroundComponent;
 import dev.ultimatchamp.enhancedtooltips.kaleido.render.tooltip.api.TooltipDrawerProvider;
+import dev.ultimatchamp.enhancedtooltips.util.EnhancedTooltipsTextVisitor;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.tooltip.OrderedTextTooltipComponent;
 import net.minecraft.client.gui.tooltip.TooltipBackgroundRenderer;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
 import net.minecraft.client.gui.tooltip.TooltipPositioner;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.text.OrderedText;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import org.jetbrains.annotations.Nullable;
 import org.joml.Vector2ic;
 
 import java.util.ArrayList;
@@ -20,67 +23,81 @@ public class EnhancedTooltipsDrawer implements TooltipDrawerProvider.ITooltipDra
     private static final int EDGE_SPACING = 32;
     private static final int PAGE_SPACING = 12;
 
-    private static int getLimitMaxHeight() {
+    private static int getMaxHeight() {
         return MinecraftClient.getInstance().getWindow().getScaledHeight() - EDGE_SPACING * 2;
+    }
+
+    private static int getMaxWidth() {
+        return MinecraftClient.getInstance().getWindow().getScaledWidth() / 2 - EDGE_SPACING;
     }
 
     @Override
     public void drawTooltip(DrawContext context, TextRenderer textRenderer, List<TooltipComponent> components, int x, int y, TooltipPositioner positioner) {
+        if (components.isEmpty()) return;
+
+        TooltipBackgroundComponent backgroundComponent = getBackgroundComponent(components);
+
+        components.removeIf(component -> component.getHeight(/*? if >1.21.1 {*/textRenderer/*?}*/) == 0 || component.getWidth(textRenderer) == 0);
+
         MatrixStack matrices = context.getMatrices();
         List<TooltipPage> pageList = new ArrayList<>();
-        TooltipBackgroundComponent backgroundComponent = getBackgroundComponent(components);
-        if (components.isEmpty()) {
-            return;
-        }
-        if (backgroundComponent != null) {
-            components.remove(backgroundComponent);
-        }
 
         int pageWidth = 0;
-        int pageHeight = -2;
-        int maxHeight = getLimitMaxHeight();
+        int maxWidth = getMaxWidth();
         int totalWidth = 0;
+
+        int pageHeight = -2;
+        int maxHeight = getMaxHeight();
 
         int spacing = components.size() > 1 ? 4 : 0;
         pageHeight += spacing;
 
         TooltipPage page = new TooltipPage();
 
-        for (int j = 0; j < components.size(); j++) {
-            TooltipComponent tooltipComponent = components.get(j);
+        for (TooltipComponent tooltipComponent : components) {
             int width = tooltipComponent.getWidth(textRenderer);
-            if (width > pageWidth) {
-                pageWidth = width;
-            }
-            pageHeight += tooltipComponent.getHeight(/*? if >1.21.1 {*/textRenderer/*?}*/);
-            if (pageHeight > maxHeight) {
-                pageList.add(page);
-                totalWidth += page.width;
-                page = new TooltipPage();
-                page.components.add(tooltipComponent);
-                page.height = tooltipComponent.getHeight(/*? if >1.21.1 {*/textRenderer/*?}*/);
-                pageHeight = tooltipComponent.getHeight(/*? if >1.21.1 {*/textRenderer/*?}*/);
-                if (j == components.size() - 1) {
-                    page.width = tooltipComponent.getWidth(textRenderer);
+            int height = tooltipComponent.getHeight(textRenderer);
+
+            if (width > maxWidth) {
+                List<TooltipComponent> wrappedComponents = wrapComponent(tooltipComponent, textRenderer, maxWidth);
+                for (TooltipComponent wrappedComponent : wrappedComponents) {
+                    int wrappedWidth = wrappedComponent.getWidth(textRenderer);
+                    int wrappedHeight = wrappedComponent.getHeight(/*? if >1.21.1 {*/textRenderer/*?}*/);
+
+                    if (pageHeight + wrappedHeight > maxHeight) {
+                        pageList.add(page);
+                        totalWidth += page.width;
+                        page = new TooltipPage();
+                        pageHeight = -2;
+                    }
+
+                    page.components.add(wrappedComponent);
+                    page.height = pageHeight += wrappedHeight;
+                    page.width = pageWidth = Math.max(page.width, wrappedWidth);
+                }
+            } else {
+                if (pageHeight + height > maxHeight) {
                     pageList.add(page);
                     totalWidth += page.width;
+                    page = new TooltipPage();
+                    pageHeight = -2;
                 }
-            } else if (j == components.size() - 1) {
-                page.height = pageHeight;
-                page.width = pageWidth;
+
                 page.components.add(tooltipComponent);
-                pageList.add(page);
-                totalWidth += page.width;
-            } else {
-                page.height = pageHeight;
-                page.width = pageWidth;
-                page.components.add(tooltipComponent);
+                page.height = pageHeight += height;
+                page.width = pageWidth = Math.max(page.width, width);
             }
+        }
+
+        if (!page.components.isEmpty()) {
+            pageList.add(page);
+            totalWidth += page.width;
         }
 
         Vector2ic vector2ic = positioner.getPosition(context.getScaledWindowWidth(), context.getScaledWindowHeight(), x, y, totalWidth, pageList.get(0).height);
         int n = vector2ic.x();
         int o = vector2ic.y();
+
         for (TooltipPage tooltipPage : pageList) {
             tooltipPage.x = n;
             tooltipPage.y = (pageList.size() > 1) ? o - EDGE_SPACING : o - 6;
@@ -96,7 +113,7 @@ public class EnhancedTooltipsDrawer implements TooltipDrawerProvider.ITooltipDra
             } else {
                 context.draw(vertexConsumerProvider -> {
             //?} else {
-                /*context.draw(() -> TooltipBackgroundRenderer.render(context, p.x, p.y, p.width, p.height, 400/^? if >1.21.1 {^/, Identifier.ofVanilla("tooltip/background")/^?}^/));
+            /*  context.draw(() -> TooltipBackgroundRenderer.render(context, p.x, p.y, p.width, p.height, 400/^? if >1.21.1 {^/, Identifier.ofVanilla("tooltip/background")/^?}^/));
             } else {
                 context.draw(() -> {
             *///?}
@@ -118,13 +135,14 @@ public class EnhancedTooltipsDrawer implements TooltipDrawerProvider.ITooltipDra
             for (TooltipComponent component : p.components) {
                 try {
                     component.drawText(textRenderer, cx, cy, matrices.peek().getPositionMatrix(), context.vertexConsumers);
+                    component.drawItems(textRenderer, cx, cy, /*? if >1.21.1 {*/pageWidth, pageHeight,/*?}*/ context);
+                    cy += component.getHeight(/*? if >1.21.1 {*/textRenderer/*?}*/);
+
+                    if (p == pageList.get(0) && component == p.components.get(0) && components.size() > 1) {
+                        cy += spacing;
+                    }
                 } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
-                component.drawItems(textRenderer, cx, cy, /*? if >1.21.1 {*/pageWidth, pageHeight,/*?}*/ context);
-                cy += component.getHeight(/*? if >1.21.1 {*/textRenderer/*?}*/);
-                if (p == pageList.get(0) && component == p.components.get(0)) {
-                    cy += spacing;
+                    EnhancedTooltips.LOGGER.error("{}", EnhancedTooltips.MOD_ID, e);
                 }
             }
         }
@@ -132,14 +150,31 @@ public class EnhancedTooltipsDrawer implements TooltipDrawerProvider.ITooltipDra
         matrices.pop();
     }
 
-    @Nullable
     private TooltipBackgroundComponent getBackgroundComponent(List<TooltipComponent> components) {
         for (TooltipComponent component : components) {
             if (component instanceof TooltipBackgroundComponent) {
                 return (TooltipBackgroundComponent) component;
             }
         }
+
         return null;
+    }
+
+    private List<TooltipComponent> wrapComponent(TooltipComponent component, TextRenderer textRenderer, int maxWidth) {
+        List<TooltipComponent> wrappedComponents = new ArrayList<>();
+
+        if (component instanceof OrderedTextTooltipComponent orderedTextTooltipComponent) {
+            Text text = EnhancedTooltipsTextVisitor.get(orderedTextTooltipComponent.text);
+
+            List<OrderedText> lines = textRenderer.wrapLines(text, maxWidth);
+            for (OrderedText line : lines) {
+                wrappedComponents.add(TooltipComponent.of(line));
+            }
+        } else {
+            wrappedComponents.add(component);
+        }
+
+        return wrappedComponents;
     }
 
     private static class TooltipPage {
