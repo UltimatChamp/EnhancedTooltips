@@ -42,6 +42,18 @@ public class EnhancedTooltipsGui {
                                 .controller(TickBoxControllerBuilder::create)
                                 .build())
                         .option(Option.<Boolean>createBuilder()
+                                .name(Text.translatable("enhancedtooltips.config.saturationTooltip"))
+                                .description(OptionDescription.createBuilder()
+                                        .text(Text.translatable("enhancedtooltips.config.saturationTooltip.desc"))
+                                        .build())
+                                .binding(
+                                        true,
+                                        () -> config.saturationTooltip,
+                                        (value) -> config.saturationTooltip = value
+                                )
+                                .controller(TickBoxControllerBuilder::create)
+                                .build())
+                        .option(Option.<Boolean>createBuilder()
                                 .name(Text.translatable("enhancedtooltips.config.rarityTooltip"))
                                 .description(OptionDescription.createBuilder()
                                         .text(Text.translatable("enhancedtooltips.config.rarityTooltip.desc"))

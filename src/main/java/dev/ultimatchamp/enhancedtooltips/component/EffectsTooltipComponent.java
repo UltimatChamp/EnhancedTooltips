@@ -104,7 +104,7 @@ public class EffectsTooltipComponent implements TooltipComponent {
         /*if (foodComponent != null) {
         *///?}
             if (EnhancedTooltipsConfig.load().hungerTooltip) height += 9 + 1;
-            height += 9 + 1;
+            if (EnhancedTooltipsConfig.load().saturationTooltip) height += 9 + 1;
 
             if (EnhancedTooltipsConfig.load().effectsTooltip == EnhancedTooltipsConfig.EffectsTooltipMode.OFF) return height;
 
@@ -138,7 +138,16 @@ public class EffectsTooltipComponent implements TooltipComponent {
         FoodComponent foodComponent = getFoodComponent();
 
         int hunger = getHunger();
-        foodWidth = Math.max(textRenderer.getWidth(Text.translatable(EnhancedTooltips.identifier("tooltip.hunger").toTranslationKey())) + 1 + ((textRenderer.fontHeight - 2) * hunger), textRenderer.getWidth(Text.translatable(EnhancedTooltips.identifier("tooltip.saturation").toTranslationKey(), "100%")));
+
+        int hungerLine = 0;
+        if (EnhancedTooltipsConfig.load().hungerTooltip) hungerLine = textRenderer.getWidth(Text.translatable(EnhancedTooltips.identifier("tooltip.hunger").toTranslationKey())) + 1 + ((textRenderer.fontHeight - 2) * hunger);
+
+        int saturationLine = 0;
+        if (EnhancedTooltipsConfig.load().saturationTooltip) saturationLine = textRenderer.getWidth(Text.translatable(EnhancedTooltips.identifier("tooltip.saturation").toTranslationKey(), "100%"));
+
+        foodWidth = Math.max(hungerLine, saturationLine);
+
+        if (EnhancedTooltipsConfig.load().effectsTooltip == EnhancedTooltipsConfig.EffectsTooltipMode.OFF) return foodWidth + 4;
 
         if (foodComponent == null) return 0;
 
@@ -224,7 +233,7 @@ public class EffectsTooltipComponent implements TooltipComponent {
             lineY += textRenderer.fontHeight + 1;
         }
 
-        context.drawText(textRenderer, saturationText, x, lineY, 0xff00ffff, true);
+        if (EnhancedTooltipsConfig.load().saturationTooltip) context.drawText(textRenderer, saturationText, x, lineY, 0xff00ffff, true); else lineY -= textRenderer.fontHeight + 1;
 
         if (EnhancedTooltipsConfig.load().effectsTooltip == EnhancedTooltipsConfig.EffectsTooltipMode.OFF) return;
 

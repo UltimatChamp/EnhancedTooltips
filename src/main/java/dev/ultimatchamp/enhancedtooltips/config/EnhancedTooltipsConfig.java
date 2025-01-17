@@ -20,6 +20,9 @@ public class EnhancedTooltipsConfig {
     public boolean hungerTooltip = true;
 
     @Comment("(default: true)")
+    public boolean saturationTooltip = true;
+
+    @Comment("(default: true)")
     public boolean rarityTooltip = true;
 
     @Comment("(default: true)")

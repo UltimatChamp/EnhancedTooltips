@@ -56,7 +56,7 @@ public class EnhancedTooltipsDrawer implements TooltipDrawerProvider.ITooltipDra
 
         for (TooltipComponent tooltipComponent : components) {
             int width = tooltipComponent.getWidth(textRenderer);
-            int height = tooltipComponent.getHeight(textRenderer);
+            int height = tooltipComponent.getHeight(/*? if >1.21.1 {*/textRenderer/*?}*/);
 
             if (width > maxWidth) {
                 List<TooltipComponent> wrappedComponents = wrapComponent(tooltipComponent, textRenderer, maxWidth);
