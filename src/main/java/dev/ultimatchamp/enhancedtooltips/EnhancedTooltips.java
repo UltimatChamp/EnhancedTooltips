@@ -40,7 +40,7 @@ public class EnhancedTooltips implements ClientModInitializer {
         //?} else {
         /*ItemTooltipCallback.EVENT.register((stack, tooltipContext, lines) -> {
         *///?}
-            if (stack.isDamageable()) {
+            if (stack.isDamageable() && !tooltipType.isAdvanced()) {
                 var damaged = stack.getMaxDamage() - stack.getDamage();
                 Text durabilityText = Text.empty();
 
