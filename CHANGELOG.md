@@ -1,11 +1,11 @@
-🗃️**Detailed Changelog: [1.1.0 --> 1.2.0](https://github.com/UltimatChamp/EnhancedTooltips/compare/1.1.0+fabric.1.21.4...1.2.0+fabric.1.21.4)**
+🗃️**Detailed Changelog: [1.2.1 --> 1.2.2](https://github.com/UltimatChamp/EnhancedTooltips/compare/1.2.1+fabric.1.21.4...1.2.2+fabric.1.21.4)**
 
 <hr>
 
 ### 🛠️Changes
 
-- Add **food** and **effect icons** to tooltips.
-
-  <img width="500px" alt="Preview" src="https://github.com/user-attachments/assets/d9cfcc48-2154-4cc3-ba4c-e24b53b82f9b" />
-
-- Fix incorrect saturation shown for 1.20.5+.
+- Added an option to disable the **saturation tooltip**. [**[#4]**](https://github.com/UltimatChamp/EnhancedTooltips/issues/4)
+- Added **tooltip wrapping**. [**[#5]**](https://github.com/UltimatChamp/EnhancedTooltips/issues/5)
+- Some fixes and minor improvements to **tooltip paging**.
+- Fixed inconsistent spacing for some items.
+- **Durability tooltip** is now automatically disabled when _advanced tooltips_ are on.

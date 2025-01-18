@@ -7,14 +7,12 @@ import net.minecraft.client.render.DiffuseLighting;
 import net.minecraft.entity.*;
 import net.minecraft.entity.decoration.ArmorStandEntity;
 import net.minecraft.entity.mob.GhastEntity;
-import net.minecraft.entity.passive.CamelEntity;
-import net.minecraft.entity.passive.CodEntity;
-import net.minecraft.entity.passive.PufferfishEntity;
-import net.minecraft.entity.passive.SalmonEntity;
+import net.minecraft.entity.passive.*;
 import net.minecraft.item.ArmorItem;
 import net.minecraft.item.EntityBucketItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.SpawnEggItem;
+import net.minecraft.nbt.NbtCompound;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 
@@ -24,7 +22,7 @@ import net.minecraft.component.type.NbtComponent;
 //?}
 
 public class ModelViewerComponent extends ColorBorderComponent {
-    private static final float ROTATION_INCREMENT = 0.4f;
+    private static final float ROTATION_INCREMENT = 0.2f;
     private static float currentRotation = 0f;
 
     private static final int ENTITY_SIZE = 30;
@@ -98,7 +96,6 @@ public class ModelViewerComponent extends ColorBorderComponent {
             *///?}
 
             if (entityType == EntityType.TROPICAL_FISH) return;
-
             if (bucketable instanceof PufferfishEntity pufferfishEntity) pufferfishEntity.setPuffState(2);
 
             super.render(context, x - ENTITY_OFFSET - 70, y, ENTITY_SIZE + 50, ENTITY_SIZE + 10, z, -1);
@@ -113,6 +110,26 @@ public class ModelViewerComponent extends ColorBorderComponent {
         //?} else {
         /*var entity = entityType.create(MinecraftClient.getInstance().world);
         *///?}
+
+        if (entityType == EntityType.VILLAGER || entityType == EntityType.ZOMBIE_VILLAGER) {
+            var villagerData = new NbtCompound();
+            villagerData.putString("profession", "minecraft:none");
+            villagerData.putString("type", "minecraft:plains");
+
+            //? if >1.20.4 {
+            var nbtComponent = stack.getOrDefault(DataComponentTypes.ENTITY_DATA, NbtComponent.DEFAULT);
+            var nbt = nbtComponent.copyNbt();
+            //?} else {
+            /*var nbt = stack.getOrCreateNbt();
+            *///?}
+
+            nbt.put("VillagerData", villagerData);
+            entity.readNbt(nbt);
+        }
+
+        if (entityType == EntityType.TROPICAL_FISH) return;
+        if (entity instanceof PufferfishEntity pufferfishEntity) pufferfishEntity.setPuffState(2);
+        if (entity instanceof SnowGolemEntity snowGolemEntity) snowGolemEntity.setHasPumpkin(false);
 
         if (entity instanceof LivingEntity livingEntity) {
             super.render(context, x - ENTITY_OFFSET - 70, y, ENTITY_SIZE + 50, ENTITY_SIZE + 50, z, -1);

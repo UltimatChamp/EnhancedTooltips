@@ -37,10 +37,11 @@ public class EnhancedTooltips implements ClientModInitializer {
         TooltipComparatorProvider.setComparator(Comparator.comparingInt(EnhancedTooltips::getSerialNumber));
         //? if >1.20.4 {
         ItemTooltipCallback.EVENT.register((stack, tooltipContext, tooltipType, lines) -> {
+            if (stack.isDamageable() && !tooltipType.isAdvanced()) {
         //?} else {
         /*ItemTooltipCallback.EVENT.register((stack, tooltipContext, lines) -> {
+            if (stack.isDamageable() && !tooltipContext.isAdvanced()) {
         *///?}
-            if (stack.isDamageable()) {
                 var damaged = stack.getMaxDamage() - stack.getDamage();
                 Text durabilityText = Text.empty();
 

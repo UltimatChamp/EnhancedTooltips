@@ -30,6 +30,30 @@ public class EnhancedTooltipsGui {
                                 .controller(TickBoxControllerBuilder::create)
                                 .build())
                         .option(Option.<Boolean>createBuilder()
+                                .name(Text.translatable("enhancedtooltips.config.hungerTooltip"))
+                                .description(OptionDescription.createBuilder()
+                                        .text(Text.translatable("enhancedtooltips.config.hungerTooltip.desc"))
+                                        .build())
+                                .binding(
+                                        true,
+                                        () -> config.hungerTooltip,
+                                        (value) -> config.hungerTooltip = value
+                                )
+                                .controller(TickBoxControllerBuilder::create)
+                                .build())
+                        .option(Option.<Boolean>createBuilder()
+                                .name(Text.translatable("enhancedtooltips.config.saturationTooltip"))
+                                .description(OptionDescription.createBuilder()
+                                        .text(Text.translatable("enhancedtooltips.config.saturationTooltip.desc"))
+                                        .build())
+                                .binding(
+                                        true,
+                                        () -> config.saturationTooltip,
+                                        (value) -> config.saturationTooltip = value
+                                )
+                                .controller(TickBoxControllerBuilder::create)
+                                .build())
+                        .option(Option.<Boolean>createBuilder()
                                 .name(Text.translatable("enhancedtooltips.config.rarityTooltip"))
                                 .description(OptionDescription.createBuilder()
                                         .text(Text.translatable("enhancedtooltips.config.rarityTooltip.desc"))
@@ -38,18 +62,6 @@ public class EnhancedTooltipsGui {
                                         true,
                                         () -> config.rarityTooltip,
                                         (value) -> config.rarityTooltip = value
-                                )
-                                .controller(TickBoxControllerBuilder::create)
-                                .build())
-                        .option(Option.<Boolean>createBuilder()
-                                .name(Text.translatable("enhancedtooltips.config.effectTooltip"))
-                                .description(OptionDescription.createBuilder()
-                                        .text(Text.translatable("enhancedtooltips.config.effectTooltip.desc"))
-                                        .build())
-                                .binding(
-                                        true,
-                                        () -> config.effectTooltip,
-                                        (value) -> config.effectTooltip = value
                                 )
                                 .controller(TickBoxControllerBuilder::create)
                                 .build())
@@ -100,6 +112,18 @@ public class EnhancedTooltipsGui {
                                         (value) -> config.durabilityTooltip = value
                                 )
                                 .customController(opt -> new EnumController<>(opt, EnhancedTooltipsConfig.DurabilityTooltipMode.class))
+                                .build())
+                        .option(Option.<EnhancedTooltipsConfig.EffectsTooltipMode>createBuilder()
+                                .name(Text.translatable("enhancedtooltips.config.effectsTooltip"))
+                                .description(OptionDescription.createBuilder()
+                                        .text(Text.translatable("enhancedtooltips.config.effectsTooltip.desc"))
+                                        .build())
+                                .binding(
+                                        EnhancedTooltipsConfig.EffectsTooltipMode.WITH_ICONS,
+                                        () -> config.effectsTooltip,
+                                        (value) -> config.effectsTooltip = value
+                                )
+                                .customController(opt -> new EnumController<>(opt, EnhancedTooltipsConfig.EffectsTooltipMode.class))
                                 .build())
                         .build())
                 .save(() -> EnhancedTooltipsConfig.save(config))
