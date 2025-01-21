@@ -84,6 +84,30 @@ public class EnhancedTooltipsConfig {
         }
     }
 
+    @Comment("RARITY/ITEM_NAME (default: RARITY)")
+    public BorderColorMode borderColor = BorderColorMode.RARITY;
+
+    public enum BorderColorMode implements TranslatableOption {
+        RARITY(0, "enhancedtooltips.config.borderColor.rarity"),
+        ITEM_NAME(1, "enhancedtooltips.config.borderColor.itemName");
+
+        private final int id;
+        private final String translationKey;
+
+        BorderColorMode(final int id, final String translationKey) {
+            this.id = id;
+            this.translationKey = translationKey;
+        }
+
+        public int getId() {
+            return this.id;
+        }
+
+        public String getTranslationKey() {
+            return this.translationKey;
+        }
+    }
+
     private static final Jankson JANKSON = Jankson.builder().build();
     private static final Path CONFIG_PATH = FabricLoader.getInstance().getConfigDir().resolve("enhancedtooltips.json5");
 

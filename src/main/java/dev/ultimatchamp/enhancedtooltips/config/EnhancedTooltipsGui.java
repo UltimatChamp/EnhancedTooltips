@@ -125,6 +125,18 @@ public class EnhancedTooltipsGui {
                                 )
                                 .customController(opt -> new EnumController<>(opt, EnhancedTooltipsConfig.EffectsTooltipMode.class))
                                 .build())
+                        .option(Option.<EnhancedTooltipsConfig.BorderColorMode>createBuilder()
+                                .name(Text.translatable("enhancedtooltips.config.borderColor"))
+                                .description(OptionDescription.createBuilder()
+                                        .text(Text.translatable("enhancedtooltips.config.borderColor.desc"))
+                                        .build())
+                                .binding(
+                                        EnhancedTooltipsConfig.BorderColorMode.RARITY,
+                                        () -> config.borderColor,
+                                        (value) -> config.borderColor = value
+                                )
+                                .customController(opt -> new EnumController<>(opt, EnhancedTooltipsConfig.BorderColorMode.class))
+                                .build())
                         .build())
                 .save(() -> EnhancedTooltipsConfig.save(config))
                 .build()

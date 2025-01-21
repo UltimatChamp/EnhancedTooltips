@@ -11,12 +11,10 @@ import dev.ultimatchamp.enhancedtooltips.kaleido.render.tooltip.api.TooltipCompo
 import dev.ultimatchamp.enhancedtooltips.kaleido.render.tooltip.api.TooltipDrawerProvider;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
-import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
 import net.minecraft.item.ArmorItem;
 import net.minecraft.item.EntityBucketItem;
 import net.minecraft.item.SpawnEggItem;
-import net.minecraft.resource.ResourceType;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -64,8 +62,9 @@ public class EnhancedTooltips implements ClientModInitializer {
         TooltipComponentAPI.EVENT.register((list, itemStack) -> {
             list.remove(0);
             list.add(0, new HeaderTooltipComponent(itemStack));
+
             list.add(1, new EffectsTooltipComponent(itemStack));
-            // Background component
+
             int color = TooltipHelper.borderColorProvider.getItemBorderColor(itemStack);
             if (itemStack.getItem() instanceof ArmorItem) {
                 list.add(new ModelViewerComponent(itemStack, 0xff000000 | color));
@@ -79,9 +78,6 @@ public class EnhancedTooltips implements ClientModInitializer {
         });
 
         TooltipDrawerProvider.setTooltipDrawerProvider(new EnhancedTooltipsDrawer());
-
-        ResourceManagerHelper resourceManagerHelper = ResourceManagerHelper.get(ResourceType.SERVER_DATA);
-        resourceManagerHelper.registerReloadListener(BorderColorLoader.INSTANCE);
     }
 
     public static Identifier identifier(String path) {

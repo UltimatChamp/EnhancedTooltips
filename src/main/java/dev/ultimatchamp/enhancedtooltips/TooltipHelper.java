@@ -3,14 +3,12 @@ package dev.ultimatchamp.enhancedtooltips;
 import dev.ultimatchamp.enhancedtooltips.api.ItemBorderColorProvider;
 import dev.ultimatchamp.enhancedtooltips.api.ItemDisplayNameProvider;
 import dev.ultimatchamp.enhancedtooltips.api.ItemRarityNameProvider;
-import net.minecraft.item.Item;
+import dev.ultimatchamp.enhancedtooltips.config.EnhancedTooltipsConfig;
+import dev.ultimatchamp.enhancedtooltips.util.TranslationStringColorParser;
 import net.minecraft.item.ItemStack;
-import net.minecraft.registry.RegistryKey;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Colors;
-
-import java.util.Optional;
 
 public class TooltipHelper {
     static ItemRarityNameProvider rarityNameProvider = new DefaultItemRarityNameProvider();
@@ -49,23 +47,22 @@ public class TooltipHelper {
 
     private static class DefaultItemBorderColorProvider implements ItemBorderColorProvider {
         @Override
-        public int getItemBorderColor(ItemStack itemStack) {
-            Optional<RegistryKey<Item>> optional = itemStack.getRegistryEntry().getKey();
-            if (optional.isPresent()) {
-                String key = optional.get().getValue().toString();
-                Integer value = BorderColorLoader.INSTANCE.getBorderColorMap().get(key);
-                if (value != null) {
-                    return value;
-                }
+        public int getItemBorderColor(ItemStack stack) {
+            Integer color = null;
+
+            if (EnhancedTooltipsConfig.load().borderColor == EnhancedTooltipsConfig.BorderColorMode.ITEM_NAME) {
+                color = TranslationStringColorParser.getColorFromTranslation(getDisplayName(stack));
             }
-            //? if >1.20.4 {
-            var color = itemStack.getRarity().getFormatting().getColorValue();
-             //?} else {
-            /*var color = itemStack.getRarity().formatting.getColorValue();
-            *///?}
-            if (color == null) {
-                color = 0xffffffff;
+
+            if (color == null || color == 0xFFFFFF) {
+                //? if >1.20.4 {
+                color = stack.getRarity().getFormatting().getColorValue();
+                //?} else {
+                /*color = stack.getRarity().formatting.getColorValue();
+                *///?}
             }
+
+            if (color == null) color = 0xFFFFFF;
             return color;
         }
     }
