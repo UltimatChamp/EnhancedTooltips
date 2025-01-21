@@ -1,11 +1,9 @@
-🗃️**Detailed Changelog: [1.2.1 --> 1.2.2](https://github.com/UltimatChamp/EnhancedTooltips/compare/1.2.1+fabric.1.21.4...1.2.2+fabric.1.21.4)**
+🗃️**Detailed Changelog: [1.2.2 --> 1.2.3](https://github.com/UltimatChamp/EnhancedTooltips/compare/1.2.2+fabric.1.21.4...1.2.3+fabric.1.21.4)**
 
 <hr>
 
 ### 🛠️Changes
 
-- Added an option to disable the **saturation tooltip**. [**[#4]**](https://github.com/UltimatChamp/EnhancedTooltips/issues/4)
-- Added **tooltip wrapping**. [**[#5]**](https://github.com/UltimatChamp/EnhancedTooltips/issues/5)
-- Some fixes and minor improvements to **tooltip paging**.
-- Fixed inconsistent spacing for some items.
-- **Durability tooltip** is now automatically disabled when _advanced tooltips_ are on.
+- Added an option to set the **border color** according to the color defined in the item name. _(Useful for resource-pack developers)_
+  - If there is no color is set in the item name, the border color will be determined based on the item's rarity.
+- Added **Turkish** translation.
