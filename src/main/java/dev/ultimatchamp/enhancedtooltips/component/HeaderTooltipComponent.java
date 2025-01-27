@@ -12,7 +12,7 @@ import net.minecraft.text.Text;
 import org.joml.Matrix4f;
 
 public class HeaderTooltipComponent implements TooltipComponent {
-    private static final int TEXTURE_SIZE = 24;
+    private static final int TEXTURE_SIZE = 20;
     private static final int ITEM_MODEL_SIZE = 16;
     private static final int SPACING = 4;
     private final ItemStack stack;
@@ -42,7 +42,7 @@ public class HeaderTooltipComponent implements TooltipComponent {
 
                 for (var displayStack : tab.getDisplayStacks()) {
                     if (stack.isOf(displayStack.getItem())) {
-                        badgeWidth = textRenderer.getWidth(tab.getDisplayName()) + SPACING * 3 - 2;
+                        badgeWidth = textRenderer.getWidth(tab.getDisplayName()) + SPACING * 2;
                         identified = true;
                         break;
                     }
@@ -128,11 +128,11 @@ public class HeaderTooltipComponent implements TooltipComponent {
         int textWidth = textRenderer.getWidth(text);
         int textHeight = textRenderer.fontHeight;
 
-        int textX = x + getTitleOffset() + textRenderer.getWidth(this.nameText) + SPACING * 2;
+        int textX = x + getTitleOffset() + textRenderer.getWidth(this.nameText) + SPACING + 2;
         int textY = y - textRenderer.fontHeight + SPACING * 2 + 2;
 
         context.fill(
-                textX - SPACING - 2,
+                textX - SPACING,
                 textY - SPACING / 2,
                 textX + textWidth + SPACING,
                 textY + textHeight,
@@ -142,7 +142,7 @@ public class HeaderTooltipComponent implements TooltipComponent {
         context.drawText(
                 textRenderer,
                 text,
-                textX - 2,
+                textX,
                 textY,
                 0xffffffff,
                 true
@@ -150,7 +150,7 @@ public class HeaderTooltipComponent implements TooltipComponent {
 
         drawFrame(
                 context,
-                textX - SPACING - 2,
+                textX - SPACING,
                 textY - SPACING / 2,
                 textWidth + SPACING * 2,
                 textHeight + SPACING,
