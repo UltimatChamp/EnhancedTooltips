@@ -13,8 +13,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 public class EnhancedTooltipsConfig {
+    //? if >1.20.6 {
     @Comment("(default: true)")
     public boolean itemBadges = true;
+    //?}
 
     @Comment("(default: true)")
     public boolean hungerTooltip = true;

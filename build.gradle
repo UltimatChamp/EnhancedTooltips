@@ -34,11 +34,6 @@ repositories {
 }
 
 loom {
-    runConfigs.all {
-        ideConfigGenerated true
-        runDir "../../run"
-    }
-
     accessWidenerPath = file("../../src/main/resources/enhancedtooltips.accesswidener")
 }
 

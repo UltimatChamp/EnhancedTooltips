@@ -2,6 +2,8 @@ package dev.ultimatchamp.enhancedtooltips.component;
 
 import dev.ultimatchamp.enhancedtooltips.TooltipHelper;
 import dev.ultimatchamp.enhancedtooltips.config.EnhancedTooltipsConfig;
+import dev.ultimatchamp.enhancedtooltips.util.BadgesUtils;
+import dev.ultimatchamp.enhancedtooltips.util.ItemGroupsUtils;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
@@ -9,7 +11,11 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.item.*;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
+import net.minecraft.util.Pair;
 import org.joml.Matrix4f;
+
+import java.util.List;
+import java.util.Map;
 
 public class HeaderTooltipComponent implements TooltipComponent {
     private static final int TEXTURE_SIZE = 20;
@@ -34,6 +40,7 @@ public class HeaderTooltipComponent implements TooltipComponent {
     public int getWidth(TextRenderer textRenderer) {
         int badgeWidth = 0;
 
+        //? if >1.20.6 {
         if (EnhancedTooltipsConfig.load().itemBadges) {
             for (var tab : ItemGroups.getGroups()) {
                 if (tab.equals(ItemGroups.getSearchGroup())) continue;
@@ -51,6 +58,7 @@ public class HeaderTooltipComponent implements TooltipComponent {
                 if (identified) break;
             }
         }
+        //?}
 
         return Math.max(textRenderer.getWidth(this.nameText) + badgeWidth, textRenderer.getWidth(this.rarityName)) + SPACING + TEXTURE_SIZE;
     }
@@ -82,49 +90,26 @@ public class HeaderTooltipComponent implements TooltipComponent {
 
         context.drawItem(this.stack, startDrawX, startDrawY);
 
+        //? if >1.20.6 {
         if (!EnhancedTooltipsConfig.load().itemBadges) return;
 
-        for (var tab : ItemGroups.getGroups()) {
-            if (tab.equals(ItemGroups.getSearchGroup())) continue;
+        String translation = "gamerule.category.misc";
+        int fillColor = -6250336;
 
-            var identified = false;
-
-            for (var displayStack : tab.getDisplayStacks()) {
-                if (stack.isOf(displayStack.getItem())) {
-                    if (tab.contains(Items.NETHERITE_PICKAXE.getDefaultStack())) {
-                        drawBadge(textRenderer, tab.getDisplayName(), x, y, context, 0xff9b59b6, 0xff8e44ad); // Tools & Utilities
-                    } else if (tab.contains(Items.NETHERITE_SWORD.getDefaultStack())) {
-                        drawBadge(textRenderer, tab.getDisplayName(), x, y, context, 0xfff94144, 0xffd72638); // Combat
-                    } else if (tab.contains(Items.REPEATER.getDefaultStack())) {
-                        drawBadge(textRenderer, tab.getDisplayName(), x, y, context, 0xffff6b6b, 0xffe63939); // Redstone Blocks
-                    } else if (tab.contains(Items.OAK_SIGN.getDefaultStack())) {
-                        drawBadge(textRenderer, tab.getDisplayName(), x, y, context, 0xff2a9d8f, 0xff207567); // Functional Blocks
-                    } else if (tab.contains(Items.COOKED_BEEF.getDefaultStack())) {
-                        drawBadge(textRenderer, tab.getDisplayName(), x, y, context, 0xff61b748, 0xff7ad85b); // Food and Drinks
-                    } else if (tab.contains(Items.GOLD_INGOT.getDefaultStack())) {
-                        drawBadge(textRenderer, tab.getDisplayName(), x, y, context, 0xffff6347, 0xffffa07a); // Ingredients
-                    } else if (tab.contains(Items.ALLAY_SPAWN_EGG.getDefaultStack())) {
-                        drawBadge(textRenderer, tab.getDisplayName(), x, y, context, 0xffa29bfe, 0xff817dc4); // Spawn Eggs
-                    } else if (tab.contains(Items.COMMAND_BLOCK.getDefaultStack())) {
-                        drawBadge(textRenderer, tab.getDisplayName(), x, y, context, 0xff9c89b8, 0xff7a6395); // Operator Utilities
-                    } else if (tab.contains(Items.GRASS_BLOCK.getDefaultStack())) {
-                        drawBadge(textRenderer, tab.getDisplayName(), x, y, context, 0xff66bb6a, 0xffa5d6a7); // Natural Blocks
-                    } else if (tab.contains(Items.BLUE_WOOL.getDefaultStack())) {
-                        drawBadge(textRenderer, tab.getDisplayName(), x, y, context, 0xff42a5f5, 0xff90caf9); // Colored Blocks
-                    } else if (tab.contains(Items.IRON_BARS.getDefaultStack())) {
-                        drawBadge(textRenderer, tab.getDisplayName(), x, y, context, 0xfff2c94c, 0xffe0a800); // Building Blocks
-                    }
-
-                    identified = true;
-                    break;
-                }
+        for (Map.Entry<List<Item>, Pair<String, Integer>> entry : ItemGroupsUtils.getItemGroups().entrySet()) {
+            if (entry.getKey().contains(stack.getItem())) {
+                translation = entry.getValue().getLeft();
+                fillColor = entry.getValue().getRight();
+                break;
             }
-
-            if (identified) break;
         }
+
+        drawBadge(textRenderer, Text.translatable(translation), x, y, context, fillColor);
+        //?}
     }
 
-    private void drawBadge(TextRenderer textRenderer, Text text, int x, int y, DrawContext context, int fillColor, int borderColor) {
+    //? if >1.20.6 {
+    private void drawBadge(TextRenderer textRenderer, Text text, int x, int y, DrawContext context, int fillColor) {
         int textWidth = textRenderer.getWidth(text);
         int textHeight = textRenderer.fontHeight;
 
@@ -148,29 +133,15 @@ public class HeaderTooltipComponent implements TooltipComponent {
                 true
         );
 
-        drawFrame(
+        BadgesUtils.drawFrame(
                 context,
                 textX - SPACING,
                 textY - SPACING / 2,
                 textWidth + SPACING * 2,
                 textHeight + SPACING,
                 400,
-                borderColor
+                BadgesUtils.darkenColor(fillColor, 0.8f)
         );
     }
-
-    private static void drawFrame(DrawContext context, int x, int y, int width, int height, int z, int color) {
-        renderVerticalLine(context, x, y, height - 2, z, color);
-        renderVerticalLine(context, x + width - 1, y, height - 2, z, color);
-        renderHorizontalLine(context, x + 1, y - 1, width - 2, z, color);
-        renderHorizontalLine(context, x + 1, y - 1 + height - 1, width - 2, z, color);
-    }
-
-    private static void renderVerticalLine(DrawContext context, int x, int y, int height, int z, int color) {
-        context.fill(x, y, x + 1, y + height, z, color);
-    }
-
-    private static void renderHorizontalLine(DrawContext context, int x, int y, int width, int z, int color) {
-        context.fill(x, y, x + width, y + 1, z, color);
-    }
+    //?}
 }

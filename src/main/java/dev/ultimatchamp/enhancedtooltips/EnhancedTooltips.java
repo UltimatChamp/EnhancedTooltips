@@ -1,22 +1,16 @@
 package dev.ultimatchamp.enhancedtooltips;
 
-import dev.ultimatchamp.enhancedtooltips.component.ColorBorderComponent;
-import dev.ultimatchamp.enhancedtooltips.component.EffectsTooltipComponent;
-import dev.ultimatchamp.enhancedtooltips.component.HeaderTooltipComponent;
-import dev.ultimatchamp.enhancedtooltips.component.ModelViewerComponent;
-import dev.ultimatchamp.enhancedtooltips.config.EnhancedTooltipsConfig;
+import dev.ultimatchamp.enhancedtooltips.component.*;
 import dev.ultimatchamp.enhancedtooltips.kaleido.render.tooltip.TooltipModule;
 import dev.ultimatchamp.enhancedtooltips.kaleido.render.tooltip.api.TooltipComparatorProvider;
 import dev.ultimatchamp.enhancedtooltips.kaleido.render.tooltip.api.TooltipComponentAPI;
 import dev.ultimatchamp.enhancedtooltips.kaleido.render.tooltip.api.TooltipDrawerProvider;
 import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
 import net.minecraft.item.ArmorItem;
 import net.minecraft.item.EntityBucketItem;
 import net.minecraft.item.SpawnEggItem;
-import net.minecraft.text.Style;
-import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,48 +27,25 @@ public class EnhancedTooltips implements ClientModInitializer {
         new TooltipModule().load();
 
         TooltipComparatorProvider.setComparator(Comparator.comparingInt(EnhancedTooltips::getSerialNumber));
-        //? if >1.20.4 {
-        ItemTooltipCallback.EVENT.register((stack, tooltipContext, tooltipType, lines) -> {
-            if (stack.isDamageable() && !tooltipType.isAdvanced()) {
-        //?} else {
-        /*ItemTooltipCallback.EVENT.register((stack, tooltipContext, lines) -> {
-            if (stack.isDamageable() && !tooltipContext.isAdvanced()) {
-        *///?}
-                var damaged = stack.getMaxDamage() - stack.getDamage();
-                Text durabilityText = Text.empty();
 
-                if (EnhancedTooltipsConfig.load().durabilityTooltip == EnhancedTooltipsConfig.DurabilityTooltipMode.VALUE) {
-                    durabilityText = Text.translatable("enhancedtooltips.tooltip.durability")
-                            .append(Text.literal(" " + damaged + " / " + stack.getMaxDamage())
-                                    .setStyle(Style.EMPTY.withColor(stack.getItemBarColor()))
-                            );
-                } else if (EnhancedTooltipsConfig.load().durabilityTooltip == EnhancedTooltipsConfig.DurabilityTooltipMode.PERCENTAGE) {
-                    durabilityText = Text.translatable("enhancedtooltips.tooltip.durability")
-                            .append(Text.literal(" " + damaged * 100 / stack.getMaxDamage() + "%")
-                                    .setStyle(Style.EMPTY.withColor(stack.getItemBarColor()))
-                            );
-                }
-
-                if (!durabilityText.equals(Text.empty())) lines.add(durabilityText);
-            }
-        });
-
-        TooltipComponentAPI.EVENT.register((list, itemStack) -> {
+        TooltipComponentAPI.EVENT.register((list, stack) -> {
             list.remove(0);
-            list.add(0, new HeaderTooltipComponent(itemStack));
+            list.add(0, new HeaderTooltipComponent(stack));
 
-            list.add(1, new EffectsTooltipComponent(itemStack));
+            list.add(1, new EffectsTooltipComponent(stack));
 
-            int color = TooltipHelper.borderColorProvider.getItemBorderColor(itemStack);
-            if (itemStack.getItem() instanceof ArmorItem) {
-                list.add(new ModelViewerComponent(itemStack, 0xff000000 | color));
-            } else if (itemStack.getItem() instanceof EntityBucketItem) {
-                list.add(new ModelViewerComponent(itemStack, 0xff000000 | color));
-            } else if (itemStack.getItem() instanceof SpawnEggItem) {
-                list.add(new ModelViewerComponent(itemStack, 0xff000000 | color));
+            int color = TooltipHelper.borderColorProvider.getItemBorderColor(stack);
+            if (stack.getItem() instanceof ArmorItem) {
+                list.add(new ModelViewerComponent(stack, 0xff000000 | color));
+            } else if (stack.getItem() instanceof EntityBucketItem) {
+                list.add(new ModelViewerComponent(stack, 0xff000000 | color));
+            } else if (stack.getItem() instanceof SpawnEggItem) {
+                list.add(new ModelViewerComponent(stack, 0xff000000 | color));
             } else {
                 list.add(new ColorBorderComponent(0xff000000 | color));
             }
+
+            if (!MinecraftClient.getInstance().options.advancedItemTooltips) list.add(new DurabilityTooltipComponent(stack));
         });
 
         TooltipDrawerProvider.setTooltipDrawerProvider(new EnhancedTooltipsDrawer());
