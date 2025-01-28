@@ -2,8 +2,7 @@ package dev.ultimatchamp.enhancedtooltips.component;
 
 import dev.ultimatchamp.enhancedtooltips.TooltipHelper;
 import dev.ultimatchamp.enhancedtooltips.config.EnhancedTooltipsConfig;
-import dev.ultimatchamp.enhancedtooltips.util.BadgesUtils;
-import dev.ultimatchamp.enhancedtooltips.util.ItemGroupsUtils;
+import dev.ultimatchamp.enhancedtooltips.util.*;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
@@ -42,20 +41,13 @@ public class HeaderTooltipComponent implements TooltipComponent {
 
         //? if >1.20.6 {
         if (EnhancedTooltipsConfig.load().itemBadges) {
-            for (var tab : ItemGroups.getGroups()) {
-                if (tab.equals(ItemGroups.getSearchGroup())) continue;
+            badgeWidth = textRenderer.getWidth(Text.translatable("gamerule.category.misc")) + SPACING * 2;
 
-                var identified = false;
-
-                for (var displayStack : tab.getDisplayStacks()) {
-                    if (stack.isOf(displayStack.getItem())) {
-                        badgeWidth = textRenderer.getWidth(tab.getDisplayName()) + SPACING * 2;
-                        identified = true;
-                        break;
-                    }
+            for (Map.Entry<List<Item>, Pair<String, Integer>> entry : ItemGroupsUtils.getItemGroups().entrySet()) {
+                if (entry.getKey().contains(stack.getItem())) {
+                    badgeWidth = textRenderer.getWidth(Text.translatable(entry.getValue().getLeft())) + SPACING * 2;
+                    break;
                 }
-
-                if (identified) break;
             }
         }
         //?}

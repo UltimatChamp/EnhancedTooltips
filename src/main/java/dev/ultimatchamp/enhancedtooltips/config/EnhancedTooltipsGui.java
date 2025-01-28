@@ -17,6 +17,7 @@ public class EnhancedTooltipsGui {
                 .title(Text.translatable("enhancedtooltips.title"))
                 .category(ConfigCategory.createBuilder()
                         .name(Text.translatable("stat.generalButton"))
+                        //? if >1.20.6 {
                         .option(Option.<Boolean>createBuilder()
                                 .name(Text.translatable("enhancedtooltips.config.itemBadges"))
                                 .description(OptionDescription.createBuilder()
@@ -29,6 +30,7 @@ public class EnhancedTooltipsGui {
                                 )
                                 .controller(TickBoxControllerBuilder::create)
                                 .build())
+                        //?}
                         .option(Option.<Boolean>createBuilder()
                                 .name(Text.translatable("enhancedtooltips.config.hungerTooltip"))
                                 .description(OptionDescription.createBuilder()

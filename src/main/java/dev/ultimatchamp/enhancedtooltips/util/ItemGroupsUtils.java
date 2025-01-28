@@ -482,9 +482,9 @@ public class ItemGroupsUtils {
             //?}
             Items.WAXED_OXIDIZED_CUT_COPPER,
             Items.WAXED_OXIDIZED_CUT_COPPER_STAIRS,
-            Items.WAXED_OXIDIZED_CUT_COPPER_SLAB,
+            Items.WAXED_OXIDIZED_CUT_COPPER_SLAB
             //? if >1.21.1 {
-            Items.WAXED_OXIDIZED_COPPER_DOOR,
+            , Items.WAXED_OXIDIZED_COPPER_DOOR,
             Items.WAXED_OXIDIZED_COPPER_TRAPDOOR,
             Items.WAXED_OXIDIZED_COPPER_BULB
             //?}
@@ -1250,6 +1250,7 @@ public class ItemGroupsUtils {
             Items.NAME_TAG,
             Items.LEAD,
             Items.BUNDLE,
+            //? if >1.21.1 {
             Items.WHITE_BUNDLE,
             Items.LIGHT_GRAY_BUNDLE,
             Items.GRAY_BUNDLE,
@@ -1266,6 +1267,7 @@ public class ItemGroupsUtils {
             Items.PURPLE_BUNDLE,
             Items.MAGENTA_BUNDLE,
             Items.PINK_BUNDLE,
+            //?}
             Items.COMPASS,
             Items.RECOVERY_COMPASS,
             Items.CLOCK,
@@ -1520,9 +1522,9 @@ public class ItemGroupsUtils {
             Items.GHAST_TEAR,
             Items.TURTLE_HELMET,
             Items.PHANTOM_MEMBRANE,
-            Items.EXPERIENCE_BOTTLE,
+            Items.EXPERIENCE_BOTTLE
             //? if >1.21.1 {
-            Items.TRIAL_KEY,
+            , Items.TRIAL_KEY,
             Items.OMINOUS_TRIAL_KEY
             //?}
     );
