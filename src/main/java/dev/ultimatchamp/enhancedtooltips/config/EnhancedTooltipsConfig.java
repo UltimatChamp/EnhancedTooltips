@@ -13,41 +13,25 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 public class EnhancedTooltipsConfig {
+    @Comment("-> General\n(default: true)")
+    public boolean rarityTooltip = true;
+
     //? if >1.20.6 {
     @Comment("(default: true)")
     public boolean itemBadges = true;
     //?}
 
-    @Comment("(default: true)")
-    public boolean hungerTooltip = true;
+    @Comment("RARITY/ITEM_NAME (default: RARITY)")
+    public BorderColorMode borderColor = BorderColorMode.RARITY;
 
-    @Comment("(default: true)")
-    public boolean saturationTooltip = true;
-
-    @Comment("(default: true)")
-    public boolean rarityTooltip = true;
-
-    @Comment("(default: true)")
-    public boolean armorTooltip = true;
-
-    @Comment("(default: true)")
-    public boolean bucketTooltip = true;
-
-    @Comment("(default: true)")
-    public boolean spawnEggTooltip = true;
-
-    @Comment("OFF/VALUE/PERCENTAGE (default: VALUE)")
-    public DurabilityTooltipMode durabilityTooltip = DurabilityTooltipMode.VALUE;
-
-    public enum DurabilityTooltipMode implements TranslatableOption {
-        OFF(0, "options.off"),
-        VALUE(1, "enhancedtooltips.config.durabilityTooltip.value"),
-        PERCENTAGE(0, "enhancedtooltips.config.durabilityTooltip.percentage");
+    public enum BorderColorMode implements TranslatableOption {
+        RARITY(0, "enhancedtooltips.config.borderColor.rarity"),
+        ITEM_NAME(1, "enhancedtooltips.config.borderColor.itemName");
 
         private final int id;
         private final String translationKey;
 
-        DurabilityTooltipMode(final int id, final String translationKey) {
+        BorderColorMode(final int id, final String translationKey) {
             this.id = id;
             this.translationKey = translationKey;
         }
@@ -60,6 +44,12 @@ public class EnhancedTooltipsConfig {
             return this.translationKey;
         }
     }
+
+    @Comment("-> Food & Drinks\n(default: true)")
+    public boolean hungerTooltip = true;
+
+    @Comment("(default: true)")
+    public boolean saturationTooltip = true;
 
     @Comment("OFF/WITHOUT_ICONS/WITH_ICONS (default: WITH_ICONS)")
     public EffectsTooltipMode effectsTooltip = EffectsTooltipMode.WITH_ICONS;
@@ -86,17 +76,27 @@ public class EnhancedTooltipsConfig {
         }
     }
 
-    @Comment("RARITY/ITEM_NAME (default: RARITY)")
-    public BorderColorMode borderColor = BorderColorMode.RARITY;
+    @Comment("-> Mobs\n(default: true)")
+    public boolean armorTooltip = true;
 
-    public enum BorderColorMode implements TranslatableOption {
-        RARITY(0, "enhancedtooltips.config.borderColor.rarity"),
-        ITEM_NAME(1, "enhancedtooltips.config.borderColor.itemName");
+    @Comment("(default: true)")
+    public boolean bucketTooltip = true;
+
+    @Comment("(default: true)")
+    public boolean spawnEggTooltip = true;
+
+    @Comment("-> Durability\nOFF/VALUE/PERCENTAGE (default: VALUE)")
+    public DurabilityTooltipMode durabilityTooltip = DurabilityTooltipMode.VALUE;
+
+    public enum DurabilityTooltipMode implements TranslatableOption {
+        OFF(0, "options.off"),
+        VALUE(1, "enhancedtooltips.config.durabilityTooltip.value"),
+        PERCENTAGE(0, "enhancedtooltips.config.durabilityTooltip.percentage");
 
         private final int id;
         private final String translationKey;
 
-        BorderColorMode(final int id, final String translationKey) {
+        DurabilityTooltipMode(final int id, final String translationKey) {
             this.id = id;
             this.translationKey = translationKey;
         }
@@ -109,6 +109,9 @@ public class EnhancedTooltipsConfig {
             return this.translationKey;
         }
     }
+
+    @Comment("(default: false)")
+    public boolean durabilityBar = false;
 
     private static final Jankson JANKSON = Jankson.builder().build();
     private static final Path CONFIG_PATH = FabricLoader.getInstance().getConfigDir().resolve("enhancedtooltips.json5");

@@ -31,9 +31,11 @@ import net.minecraft.item.FoodComponent;
 
 public class EffectsTooltipComponent implements TooltipComponent {
     private final ItemStack stack;
+    private final EnhancedTooltipsConfig config;
 
     public EffectsTooltipComponent(ItemStack stack) {
         this.stack = stack;
+        this.config = EnhancedTooltipsConfig.load();
     }
 
     //? if >1.21.1 {
@@ -103,10 +105,10 @@ public class EffectsTooltipComponent implements TooltipComponent {
         //?} else {
         /*if (foodComponent != null) {
         *///?}
-            if (EnhancedTooltipsConfig.load().hungerTooltip) height += 9 + 1;
-            if (EnhancedTooltipsConfig.load().saturationTooltip) height += 9 + 1;
+            if (config.hungerTooltip) height += 9 + 1;
+            if (config.saturationTooltip) height += 9 + 1;
 
-            if (EnhancedTooltipsConfig.load().effectsTooltip == EnhancedTooltipsConfig.EffectsTooltipMode.OFF) return height;
+            if (config.effectsTooltip == EnhancedTooltipsConfig.EffectsTooltipMode.OFF) return height;
 
             //? if >1.21.1 {
             for (ConsumeEffect entry : consumableComponent.onConsumeEffects()) {
@@ -140,14 +142,14 @@ public class EffectsTooltipComponent implements TooltipComponent {
         int hunger = getHunger();
 
         int hungerLine = 0;
-        if (EnhancedTooltipsConfig.load().hungerTooltip) hungerLine = textRenderer.getWidth(Text.translatable(EnhancedTooltips.identifier("tooltip.hunger").toTranslationKey())) + 1 + ((textRenderer.fontHeight - 2) * hunger);
+        if (config.hungerTooltip) hungerLine = textRenderer.getWidth(Text.translatable(EnhancedTooltips.identifier("tooltip.hunger").toTranslationKey())) + 1 + ((textRenderer.fontHeight - 2) * hunger);
 
         int saturationLine = 0;
-        if (EnhancedTooltipsConfig.load().saturationTooltip) saturationLine = textRenderer.getWidth(Text.translatable(EnhancedTooltips.identifier("tooltip.saturation").toTranslationKey(), "100%"));
+        if (config.saturationTooltip) saturationLine = textRenderer.getWidth(Text.translatable(EnhancedTooltips.identifier("tooltip.saturation").toTranslationKey(), "100%"));
 
         foodWidth = Math.max(hungerLine, saturationLine);
 
-        if (EnhancedTooltipsConfig.load().effectsTooltip == EnhancedTooltipsConfig.EffectsTooltipMode.OFF) return foodWidth + 4;
+        if (config.effectsTooltip == EnhancedTooltipsConfig.EffectsTooltipMode.OFF) return foodWidth + 4;
 
         if (foodComponent == null) return 0;
 
@@ -198,7 +200,7 @@ public class EffectsTooltipComponent implements TooltipComponent {
 
         var lineY = y;
 
-        if (EnhancedTooltipsConfig.load().hungerTooltip) {
+        if (config.hungerTooltip) {
             context.drawText(textRenderer, hungerText, x, lineY, 0xffffffff, true);
 
             Identifier fullHunger = Identifier.of("minecraft", "hud/food_full");
@@ -233,9 +235,9 @@ public class EffectsTooltipComponent implements TooltipComponent {
             lineY += textRenderer.fontHeight + 1;
         }
 
-        if (EnhancedTooltipsConfig.load().saturationTooltip) context.drawText(textRenderer, saturationText, x, lineY, 0xff00ffff, true); else lineY -= textRenderer.fontHeight + 1;
+        if (config.saturationTooltip) context.drawText(textRenderer, saturationText, x, lineY, 0xff00ffff, true); else lineY -= textRenderer.fontHeight + 1;
 
-        if (EnhancedTooltipsConfig.load().effectsTooltip == EnhancedTooltipsConfig.EffectsTooltipMode.OFF) return;
+        if (config.effectsTooltip == EnhancedTooltipsConfig.EffectsTooltipMode.OFF) return;
 
         //? if >1.21.1 {
         for (ConsumeEffect entry : consumableComponent.onConsumeEffects()) {
@@ -267,7 +269,7 @@ public class EffectsTooltipComponent implements TooltipComponent {
 
                 lineY += textRenderer.fontHeight + 1;
 
-                if (EnhancedTooltipsConfig.load().effectsTooltip == EnhancedTooltipsConfig.EffectsTooltipMode.WITH_ICONS) {
+                if (config.effectsTooltip == EnhancedTooltipsConfig.EffectsTooltipMode.WITH_ICONS) {
                     //? if >1.21.1 {
                     context.drawSpriteStretched(RenderLayer::getGuiTextured, effectTexture, x - 2, lineY, textRenderer.fontHeight, textRenderer.fontHeight);
                     //?} else {

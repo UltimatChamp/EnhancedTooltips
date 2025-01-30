@@ -35,10 +35,12 @@ public class TooltipBackgroundComponent implements TooltipComponent {
     }
 
     protected void renderVerticalLine(DrawContext context, int x, int y, int height, int z, int startColor, int endColor) {
+        if (startColor == -1 || startColor == 0xffffff) startColor = endColor;
         context.fillGradient(x, y, x + 1, y + height, z, startColor, endColor);
     }
 
     protected void renderHorizontalLine(DrawContext context, int x, int y, int width, int z, int color) {
+        if (color == -1 || color == 0xffffff) color = 1347420415;
         context.fill(x, y, x + width, y + 1, z, color);
     }
 

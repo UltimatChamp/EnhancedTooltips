@@ -31,10 +31,12 @@ public class ModelViewerComponent extends ColorBorderComponent {
     private static final int SHADOW_LIGHT_COLOR = 15728880;
 
     private final ItemStack stack;
+    private final EnhancedTooltipsConfig config;
 
     public ModelViewerComponent(ItemStack stack, int color) {
         super(color);
         this.stack = stack;
+        this.config = EnhancedTooltipsConfig.load();
     }
 
     //? if >1.21.1 {
@@ -53,13 +55,13 @@ public class ModelViewerComponent extends ColorBorderComponent {
         currentRotation = (currentRotation + ROTATION_INCREMENT) % 360;
 
         if (stack.getItem() instanceof ArmorItem) {
-            if (!EnhancedTooltipsConfig.load().armorTooltip) return;
+            if (!config.armorTooltip) return;
             renderArmorStand(context, x, y, z);
         } else if (stack.getItem() instanceof EntityBucketItem bucketItem) {
-            if (!EnhancedTooltipsConfig.load().bucketTooltip) return;
+            if (!config.bucketTooltip) return;
             renderBucketEntity(context, x, y, z, bucketItem);
         } else if (stack.getItem() instanceof SpawnEggItem spawnEggItem) {
-            if (!EnhancedTooltipsConfig.load().spawnEggTooltip) return;
+            if (!config.spawnEggTooltip) return;
             renderSpawnEggEntity(context, x, y, z, spawnEggItem);
         }
     }

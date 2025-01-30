@@ -6,24 +6,24 @@ import net.minecraft.item.Items;
 import net.minecraft.util.Pair;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 public class ItemGroupsUtils {
     public static @NotNull Map<List<Item>, Pair<String, Integer>> getItemGroups() {
-        Map<List<Item>, Pair<String, Integer>> itemGroups = new HashMap<>();
+        Map<List<Item>, Pair<String, Integer>> itemGroups = new LinkedHashMap<>();
 
-        itemGroups.put(TOOLS, new Pair<>("itemGroup.tools", 0xff9b59b6));
         itemGroups.put(COMBAT, new Pair<>("itemGroup.combat", 0xfff94144));
-        itemGroups.put(REDSTONE_BLOCKS, new Pair<>("itemGroup.redstone", 0xffff6b6b));
-        itemGroups.put(FUNCTIONAL_BLOCKS, new Pair<>("itemGroup.functional", 0xff2a9d8f));
-        itemGroups.put(FOOD_AND_DRINK, new Pair<>("itemGroup.foodAndDrink", 0xff61b748));
-        itemGroups.put(INGREDIENTS, new Pair<>("itemGroup.ingredients", 0xffff6347));
+        itemGroups.put(TOOLS, new Pair<>("itemGroup.tools", 0xff9b59b6));
         itemGroups.put(SPAWN_EGGS, new Pair<>("itemGroup.spawnEggs", 0xffa29bfe));
         itemGroups.put(OPERATOR, new Pair<>("itemGroup.op", 0xff9c89b8));
-        itemGroups.put(NATURAL_BLOCKS, new Pair<>("itemGroup.natural", 0xff66bb6a));
+        itemGroups.put(FOOD_AND_DRINK, new Pair<>("itemGroup.foodAndDrink", 0xff61b748));
+        itemGroups.put(REDSTONE_BLOCKS, new Pair<>("itemGroup.redstone", 0xffff6b6b));
+        itemGroups.put(INGREDIENTS, new Pair<>("itemGroup.ingredients", 0xffff6347));
         itemGroups.put(COLORED_BLOCKS, new Pair<>("itemGroup.coloredBlocks", 0xff42a5f5));
+        itemGroups.put(FUNCTIONAL_BLOCKS, new Pair<>("itemGroup.functional", 0xff2a9d8f));
+        itemGroups.put(NATURAL_BLOCKS, new Pair<>("itemGroup.natural", 0xff66bb6a));
         itemGroups.put(BUILDING_BLOCKS, new Pair<>("itemGroup.buildingBlocks", 0xfff2c94c));
 
         return itemGroups;

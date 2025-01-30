@@ -23,11 +23,13 @@ public class HeaderTooltipComponent implements TooltipComponent {
     private final ItemStack stack;
     private final OrderedText nameText;
     private final OrderedText rarityName;
+    private final EnhancedTooltipsConfig config;
 
     public HeaderTooltipComponent(ItemStack stack) {
         this.stack = stack;
         this.nameText = TooltipHelper.getDisplayName(stack).asOrderedText();
         this.rarityName = TooltipHelper.getRarityName(stack).asOrderedText();
+        this.config = EnhancedTooltipsConfig.load();
     }
 
     @Override
@@ -40,7 +42,7 @@ public class HeaderTooltipComponent implements TooltipComponent {
         int badgeWidth = 0;
 
         //? if >1.20.6 {
-        if (EnhancedTooltipsConfig.load().itemBadges) {
+        if (config.itemBadges) {
             badgeWidth = textRenderer.getWidth(Text.translatable("gamerule.category.misc")) + SPACING * 2;
 
             for (Map.Entry<List<Item>, Pair<String, Integer>> entry : ItemGroupsUtils.getItemGroups().entrySet()) {
@@ -65,7 +67,7 @@ public class HeaderTooltipComponent implements TooltipComponent {
         float startDrawY = y + 1;
         textRenderer.draw(this.nameText, startDrawX, startDrawY, -1, true, matrix, vertexConsumers, TextRenderer.TextLayerType.NORMAL, 0, 0xF000F0);
 
-        if (EnhancedTooltipsConfig.load().rarityTooltip) {
+        if (config.rarityTooltip) {
             startDrawY += textRenderer.fontHeight + SPACING;
             textRenderer.draw(this.rarityName, startDrawX, startDrawY, -1, true, matrix, vertexConsumers, TextRenderer.TextLayerType.NORMAL, 0, 0xF000F0);
         }
@@ -83,7 +85,7 @@ public class HeaderTooltipComponent implements TooltipComponent {
         context.drawItem(this.stack, startDrawX, startDrawY);
 
         //? if >1.20.6 {
-        if (!EnhancedTooltipsConfig.load().itemBadges) return;
+        if (!config.itemBadges) return;
 
         String translation = "gamerule.category.misc";
         int fillColor = -6250336;
@@ -113,7 +115,7 @@ public class HeaderTooltipComponent implements TooltipComponent {
                 textY - SPACING / 2,
                 textX + textWidth + SPACING,
                 textY + textHeight,
-                fillColor
+                BadgesUtils.darkenColor(fillColor, 0.9f)
         );
 
         context.drawText(
