@@ -4,6 +4,7 @@ import dev.ultimatchamp.enhancedtooltips.EnhancedTooltips;
 import dev.ultimatchamp.enhancedtooltips.kaleido.render.tooltip.api.TooltipComponentAPI;
 import dev.ultimatchamp.enhancedtooltips.kaleido.render.tooltip.api.TooltipDrawerProvider;
 import dev.ultimatchamp.enhancedtooltips.kaleido.render.tooltip.impl.TooltipItemStackCache;
+import dev.ultimatchamp.enhancedtooltips.util.EnhancedTooltipsTextVisitor;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.tooltip.HoveredTooltipPositioner;
@@ -11,14 +12,11 @@ import net.minecraft.client.gui.tooltip.OrderedTextTooltipComponent;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
 import net.minecraft.client.gui.tooltip.TooltipPositioner;
 import net.minecraft.item.ItemStack;
-import net.minecraft.text.OrderedText;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -41,7 +39,7 @@ public abstract class DrawContextMixin {
 
         Optional<TooltipComponent> markComponent = mutableComponents.stream()
                 .filter(component -> component instanceof OrderedTextTooltipComponent)
-                .filter(component -> EnhancedTooltips.MARK_KEY.equals(getContent(((OrderedTextTooltipComponent) component).text)))
+                .filter(component -> EnhancedTooltips.MARK_KEY.equals(EnhancedTooltipsTextVisitor.get(((OrderedTextTooltipComponent) component).text).getString()))
                 .findFirst();
 
         if (markComponent.isPresent()) {
@@ -58,29 +56,5 @@ public abstract class DrawContextMixin {
                 }
             }
         }
-    }
-
-    @Unique
-    private String getContent(OrderedText text) {
-        if (text == null) {
-            return null;
-        }
-
-        try {
-            Field[] fields = text.getClass().getDeclaredFields();
-            for (Field field : fields) {
-                if (!field.canAccess(text)) {
-                    field.setAccessible(true);
-                }
-
-                if (field.get(text) instanceof String content) {
-                    return content;
-                }
-            }
-        } catch (IllegalAccessException e) {
-            EnhancedTooltips.LOGGER.error("{}", EnhancedTooltips.MOD_ID, e);
-        }
-
-        return null;
     }
 }

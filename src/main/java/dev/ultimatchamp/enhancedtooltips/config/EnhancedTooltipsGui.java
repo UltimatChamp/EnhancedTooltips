@@ -3,6 +3,7 @@ package dev.ultimatchamp.enhancedtooltips.config;
 import dev.isxander.yacl3.api.*;
 import dev.isxander.yacl3.api.controller.TickBoxControllerBuilder;
 import dev.isxander.yacl3.gui.controllers.cycling.EnumController;
+import dev.isxander.yacl3.gui.controllers.slider.FloatSliderController;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.text.Text;
 
@@ -27,6 +28,18 @@ public class EnhancedTooltipsGui {
                                                 (value) -> config.rarityTooltip = value
                                         )
                                         .controller(TickBoxControllerBuilder::create)
+                                        .build())
+                                .option(Option.<Float>createBuilder()
+                                        .name(Text.translatable("enhancedtooltips.config.scaleFactor"))
+                                        .description(OptionDescription.createBuilder()
+                                                .text(Text.translatable("enhancedtooltips.config.scaleFactor.desc"))
+                                                .build())
+                                        .binding(
+                                                1f,
+                                                () -> config.scaleFactor,
+                                                (value) -> config.scaleFactor = value
+                                        )
+                                        .customController(opt -> new FloatSliderController(opt, 0.25f, 2f, 0.05f, value -> Text.literal(String.format("%." + 0 /* decimal places */ + "f%%", value * 100.0F))))
                                         .build())
                                 //? if >1.20.6 {
                                 .option(Option.<Boolean>createBuilder()

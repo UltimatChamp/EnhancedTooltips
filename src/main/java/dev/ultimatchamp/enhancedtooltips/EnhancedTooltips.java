@@ -5,8 +5,10 @@ import dev.ultimatchamp.enhancedtooltips.kaleido.render.tooltip.TooltipModule;
 import dev.ultimatchamp.enhancedtooltips.kaleido.render.tooltip.api.TooltipComparatorProvider;
 import dev.ultimatchamp.enhancedtooltips.kaleido.render.tooltip.api.TooltipComponentAPI;
 import dev.ultimatchamp.enhancedtooltips.kaleido.render.tooltip.api.TooltipDrawerProvider;
+import dev.ultimatchamp.enhancedtooltips.util.EnhancedTooltipsTextVisitor;
 import net.fabricmc.api.ClientModInitializer;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.tooltip.OrderedTextTooltipComponent;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
 import net.minecraft.item.ArmorItem;
 import net.minecraft.item.EntityBucketItem;
@@ -41,7 +43,19 @@ public class EnhancedTooltips implements ClientModInitializer {
                 list.add(new ColorBorderComponent(0xff000000 | color));
             }
 
-            if (!MinecraftClient.getInstance().options.advancedItemTooltips) list.add(new DurabilityTooltipComponent(stack));
+            if (MinecraftClient.getInstance().options.advancedItemTooltips) {
+                for (TooltipComponent component : list) {
+                    if (component instanceof OrderedTextTooltipComponent orderedTextTooltipComponent) {
+                        if (EnhancedTooltipsTextVisitor.get(orderedTextTooltipComponent.text).getString().contains((stack.getMaxDamage() - stack.getDamage()) + " / " +  stack.getMaxDamage())) {
+                            list.remove(component);
+                            break;
+                        }
+                    }
+                }
+                list.add(list.size() - 3, new DurabilityTooltipComponent(stack));
+            } else {
+                list.add(new DurabilityTooltipComponent(stack));
+            }
         });
 
         TooltipDrawerProvider.setTooltipDrawerProvider(new EnhancedTooltipsDrawer());

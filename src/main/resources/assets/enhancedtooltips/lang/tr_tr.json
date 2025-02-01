@@ -2,6 +2,8 @@
   "enhancedtooltips.title": "EnhancedTooltips Konfigürasyonu",
   "enhancedtooltips.config.rarityTooltip": "Nadirlik Alet İpucu",
   "enhancedtooltips.config.rarityTooltip.desc": "Bir eşyanın nadirliğini alet ipucunda gösterir.",
+  "enhancedtooltips.config.scaleFactor": "Tooltip Scale Factor",
+  "enhancedtooltips.config.scaleFactor.desc": "Adjusts the size of tooltips. A scale of 100% displays the tooltip at its default size.",
   "enhancedtooltips.config.itemBadges": "Eşya Rozetleri",
   "enhancedtooltips.config.itemBadges.desc": "Eşyanın kategorisini alet ipucunda rozet olarak gösterir.",
   "enhancedtooltips.config.borderColor": "Alet İpucu Çerçeve Rengi",

@@ -2,6 +2,8 @@
   "enhancedtooltips.title": "EnhancedTooltips Config",
   "enhancedtooltips.config.rarityTooltip": "Rarity Tooltip",
   "enhancedtooltips.config.rarityTooltip.desc": "Shows the rarity of an item in its tooltip.",
+  "enhancedtooltips.config.scaleFactor": "Tooltip Scale Factor",
+  "enhancedtooltips.config.scaleFactor.desc": "Adjusts the size of tooltips. A scale of 100% displays the tooltip at its default size.",
   "enhancedtooltips.config.itemBadges": "Item Badges",
   "enhancedtooltips.config.itemBadges.desc": "Shows the category of an item in a badge on its tooltip.",
   "enhancedtooltips.config.borderColor": "Tooltip Border Color",

@@ -16,6 +16,9 @@ public class EnhancedTooltipsConfig {
     @Comment("-> General\n(default: true)")
     public boolean rarityTooltip = true;
 
+    @Comment("(default: 1.0)")
+    public float scaleFactor = 1f;
+
     //? if >1.20.6 {
     @Comment("(default: true)")
     public boolean itemBadges = true;

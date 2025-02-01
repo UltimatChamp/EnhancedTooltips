@@ -1,6 +1,7 @@
 package dev.ultimatchamp.enhancedtooltips;
 
 import dev.ultimatchamp.enhancedtooltips.component.TooltipBackgroundComponent;
+import dev.ultimatchamp.enhancedtooltips.config.EnhancedTooltipsConfig;
 import dev.ultimatchamp.enhancedtooltips.kaleido.render.tooltip.api.TooltipDrawerProvider;
 import dev.ultimatchamp.enhancedtooltips.util.EnhancedTooltipsTextVisitor;
 import net.minecraft.client.MinecraftClient;
@@ -42,12 +43,14 @@ public class EnhancedTooltipsDrawer implements TooltipDrawerProvider.ITooltipDra
         MatrixStack matrices = context.getMatrices();
         List<TooltipPage> pageList = new ArrayList<>();
 
+        float scale = EnhancedTooltipsConfig.load().scaleFactor;
+
         int pageWidth = 0;
-        int maxWidth = getMaxWidth();
+        int maxWidth = (int) (getMaxWidth() / scale);
         int totalWidth = 0;
 
         int pageHeight = -2;
-        int maxHeight = getMaxHeight();
+        int maxHeight = (int) (getMaxHeight() / scale);
 
         int spacing = components.size() > 1 ? 4 : 0;
         pageHeight += spacing;
@@ -94,7 +97,8 @@ public class EnhancedTooltipsDrawer implements TooltipDrawerProvider.ITooltipDra
             totalWidth += page.width;
         }
 
-        Vector2ic vector2ic = positioner.getPosition(context.getScaledWindowWidth(), context.getScaledWindowHeight(), x, y, totalWidth, pageList.get(0).height);
+        int scaledOffset = ((int) (12 * EnhancedTooltipsConfig.load().scaleFactor)) - 12;
+        Vector2ic vector2ic = positioner.getPosition(context.getScaledWindowWidth(), context.getScaledWindowHeight(), x + scaledOffset, y - scaledOffset, (int) (totalWidth * scale), (int) (pageList.get(0).height * scale));
         int n = vector2ic.x();
         int o = vector2ic.y();
 
@@ -106,19 +110,24 @@ public class EnhancedTooltipsDrawer implements TooltipDrawerProvider.ITooltipDra
 
         matrices.push();
 
+        matrices.scale(scale, scale, scale);
+
         for (TooltipPage p : pageList) {
+            if (pageList.get(0) == p) p.x = (int) (p.x / scale);
+            p.y = (int) (p.y / scale);
+
             if (backgroundComponent == null) {
             //? if >1.21.1 {
-                context.draw(vertexConsumerProvider -> TooltipBackgroundRenderer.render(context, p.x, p.y, p.width, p.height, 400, Identifier.ofVanilla("tooltip/background")));
+                context.draw(vertexConsumerProvider -> TooltipBackgroundRenderer.render(context, p.x, p.y, p.width, p.height, (int) (400 / scale), Identifier.ofVanilla("tooltip/background")));
             } else {
                 context.draw(vertexConsumerProvider -> {
             //?} else {
-            /*  context.draw(() -> TooltipBackgroundRenderer.render(context, p.x, p.y, p.width, p.height, 400/^? if >1.21.1 {^/, Identifier.ofVanilla("tooltip/background")/^?}^/));
+            /*  context.draw(() -> TooltipBackgroundRenderer.render(context, p.x, p.y, p.width, p.height, 400));
             } else {
                 context.draw(() -> {
             *///?}
                     try {
-                        backgroundComponent.render(context, p.x, p.y, p.width, p.height, 400, pageList.indexOf(p));
+                        backgroundComponent.render(context, p.x, p.y, p.width, p.height, (int) (400 / scale), pageList.indexOf(p));
                     } catch (Exception e) {
                         EnhancedTooltips.LOGGER.error("[{}]", EnhancedTooltips.MOD_ID, e);
                     }
@@ -126,7 +135,7 @@ public class EnhancedTooltipsDrawer implements TooltipDrawerProvider.ITooltipDra
             }
         }
 
-        matrices.translate(0.0f, 0.0f, 400.0f);
+        matrices.translate(0.0f, 0.0f, 400.0f / scale);
 
         for (TooltipPage p : pageList) {
             int cx = p.x;
@@ -135,7 +144,7 @@ public class EnhancedTooltipsDrawer implements TooltipDrawerProvider.ITooltipDra
             for (TooltipComponent component : p.components) {
                 try {
                     component.drawText(textRenderer, cx, cy, matrices.peek().getPositionMatrix(), context.vertexConsumers);
-                    component.drawItems(textRenderer, cx, cy, /*? if >1.21.1 {*/pageWidth, pageHeight,/*?}*/ context);
+                    component.drawItems(textRenderer, cx, cy, /*? if >1.21.1 {*/p.width, p.height,/*?}*/ context);
                     cy += component.getHeight(/*? if >1.21.1 {*/textRenderer/*?}*/);
 
                     if (p == pageList.get(0) && component == p.components.get(0) && components.size() > 1) {
