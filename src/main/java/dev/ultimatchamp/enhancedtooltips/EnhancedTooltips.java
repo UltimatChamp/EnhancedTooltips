@@ -36,11 +36,10 @@ public class EnhancedTooltips implements ClientModInitializer {
 
             list.add(1, new EffectsTooltipComponent(stack));
 
-            int color = TooltipHelper.borderColorProvider.getItemBorderColor(stack);
             if (stack.getItem() instanceof ArmorItem || stack.getItem() instanceof EntityBucketItem || stack.getItem() instanceof SpawnEggItem) {
-                list.add(new ModelViewerComponent(stack, 0xff000000 | color));
+                list.add(new ModelViewerComponent(stack));
             } else {
-                list.add(new ColorBorderComponent(0xff000000 | color));
+                list.add(new ColorBorderComponent(stack));
             }
 
             if (MinecraftClient.getInstance().options.advancedItemTooltips) {

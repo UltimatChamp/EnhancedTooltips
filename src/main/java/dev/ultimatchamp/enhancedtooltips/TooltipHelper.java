@@ -23,6 +23,10 @@ public class TooltipHelper {
         return displayNameProvider.getDisplayName(stack);
     }
 
+    public static int getItemBorderColor(ItemStack stack) {
+        return borderColorProvider.getItemBorderColor(stack);
+    }
+
     private static class DefaultItemRarityNameProvider implements ItemRarityNameProvider {
         @Override
         public Text getRarityName(ItemStack stack) {
@@ -54,15 +58,15 @@ public class TooltipHelper {
                 color = TranslationStringColorParser.getColorFromTranslation(getDisplayName(stack));
             }
 
-            if (color == null || color == 0xFFFFFF) {
+            if (color == null || color == -1) {
                 //? if >1.20.4 {
                 color = stack.getRarity().getFormatting().getColorValue();
                 //?} else {
                 /*color = stack.getRarity().formatting.getColorValue();
                 *///?}
+                if (color == null || color == 0xFFFFFF) color = 0xFFFFFFFF;
             }
 
-            if (color == null) color = 0xFFFFFF;
             return color;
         }
     }

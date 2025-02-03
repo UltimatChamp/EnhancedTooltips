@@ -7,6 +7,7 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.util.TranslatableOption;
 
+import java.awt.*;
 import java.io.IOException;
 import java.lang.reflect.Modifier;
 import java.nio.file.Files;
@@ -24,12 +25,13 @@ public class EnhancedTooltipsConfig {
     public boolean itemBadges = true;
     //?}
 
-    @Comment("RARITY/ITEM_NAME (default: RARITY)")
+    @Comment("-> Border\nRARITY/ITEM_NAME/CUSTOM (default: RARITY)")
     public BorderColorMode borderColor = BorderColorMode.RARITY;
 
     public enum BorderColorMode implements TranslatableOption {
         RARITY(0, "enhancedtooltips.config.borderColor.rarity"),
-        ITEM_NAME(1, "enhancedtooltips.config.borderColor.itemName");
+        ITEM_NAME(1, "enhancedtooltips.config.borderColor.itemName"),
+        CUSTOM(2, "generator.custom");
 
         private final int id;
         private final String translationKey;
@@ -48,6 +50,46 @@ public class EnhancedTooltipsConfig {
         }
     }
 
+    public CustomBorderColorsConfig customBorderColors = new CustomBorderColorsConfig();
+
+    public static class CustomBorderColorsConfig {
+        @Comment("(default: #5000FF50)")
+        public Color common = BorderColor.COMMON.getColor();
+
+        @Comment("(default: #FFFF55FF)")
+        public Color uncommon = BorderColor.UNCOMMON.getColor();
+
+        @Comment("(default: #55FFFFFF)")
+        public Color rare = BorderColor.RARE.getColor();
+
+        @Comment("(default: #FF00FFFF)")
+        public Color epic = BorderColor.EPIC.getColor();
+
+        @Comment("(default: #5000FF50)")
+        public Color endColor = BorderColor.END_COLOR.getColor();
+    }
+
+    public enum BorderColor {
+        COMMON(0x505000FF),
+        UNCOMMON(0xFFFFFF55),
+        RARE(0xFF55FFFF),
+        EPIC(0xFFFF00FF),
+        END_COLOR(0x505000FF);
+
+        private final int rgb;
+
+        BorderColor(int rgb) {
+            this.rgb = rgb;
+        }
+
+        public Color getColor() {
+            return new Color(rgb, true);
+        }
+    }
+
+    @Comment("-> Background\n(default: #100010F0)")
+    public Color backgroundColor = new Color(0xF0100010, true);
+
     @Comment("-> Food & Drinks\n(default: true)")
     public boolean hungerTooltip = true;
 
@@ -59,8 +101,8 @@ public class EnhancedTooltipsConfig {
 
     public enum EffectsTooltipMode implements TranslatableOption {
         OFF(0, "options.off"),
-        WITHOUT_ICONS(0, "enhancedtooltips.config.effectsTooltip.withoutIcons"),
-        WITH_ICONS(1, "enhancedtooltips.config.effectsTooltip.withIcons");
+        WITHOUT_ICONS(1, "enhancedtooltips.config.effectsTooltip.withoutIcons"),
+        WITH_ICONS(2, "enhancedtooltips.config.effectsTooltip.withIcons");
 
         private final int id;
         private final String translationKey;
@@ -94,7 +136,7 @@ public class EnhancedTooltipsConfig {
     public enum DurabilityTooltipMode implements TranslatableOption {
         OFF(0, "options.off"),
         VALUE(1, "enhancedtooltips.config.durabilityTooltip.value"),
-        PERCENTAGE(0, "enhancedtooltips.config.durabilityTooltip.percentage");
+        PERCENTAGE(2, "enhancedtooltips.config.durabilityTooltip.percentage");
 
         private final int id;
         private final String translationKey;
@@ -116,7 +158,26 @@ public class EnhancedTooltipsConfig {
     @Comment("(default: false)")
     public boolean durabilityBar = false;
 
-    private static final Jankson JANKSON = Jankson.builder().build();
+    private static final Jankson JANKSON = Jankson.builder()
+            .registerSerializer(Color.class, (color, marshaller) -> new JsonPrimitive(String.format("#%02X%02X%02X%02X", color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()))) // in RRGGBBAA
+            .registerDeserializer(JsonPrimitive.class, Color.class, (json, marshaller) -> {
+                String hex = json.asString();
+                if (hex.startsWith("#")) hex = hex.substring(1);
+
+                if (hex.length() == 8) {
+                    int r = Integer.parseInt(hex.substring(0, 2), 16); // Red
+                    int g = Integer.parseInt(hex.substring(2, 4), 16); // Green
+                    int b = Integer.parseInt(hex.substring(4, 6), 16); // Blue
+                    int a = Integer.parseInt(hex.substring(6, 8), 16); // Alpha
+                    return new Color(r, g, b, a);
+                } else if (hex.length() == 6) { // no alpha
+                    return Color.decode("#" + hex);
+                } else {
+                    throw new IllegalArgumentException("Invalid color format: " + json.asString());
+                }
+            })
+            .build();
+
     private static final Path CONFIG_PATH = FabricLoader.getInstance().getConfigDir().resolve("enhancedtooltips.json5");
 
     private static EnhancedTooltipsConfig cachedConfig;
@@ -171,9 +232,7 @@ public class EnhancedTooltipsConfig {
         var defaultConfig = new EnhancedTooltipsConfig();
 
         for (var field : EnhancedTooltipsConfig.class.getDeclaredFields()) {
-            if (Modifier.isStatic(field.getModifiers())) {
-                continue;
-            }
+            if (Modifier.isStatic(field.getModifiers())) continue;
 
             try {
                 var fieldName = field.getName();

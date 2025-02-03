@@ -1,5 +1,6 @@
 package dev.ultimatchamp.enhancedtooltips.component;
 
+import dev.ultimatchamp.enhancedtooltips.config.EnhancedTooltipsConfig;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
@@ -13,39 +14,41 @@ public class TooltipBackgroundComponent implements TooltipComponent {
         int k = width + INNER_PADDING * 2;
         int l = height + INNER_PADDING * 2;
 
-        renderHorizontalLine(context, i, j - 1, k, z, -267386864);
-        renderHorizontalLine(context, i, j + l, k, z, -267386864);
+        int bgColor = EnhancedTooltipsConfig.load().backgroundColor.getRGB();
+
+        renderHorizontalLine(context, i, j - 1, k, z, bgColor);
+        renderHorizontalLine(context, i, j + l, k, z, bgColor);
         renderRectangle(context, i, j, k, l, z);
-        renderVerticalLine(context, i - 1, j, l, z);
-        renderVerticalLine(context, i + k, j, l, z);
+        renderVerticalLine(context, i - 1, j, l, z, bgColor, bgColor);
+        renderVerticalLine(context, i + k, j, l, z, bgColor, bgColor);
         renderBorder(context, i, j + 1, k, l, z, page);
     }
 
     protected void renderBorder(DrawContext context, int x, int y, int width, int height, int z, int page) {
-        int startColor = 1347420415;
-        int endColor = 1347420415;
+        int startColor = EnhancedTooltipsConfig.BorderColor.COMMON.getColor().getRGB();
+        int endColor = EnhancedTooltipsConfig.BorderColor.END_COLOR.getColor().getRGB();
+
+        if (EnhancedTooltipsConfig.load().borderColor == EnhancedTooltipsConfig.BorderColorMode.CUSTOM) {
+            startColor = EnhancedTooltipsConfig.load().customBorderColors.common.getRGB();
+            endColor = EnhancedTooltipsConfig.load().customBorderColors.endColor.getRGB();
+        }
+
         renderVerticalLine(context, x, y, height - 2, z, startColor, endColor);
         renderVerticalLine(context, x + width - 1, y, height - 2, z, startColor, endColor);
         renderHorizontalLine(context, x, y - 1, width, z, startColor);
         renderHorizontalLine(context, x, y - 1 + height - 1, width, z, endColor);
     }
 
-    private void renderVerticalLine(DrawContext context, int x, int y, int height, int z) {
-        context.fill(x, y, x + 1, y + height, z, -267386864);
-    }
-
     protected void renderVerticalLine(DrawContext context, int x, int y, int height, int z, int startColor, int endColor) {
-        if (startColor == -1 || startColor == 0xffffff) startColor = endColor;
         context.fillGradient(x, y, x + 1, y + height, z, startColor, endColor);
     }
 
     protected void renderHorizontalLine(DrawContext context, int x, int y, int width, int z, int color) {
-        if (color == -1 || color == 0xffffff) color = 1347420415;
         context.fill(x, y, x + width, y + 1, z, color);
     }
 
     protected void renderRectangle(DrawContext context, int x, int y, int width, int height, int z) {
-        context.fill(x, y, x + width, y + height, z, -267386864);
+        context.fill(x, y, x + width, y + height, z, EnhancedTooltipsConfig.load().backgroundColor.getRGB());
     }
 
     @Override

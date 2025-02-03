@@ -34,15 +34,15 @@ public class TranslationStringColorParser {
     public static int getColorFromTranslation(String text) {
         char[] charArray = text.toCharArray();
 
-        if (charArray.length < 3) return 0xFFFFFF;
+        if (charArray.length < 2) return 0xFFFFFFFF;
 
         for (int i = 0; i < charArray.length - 1; i++) {
             if (charArray[i] == '§') {
-                int color = COLOR_MAP.getOrDefault(charArray[i + 1], 0xFFFFFF);
-                if (color != 0xFFFFFF) return color;
+                int color = COLOR_MAP.getOrDefault(charArray[i + 1], 0xFFFFFFFF);
+                if (color != 0xFFFFFFFF) return color;
             }
         }
 
-        return 0xFFFFFF;
+        return 0xFFFFFFFF;
     }
 }

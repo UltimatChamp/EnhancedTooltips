@@ -33,8 +33,8 @@ public class ModelViewerComponent extends ColorBorderComponent {
     private final ItemStack stack;
     private final EnhancedTooltipsConfig config;
 
-    public ModelViewerComponent(ItemStack stack, int color) {
-        super(color);
+    public ModelViewerComponent(ItemStack stack) {
+        super(stack);
         this.stack = stack;
         this.config = EnhancedTooltipsConfig.load();
     }
