@@ -34,7 +34,7 @@
   "enhancedtooltips.config.durabilityTooltip.percentage": "Percentage",
   "enhancedtooltips.config.durabilityBar": "Durability Bar",
   "enhancedtooltips.config.durabilityBar.desc": "Shows the durability of an item, represented by a bar, in its tooltip.",
-  "enhancedtooltips.config.screen.warn": "§cBEnhancedTooltips is unable to display a configuration screen because YetAnotherConfigLib mod is not installed. Please use the configuration file instead. Sorry for the inconvenience!",
+  "enhancedtooltips.config.screen.warn": "§cEnhancedTooltips is unable to display a configuration screen because YetAnotherConfigLib mod is not installed. Please use the configuration file instead. Sorry for the inconvenience!",
   "enhancedtooltips.rarity.common": "Common",
   "enhancedtooltips.rarity.uncommon": "Uncommon",
   "enhancedtooltips.rarity.rare": "Rare",
