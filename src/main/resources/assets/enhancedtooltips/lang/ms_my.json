@@ -34,7 +34,7 @@
   "enhancedtooltips.config.durabilityTooltip.percentage": "Peratusan",
   "enhancedtooltips.config.durabilityBar": "Palang Ketahanan",
   "enhancedtooltips.config.durabilityBar.desc": "Menunjukkan ketahanan item yang diwakili oleh palang di dalam petua alat.",
-  "enhancedtooltips.config.screen.warn": "§cBEnhancedTooltips tidak dapat memaparkan skrin konfigurasi kerana mod YetAnotherConfigLib tidak dipasang. Sila gunakan fail konfigurasi. Maaf atas kesulitan ini!",
+  "enhancedtooltips.config.screen.warn": "§cEnhancedTooltips tidak dapat memaparkan skrin konfigurasi kerana mod YetAnotherConfigLib tidak dipasang. Sila gunakan fail konfigurasi. Maaf atas kesulitan ini!",
   "enhancedtooltips.rarity.common": "Biasa",
   "enhancedtooltips.rarity.uncommon": "Tidak Biasa",
   "enhancedtooltips.rarity.rare": "Jarang",
