@@ -20,10 +20,8 @@ public class EnhancedTooltipsConfig {
     @Comment("(default: 1.0)")
     public float scaleFactor = 1f;
 
-    //? if >1.20.6 {
     @Comment("(default: true)")
     public boolean itemBadges = true;
-    //?}
 
     @Comment("-> Border\nRARITY/ITEM_NAME/CUSTOM (default: RARITY)")
     public BorderColorMode borderColor = BorderColorMode.RARITY;

@@ -4,6 +4,8 @@ import dev.ultimatchamp.enhancedtooltips.config.EnhancedTooltipsConfig;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.DiffuseLighting;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.NbtComponent;
 import net.minecraft.entity.*;
 import net.minecraft.entity.decoration.ArmorStandEntity;
 import net.minecraft.entity.mob.GhastEntity;
@@ -15,11 +17,6 @@ import net.minecraft.item.SpawnEggItem;
 import net.minecraft.nbt.NbtCompound;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
-
-//? if >1.20.4 {
-import net.minecraft.component.DataComponentTypes;
-import net.minecraft.component.type.NbtComponent;
-//?}
 
 public class ModelViewerComponent extends ColorBorderComponent {
     private static final float ROTATION_INCREMENT = 0.2f;

@@ -1,4 +1,3 @@
-//? if >1.20.6 {
 package dev.ultimatchamp.enhancedtooltips.util;
 
 import net.minecraft.item.Item;
@@ -1634,4 +1633,3 @@ public class ItemGroupsUtils {
             Items.DEBUG_STICK
     );
 }
-//?}

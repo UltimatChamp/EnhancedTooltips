@@ -41,7 +41,6 @@ public class HeaderTooltipComponent implements TooltipComponent {
     public int getWidth(TextRenderer textRenderer) {
         int badgeWidth = 0;
 
-        //? if >1.20.6 {
         if (config.itemBadges) {
             badgeWidth = textRenderer.getWidth(Text.translatable("gamerule.category.misc")) + SPACING * 2;
 
@@ -52,7 +51,6 @@ public class HeaderTooltipComponent implements TooltipComponent {
                 }
             }
         }
-        //?}
 
         return Math.max(textRenderer.getWidth(this.nameText) + badgeWidth, textRenderer.getWidth(this.rarityName)) + SPACING + TEXTURE_SIZE;
     }
@@ -84,7 +82,6 @@ public class HeaderTooltipComponent implements TooltipComponent {
 
         context.drawItem(this.stack, startDrawX, startDrawY);
 
-        //? if >1.20.6 {
         if (!config.itemBadges) return;
 
         String translation = "gamerule.category.misc";
@@ -99,10 +96,8 @@ public class HeaderTooltipComponent implements TooltipComponent {
         }
 
         drawBadge(textRenderer, Text.translatable(translation), x, y, context, fillColor);
-        //?}
     }
 
-    //? if >1.20.6 {
     private void drawBadge(TextRenderer textRenderer, Text text, int x, int y, DrawContext context, int fillColor) {
         int textWidth = textRenderer.getWidth(text);
         int textHeight = textRenderer.fontHeight;
@@ -137,5 +132,4 @@ public class HeaderTooltipComponent implements TooltipComponent {
                 BadgesUtils.darkenColor(fillColor, 0.8f)
         );
     }
-    //?}
 }

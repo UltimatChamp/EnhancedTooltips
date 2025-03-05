@@ -20,13 +20,9 @@ import net.minecraft.component.type.FoodComponent;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.item.consume.ApplyEffectsConsumeEffect;
 import net.minecraft.item.consume.ConsumeEffect;
-//?} else if >1.20.4 {
+//?} else {
 /*import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.FoodComponent;
-*///?} else {
-/*import com.mojang.datafixers.util.Pair;
-import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.item.FoodComponent;
 *///?}
 
 public class EffectsTooltipComponent implements TooltipComponent {
@@ -49,10 +45,8 @@ public class EffectsTooltipComponent implements TooltipComponent {
 
         //? if >1.21.1 {
         foodComponent = this.stack.getItem().getComponents().get(DataComponentTypes.FOOD);
-        //?} else if >1.20.4 {
+        //?} else {
         /*foodComponent = this.stack.getItem().getComponents().get(DataComponentTypes.FOOD);
-        *///?} else {
-        /*foodComponent = this.stack.getItem().getFoodComponent();
         *///?}
 
         return foodComponent;
@@ -66,12 +60,9 @@ public class EffectsTooltipComponent implements TooltipComponent {
         ConsumableComponent consumableComponent = getConsumableComponent();
         if (foodComponent != null && consumableComponent != null) {
             hunger = foodComponent.nutrition();
-            //?} else if >1.20.4 {
+        //?} else {
         /*if (foodComponent != null) {
             hunger = foodComponent.nutrition();
-        *///?} else {
-        /*if (foodComponent != null) {
-            hunger = foodComponent.getHunger();
         *///?}
         }
 
@@ -84,11 +75,7 @@ public class EffectsTooltipComponent implements TooltipComponent {
         int hunger = getHunger();
 
         if (foodComponent != null) {
-            //? if >1.20.4 {
             saturation = (int) ((foodComponent.saturation() / (hunger * 2.0)) * 100);
-            //?} else {
-            /*saturation = (int) (foodComponent.getSaturationModifier() * 100);
-            *///?}
         }
 
         return saturation;
@@ -119,11 +106,8 @@ public class EffectsTooltipComponent implements TooltipComponent {
                 for (StatusEffectInstance statusEffect : applyEffectsConsumeEffect.effects()) {
                     height += textRenderer.fontHeight + 1;
                 }
-            //?} else if >1.20.4 {
+            //?} else {
             /*for (FoodComponent.StatusEffectEntry entry : foodComponent.effects()) {
-                height += 9 + 1;
-            *///?} else {
-            /*for (Pair<StatusEffectInstance, Float> effect : foodComponent.getStatusEffects()) {
                 height += 9 + 1;
             *///?}
             }
@@ -166,12 +150,9 @@ public class EffectsTooltipComponent implements TooltipComponent {
             for (StatusEffectInstance statusEffect : applyEffectsConsumeEffect.effects()) {
                 effectsWidth = Math.max(effectsWidth, textRenderer.getWidth(Text.translatable(statusEffect.getTranslationKey()).append(" (99:99)")));
             }
-        //?} else if >1.20.4 {
+        //?} else {
         /*for (FoodComponent.StatusEffectEntry entry : foodComponent.effects()) {
             effectsWidth = Math.max(effectsWidth, textRenderer.getWidth(Text.translatable(entry.effect().getTranslationKey()).append(" (99:99)")));
-        *///?} else {
-        /*for (Pair<StatusEffectInstance, Float> effect : foodComponent.getStatusEffects()) {
-            effectsWidth = Math.max(effectsWidth, textRenderer.getWidth(Text.translatable(effect.getFirst().getTranslationKey()).append(" (99:99)")));
         *///?}
         }
 
@@ -214,10 +195,8 @@ public class EffectsTooltipComponent implements TooltipComponent {
             for (int i = 0; i < (int) fullHungers; i++) {
                 //? if >1.21.1 {
                 context.drawGuiTexture(RenderLayer::getGuiTextured, fullHunger, textRenderer.fontHeight, textRenderer.fontHeight, 0, 0, x + hungerWidth, lineY, textRenderer.fontHeight, textRenderer.fontHeight);
-                //?} else if >1.20.1 {
+                //?} else {
                 /*context.drawGuiTexture(fullHunger, x + hungerWidth, lineY, textRenderer.fontHeight, textRenderer.fontHeight);
-                *///?} else {
-                /*context.drawTexture(new Identifier("textures/gui/icons.png"), x + hungerWidth, lineY, 52, 27, textRenderer.fontHeight, textRenderer.fontHeight, 256, 256);
                 *///?}
                 hungerWidth += textRenderer.fontHeight - 2;
             }
@@ -225,10 +204,8 @@ public class EffectsTooltipComponent implements TooltipComponent {
             if (hasHalfHunger) {
                 //? if >1.21.1 {
                 context.drawGuiTexture(RenderLayer::getGuiTextured, halfHunger, textRenderer.fontHeight, textRenderer.fontHeight, 0, 0, x + hungerWidth, lineY, textRenderer.fontHeight, textRenderer.fontHeight);
-                //?} else if >1.20.1 {
+                //?} else {
                 /*context.drawGuiTexture(halfHunger, x + hungerWidth, lineY, textRenderer.fontHeight, textRenderer.fontHeight);
-                *///?} else {
-                /*context.drawTexture(new Identifier("textures/gui/icons.png"), x + hungerWidth, lineY, 61, 27, textRenderer.fontHeight, textRenderer.fontHeight, 256, 256);
                 *///?}
             }
 
@@ -247,25 +224,30 @@ public class EffectsTooltipComponent implements TooltipComponent {
 
             for (StatusEffectInstance statusEffect : applyEffectsConsumeEffect.effects()) {
                 int c = statusEffect.getEffectType().value().getColor();
-        //?} else if >1.20.4 {
+        //?} else {
         /*for (FoodComponent.StatusEffectEntry entry : foodComponent.effects()) {
             var statusEffect = entry.effect();
             int c = statusEffect.getEffectType().value().getColor();
-        *///?} else {
-        /*for (Pair<StatusEffectInstance, Float> effect : foodComponent.getStatusEffects()) {
-            var statusEffect = effect.getFirst();
-            int c = statusEffect.getEffectType().getColor();
         *///?}
                 Sprite effectTexture = MinecraftClient.getInstance().getStatusEffectSpriteManager().getSprite(statusEffect.getEffectType());
 
-                Text effectText = Text.translatable(statusEffect.getTranslationKey())
-                        //? if >1.20.4 {
-                        .append(" (").append(StatusEffectUtil.getDurationText(statusEffect, 1.0f, 20)).append(")");
-                        //?} else if >1.20.2 {
-                        /*.append(" (").append(StatusEffectUtil.getDurationText(statusEffect, 1.0f, 20)).append(")");
-                        *///?} else {
-                        /*.append(" (").append(StatusEffectUtil.getDurationText(statusEffect, 1.0f)).append(")");
-                        *///?}
+                Text effectText;
+
+                //? if >1.21.1 {
+                float probability = applyEffectsConsumeEffect.probability();
+                //?} else {
+                /*float probability = entry.probability();
+                *///?}
+
+                if (probability >= 1f) {
+                    effectText = Text.translatable(statusEffect.getTranslationKey())
+                            .append(" (").append(StatusEffectUtil.getDurationText(statusEffect, 1.0f, 20)).append(")");
+                } else {
+                    effectText = Text.translatable(statusEffect.getTranslationKey())
+                            .append(" (").append(StatusEffectUtil.getDurationText(statusEffect, 1.0f, 20)).append(")")
+                            .append(" [").append(Math.round(probability * 100) + "%").append("]");
+
+                }
 
                 lineY += textRenderer.fontHeight + 1;
 

@@ -44,7 +44,6 @@ public class EnhancedTooltipsGui {
                                         )
                                         .customController(opt -> new FloatSliderController(opt, 0.25f, 2f, 0.05f, value -> Text.literal(String.format("%." + 0 /* decimal places */ + "f%%", value * 100.0F))))
                                         .build())
-                                //? if >1.20.6 {
                                 .option(Option.<Boolean>createBuilder()
                                         .name(Text.translatable("enhancedtooltips.config.itemBadges"))
                                         .description(OptionDescription.createBuilder()
@@ -57,7 +56,6 @@ public class EnhancedTooltipsGui {
                                         )
                                         .controller(TickBoxControllerBuilder::create)
                                         .build())
-                                //?}
                                 .build())
                         .group(OptionGroup.createBuilder()
                                 .name(Text.translatable("enhancedtooltips.config.group.border"))

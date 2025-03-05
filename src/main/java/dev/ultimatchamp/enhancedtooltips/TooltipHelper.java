@@ -30,8 +30,8 @@ public class TooltipHelper {
     private static class DefaultItemRarityNameProvider implements ItemRarityNameProvider {
         @Override
         public Text getRarityName(ItemStack stack) {
-            String markKey = EnhancedTooltips.MOD_ID + ".rarity." + stack.getRarity().name().toLowerCase();
-            return Text.translatable(markKey)
+            String key = EnhancedTooltips.MOD_ID + ".rarity." + stack.getRarity().name().toLowerCase();
+            return Text.translatable(key)
                     .setStyle(Style.EMPTY.withColor(Colors.GRAY));
         }
     }
@@ -40,11 +40,7 @@ public class TooltipHelper {
         @Override
         public Text getDisplayName(ItemStack stack) {
             return Text.empty().append(stack.getName()).formatted(
-                    //? if >1.20.4 {
                     stack.getRarity().getFormatting()
-                    //?} else {
-                    /*stack.getRarity().formatting
-                    *///?}
             );
         }
     }
@@ -59,11 +55,7 @@ public class TooltipHelper {
             }
 
             if (color == null || color == -1) {
-                //? if >1.20.4 {
                 color = stack.getRarity().getFormatting().getColorValue();
-                //?} else {
-                /*color = stack.getRarity().formatting.getColorValue();
-                *///?}
                 if (color == null || color == 0xFFFFFF) color = 0xFFFFFFFF;
             }
 

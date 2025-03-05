@@ -129,7 +129,7 @@ public class EnhancedTooltipsDrawer implements TooltipDrawerProvider.ITooltipDra
                     try {
                         backgroundComponent.render(context, p.x, p.y, p.width, p.height, (int) (400 / scale), pageList.indexOf(p));
                     } catch (Exception e) {
-                        EnhancedTooltips.LOGGER.error("[{}]", EnhancedTooltips.MOD_ID, e);
+                        EnhancedTooltips.LOGGER.error("[EnhancedTooltips]", e);
                     }
                 });
             }
@@ -151,7 +151,7 @@ public class EnhancedTooltipsDrawer implements TooltipDrawerProvider.ITooltipDra
                         cy += spacing;
                     }
                 } catch (Exception e) {
-                    EnhancedTooltips.LOGGER.error("{}", EnhancedTooltips.MOD_ID, e);
+                    EnhancedTooltips.LOGGER.error("[EnhancedTooltips]", e);
                 }
             }
         }

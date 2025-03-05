@@ -1,14 +1,11 @@
 package dev.ultimatchamp.enhancedtooltips.mixin.kaleido;
 
-import dev.ultimatchamp.enhancedtooltips.EnhancedTooltips;
 import dev.ultimatchamp.enhancedtooltips.kaleido.render.tooltip.api.TooltipComponentAPI;
 import dev.ultimatchamp.enhancedtooltips.kaleido.render.tooltip.api.TooltipDrawerProvider;
 import dev.ultimatchamp.enhancedtooltips.kaleido.render.tooltip.impl.TooltipItemStackCache;
-import dev.ultimatchamp.enhancedtooltips.util.EnhancedTooltipsTextVisitor;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.tooltip.HoveredTooltipPositioner;
-import net.minecraft.client.gui.tooltip.OrderedTextTooltipComponent;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
 import net.minecraft.client.gui.tooltip.TooltipPositioner;
 import net.minecraft.item.ItemStack;
@@ -19,7 +16,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 //? if >1.21.1 {
 import net.minecraft.util.Identifier;
@@ -35,26 +31,18 @@ public abstract class DrawContextMixin {
     /*@Inject(method = "drawTooltip(Lnet/minecraft/client/font/TextRenderer;Ljava/util/List;IILnet/minecraft/client/gui/tooltip/TooltipPositioner;)V", at = @At("HEAD"), cancellable = true)
     private void injectDrawTooltip(TextRenderer textRenderer, List<TooltipComponent> components, int x, int y, TooltipPositioner positioner, CallbackInfo ci) {
     *///?}
-        List<TooltipComponent> mutableComponents = new ArrayList<>(components);
+        List<TooltipComponent> tooltipComponents = new ArrayList<>(components);
+        ItemStack cacheItemStack = TooltipItemStackCache.getItemStack();
 
-        Optional<TooltipComponent> markComponent = mutableComponents.stream()
-                .filter(component -> component instanceof OrderedTextTooltipComponent)
-                .filter(component -> EnhancedTooltips.MARK_KEY.equals(EnhancedTooltipsTextVisitor.get(((OrderedTextTooltipComponent) component).text).getString()))
-                .findFirst();
+        if (cacheItemStack == null) return;
+        TooltipItemStackCache.saveItemStack(null);
 
-        if (markComponent.isPresent()) {
-            mutableComponents.remove(markComponent.get());
+        TooltipComponentAPI.EVENT.invoker().of(tooltipComponents, cacheItemStack);
 
-            ItemStack cacheItemStack = TooltipItemStackCache.getItemStack();
-            if (cacheItemStack != null) {
-                TooltipComponentAPI.EVENT.invoker().of(mutableComponents, cacheItemStack);
-
-                TooltipDrawerProvider.ITooltipDrawer drawer = TooltipDrawerProvider.getTooltipDrawer();
-                if (drawer != null) {
-                    drawer.drawTooltip((DrawContext) (Object) this, textRenderer, mutableComponents, x, y, HoveredTooltipPositioner.INSTANCE);
-                    ci.cancel();
-                }
-            }
+        TooltipDrawerProvider.ITooltipDrawer drawer = TooltipDrawerProvider.getTooltipDrawer();
+        if (drawer != null) {
+            drawer.drawTooltip((DrawContext) (Object) this, textRenderer, tooltipComponents, x, y, HoveredTooltipPositioner.INSTANCE);
+            ci.cancel();
         }
     }
 }

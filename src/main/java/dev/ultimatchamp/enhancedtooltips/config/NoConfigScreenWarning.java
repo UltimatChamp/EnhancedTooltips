@@ -21,16 +21,9 @@ public class NoConfigScreenWarning extends Screen {
         this.addDrawableChild(btn);
     }
 
-    //? if <1.20.2 {
-    /*@Override
-    public void renderBackground(DrawContext context) {
-        this.renderBackgroundTexture(context);
-    }
-    *///?}
-
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-        this.renderBackground(context/*? if >1.20.1 {*/, mouseX, mouseY, delta/*?}*/);
+        this.renderBackground(context, mouseX, mouseY, delta);
         super.render(context, mouseX, mouseY, delta);
 
         Text warning = Text.translatable("enhancedtooltips.config.screen.warn");

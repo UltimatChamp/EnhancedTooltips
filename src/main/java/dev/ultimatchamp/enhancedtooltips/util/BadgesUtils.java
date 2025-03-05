@@ -9,9 +9,9 @@ public class BadgesUtils {
         int green = (color >> 8) & 0xFF;
         int blue = color & 0xFF;
 
-        red = Math.max(0, (int)(red * factor));
-        green = Math.max(0, (int)(green * factor));
-        blue = Math.max(0, (int)(blue * factor));
+        red = Math.max(0, (int) (red * factor));
+        green = Math.max(0, (int) (green * factor));
+        blue = Math.max(0, (int) (blue * factor));
 
         return (alpha << 24) | (red << 16) | (green << 8) | blue;
     }
