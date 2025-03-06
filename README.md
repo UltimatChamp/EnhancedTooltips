@@ -64,15 +64,15 @@ _A mod that overhauls tooltips, and adds some extra information._
 
 ### Durability Tooltip
 
-<img alt="Image" height="150px" src="https://cdn.modrinth.com/data/8H6RXl2q/images/195d97363aa2ca8b66be3936ef580734ed21af2c.png" />
-<img alt="Image" height="150px" src="https://cdn.modrinth.com/data/8H6RXl2q/images/9137a384302024e24dbc6f63afdf98a2499f0148.png" /><br />
-<img alt="Image" height="238px" src="https://cdn.modrinth.com/data/8H6RXl2q/images/3cf4b9b18d9c7002f0a8e7a7c61b5c97bfcf7d59.png" />
+<img alt="Image" width="150px" src="https://cdn.modrinth.com/data/8H6RXl2q/images/195d97363aa2ca8b66be3936ef580734ed21af2c.png" />
+<img alt="Image" width="125px" src="https://cdn.modrinth.com/data/8H6RXl2q/images/9137a384302024e24dbc6f63afdf98a2499f0148.png" />
+<img alt="Image" width="175px" src="https://cdn.modrinth.com/data/8H6RXl2q/images/3cf4b9b18d9c7002f0a8e7a7c61b5c97bfcf7d59.png" />
 
 ---
 
 ### Custom Colors
 
-<img alt="Image" width="350px" src="https://cdn.modrinth.com/data/8H6RXl2q/images/df9ea34143aa6e23605976a9e18690dc8c3b7b97.png" />
+<img alt="Image" width="300px" src="https://cdn.modrinth.com/data/8H6RXl2q/images/df9ea34143aa6e23605976a9e18690dc8c3b7b97.png" />
 
 ## Credits!
 
