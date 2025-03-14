@@ -1,18 +1,23 @@
 package dev.ultimatchamp.enhancedtooltips.component;
 
-import dev.ultimatchamp.enhancedtooltips.TooltipHelper;
+import dev.ultimatchamp.enhancedtooltips.tooltip.TooltipHelper;
 import dev.ultimatchamp.enhancedtooltips.config.EnhancedTooltipsConfig;
 import dev.ultimatchamp.enhancedtooltips.util.*;
+import net.fabricmc.loader.api.FabricLoader;
+import net.fabricmc.loader.api.ModContainer;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
 import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.*;
+import net.minecraft.registry.Registries;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Pair;
 import org.joml.Matrix4f;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -23,6 +28,7 @@ public class HeaderTooltipComponent implements TooltipComponent {
     private final ItemStack stack;
     private final OrderedText nameText;
     private final OrderedText rarityName;
+    private final Map<String, String> mods = new HashMap<>();
     private final EnhancedTooltipsConfig config;
 
     public HeaderTooltipComponent(ItemStack stack) {
@@ -30,6 +36,11 @@ public class HeaderTooltipComponent implements TooltipComponent {
         this.nameText = TooltipHelper.getDisplayName(stack).asOrderedText();
         this.rarityName = TooltipHelper.getRarityName(stack).asOrderedText();
         this.config = EnhancedTooltipsConfig.load();
+
+        for (ModContainer modContainer : FabricLoader.getInstance().getAllMods()) {
+            if (modContainer.getMetadata().getId().equals("minecraft")) continue;
+            this.mods.put(modContainer.getMetadata().getId(), modContainer.getMetadata().getName());
+        }
     }
 
     @Override
@@ -42,13 +53,20 @@ public class HeaderTooltipComponent implements TooltipComponent {
         int badgeWidth = 0;
 
         if (config.itemBadges) {
-            badgeWidth = textRenderer.getWidth(Text.translatable("gamerule.category.misc")) + SPACING * 2;
+            String badgeText = "gamerule.category.misc";
 
             for (Map.Entry<List<Item>, Pair<String, Integer>> entry : ItemGroupsUtils.getItemGroups().entrySet()) {
                 if (entry.getKey().contains(stack.getItem())) {
-                    badgeWidth = textRenderer.getWidth(Text.translatable(entry.getValue().getLeft())) + SPACING * 2;
+                    badgeText = entry.getValue().getLeft();
+                    badgeWidth = textRenderer.getWidth(Text.translatable(badgeText)) + SPACING * 2;
                     break;
                 }
+            }
+
+            if (badgeText.equals("gamerule.category.misc")) {
+                String namespace = Registries.ITEM.getId(stack.getItem()).getNamespace();
+                badgeText = this.mods.getOrDefault(namespace, "gamerule.category.misc");
+                badgeWidth = textRenderer.getWidth(Text.translatable(badgeText)) + SPACING * 2;
             }
         }
 
@@ -80,7 +98,20 @@ public class HeaderTooltipComponent implements TooltipComponent {
         int startDrawX = x + (TEXTURE_SIZE - ITEM_MODEL_SIZE) / 2;
         int startDrawY = y + (TEXTURE_SIZE - ITEM_MODEL_SIZE) / 2;
 
+        if (config.itemPreviewAnimation) {
+            float time = (System.currentTimeMillis() % 1000) / 1000.0f;
+            float bounce = (float) Math.sin(time * Math.PI * 2) * 2.0f;
+
+            MatrixStack matrixStack = new MatrixStack();
+            matrixStack.translate(0, bounce, 0);
+
+            context.getMatrices().push();
+            context.getMatrices().multiplyPositionMatrix(matrixStack.peek().getPositionMatrix());
+        }
+
         context.drawItem(this.stack, startDrawX, startDrawY);
+
+        if (config.itemPreviewAnimation) context.getMatrices().pop();
 
         if (!config.itemBadges) return;
 
@@ -93,6 +124,13 @@ public class HeaderTooltipComponent implements TooltipComponent {
                 fillColor = entry.getValue().getRight();
                 break;
             }
+        }
+
+        if (translation.equals("gamerule.category.misc")) {
+            String namespace = Registries.ITEM.getId(stack.getItem()).getNamespace();
+            translation = this.mods.getOrDefault(namespace, "gamerule.category.misc");
+
+            if (!translation.equals("gamerule.category.misc")) fillColor = 0xff0d5e7b;
         }
 
         drawBadge(textRenderer, Text.translatable(translation), x, y, context, fillColor);

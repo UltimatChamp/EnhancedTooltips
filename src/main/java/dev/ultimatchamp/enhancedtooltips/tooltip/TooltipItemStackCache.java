@@ -1,4 +1,4 @@
-package dev.ultimatchamp.enhancedtooltips.kaleido.render.tooltip.impl;
+package dev.ultimatchamp.enhancedtooltips.tooltip;
 
 import net.minecraft.item.ItemStack;
 import org.jetbrains.annotations.Nullable;

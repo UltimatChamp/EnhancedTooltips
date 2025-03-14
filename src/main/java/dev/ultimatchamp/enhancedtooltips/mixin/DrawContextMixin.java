@@ -1,8 +1,8 @@
-package dev.ultimatchamp.enhancedtooltips.mixin.kaleido;
+package dev.ultimatchamp.enhancedtooltips.mixin;
 
-import dev.ultimatchamp.enhancedtooltips.kaleido.render.tooltip.api.TooltipComponentAPI;
-import dev.ultimatchamp.enhancedtooltips.kaleido.render.tooltip.api.TooltipDrawerProvider;
-import dev.ultimatchamp.enhancedtooltips.kaleido.render.tooltip.impl.TooltipItemStackCache;
+import dev.ultimatchamp.enhancedtooltips.api.TooltipComponentAPI;
+import dev.ultimatchamp.enhancedtooltips.api.TooltipDrawerProvider;
+import dev.ultimatchamp.enhancedtooltips.tooltip.TooltipItemStackCache;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.tooltip.HoveredTooltipPositioner;
@@ -23,10 +23,10 @@ import org.jetbrains.annotations.Nullable;
 //?}
 
 @Mixin(DrawContext.class)
-public abstract class DrawContextMixin {
+public class DrawContextMixin {
     //? if >1.21.1 {
     @Inject(method = "drawTooltip(Lnet/minecraft/client/font/TextRenderer;Ljava/util/List;IILnet/minecraft/client/gui/tooltip/TooltipPositioner;Lnet/minecraft/util/Identifier;)V", at = @At("HEAD"), cancellable = true)
-    private void injectDrawTooltip(TextRenderer textRenderer, List<TooltipComponent> components, int x, int y, TooltipPositioner positioner, @Nullable Identifier texture, CallbackInfo ci) {
+    private void enhancedtooltips$injectDrawTooltip(TextRenderer textRenderer, List<TooltipComponent> components, int x, int y, TooltipPositioner positioner, @Nullable Identifier texture, CallbackInfo ci) {
     //?} else {
     /*@Inject(method = "drawTooltip(Lnet/minecraft/client/font/TextRenderer;Ljava/util/List;IILnet/minecraft/client/gui/tooltip/TooltipPositioner;)V", at = @At("HEAD"), cancellable = true)
     private void injectDrawTooltip(TextRenderer textRenderer, List<TooltipComponent> components, int x, int y, TooltipPositioner positioner, CallbackInfo ci) {

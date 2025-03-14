@@ -1,4 +1,4 @@
-package dev.ultimatchamp.enhancedtooltips.kaleido.render.tooltip.api;
+package dev.ultimatchamp.enhancedtooltips.api;
 
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;

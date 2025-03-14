@@ -18,8 +18,7 @@ import net.minecraft.nbt.NbtCompound;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 
-public class ModelViewerComponent extends ColorBorderComponent {
-    private static final float ROTATION_INCREMENT = 0.2f;
+public class ModelViewerComponent extends TooltipBorderColorComponent {
     private static float currentRotation = 0f;
 
     private static final int ENTITY_SIZE = 30;
@@ -29,11 +28,13 @@ public class ModelViewerComponent extends ColorBorderComponent {
 
     private final ItemStack stack;
     private final EnhancedTooltipsConfig config;
+    private final float ROTATION_INCREMENT;
 
     public ModelViewerComponent(ItemStack stack) {
         super(stack);
         this.stack = stack;
         this.config = EnhancedTooltipsConfig.load();
+        this.ROTATION_INCREMENT = config.rotationSpeed;
     }
 
     //? if >1.21.1 {
@@ -67,10 +68,8 @@ public class ModelViewerComponent extends ColorBorderComponent {
         var armorStand = new ArmorStandEntity(EntityType.ARMOR_STAND, MinecraftClient.getInstance().world);
         //? if >1.21.1 {
         armorStand.equipStack(getEquipmentSlot(stack), stack);
-        //?} else if >1.20.6 {
+        //?} else {
         /*armorStand.equipStack(armorStand.getPreferredEquipmentSlot(stack), stack);
-        *///?} else {
-        /*armorStand.equipStack(LivingEntity.getPreferredEquipmentSlot(stack), stack);
         *///?}
 
         super.render(context, x - ENTITY_OFFSET - 25, y, ENTITY_SIZE + 10, ENTITY_SIZE + 30 + 10, z, -1);
@@ -86,13 +85,8 @@ public class ModelViewerComponent extends ColorBorderComponent {
         *///?}
 
         if (entity instanceof Bucketable bucketable) {
-            //? if >1.20.4 {
             var nbtComponent = stack.getOrDefault(DataComponentTypes.BUCKET_ENTITY_DATA, NbtComponent.DEFAULT);
             bucketable.copyDataFromNbt(nbtComponent.copyNbt());
-            //?} else {
-            /*var nbtComponent = stack.getOrCreateNbt();
-            bucketable.copyDataFromNbt(nbtComponent);
-            *///?}
 
             if (entityType == EntityType.TROPICAL_FISH) return;
             if (bucketable instanceof PufferfishEntity pufferfishEntity) pufferfishEntity.setPuffState(2);
@@ -115,12 +109,8 @@ public class ModelViewerComponent extends ColorBorderComponent {
             villagerData.putString("profession", "minecraft:none");
             villagerData.putString("type", "minecraft:plains");
 
-            //? if >1.20.4 {
             var nbtComponent = stack.getOrDefault(DataComponentTypes.ENTITY_DATA, NbtComponent.DEFAULT);
             var nbt = nbtComponent.copyNbt();
-            //?} else {
-            /*var nbt = stack.getOrCreateNbt();
-            *///?}
 
             nbt.put("VillagerData", villagerData);
             entity.readNbt(nbt);
@@ -170,11 +160,7 @@ public class ModelViewerComponent extends ColorBorderComponent {
 
         var dispatcher = MinecraftClient.getInstance().getEntityRenderDispatcher();
         dispatcher.setRenderShadows(false);
-        //? if >1.21.1 {
-        dispatcher.render(entity, 0.0, 0.0, 0.0, 0.0F, context.getMatrices(), context.vertexConsumers, SHADOW_LIGHT_COLOR);
-        //?} else {
-        /*dispatcher.render(entity, 0.0, 0.0, 0.0, 0.0F, 1.0F, context.getMatrices(), context.vertexConsumers, SHADOW_LIGHT_COLOR);
-        *///?}
+        dispatcher.render(entity, 0.0, 0.0, 0.0,/*? if 1.21.1 {*//* 0.0F,*//*?}*/ 1.0F, context.getMatrices(), context.vertexConsumers, SHADOW_LIGHT_COLOR);
         dispatcher.setRenderShadows(true);
 
         context.getMatrices().pop();

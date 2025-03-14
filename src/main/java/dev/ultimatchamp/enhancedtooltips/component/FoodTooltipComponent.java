@@ -25,11 +25,11 @@ import net.minecraft.item.consume.ConsumeEffect;
 import net.minecraft.component.type.FoodComponent;
 *///?}
 
-public class EffectsTooltipComponent implements TooltipComponent {
+public class FoodTooltipComponent implements TooltipComponent {
     private final ItemStack stack;
     private final EnhancedTooltipsConfig config;
 
-    public EffectsTooltipComponent(ItemStack stack) {
+    public FoodTooltipComponent(ItemStack stack) {
         this.stack = stack;
         this.config = EnhancedTooltipsConfig.load();
     }

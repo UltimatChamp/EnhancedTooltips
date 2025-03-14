@@ -1,15 +1,15 @@
 package dev.ultimatchamp.enhancedtooltips.component;
 
-import dev.ultimatchamp.enhancedtooltips.TooltipHelper;
+import dev.ultimatchamp.enhancedtooltips.tooltip.TooltipHelper;
 import dev.ultimatchamp.enhancedtooltips.config.EnhancedTooltipsConfig;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Rarity;
 
-public class ColorBorderComponent extends TooltipBackgroundComponent {
+public class TooltipBorderColorComponent extends TooltipBackgroundComponent {
     private final ItemStack stack;
 
-    public ColorBorderComponent(ItemStack stack) {
+    public TooltipBorderColorComponent(ItemStack stack) {
         this.stack = stack;
     }
 

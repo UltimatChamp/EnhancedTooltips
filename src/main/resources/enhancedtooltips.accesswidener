@@ -1,6 +1,7 @@
 accessWidener v2 named
 
 accessible field net/minecraft/client/gui/DrawContext vertexConsumers Lnet/minecraft/client/render/VertexConsumerProvider$Immediate;
+accessible field net/minecraft/item/DecorationItem entityType Lnet/minecraft/entity/EntityType;
 accessible field net/minecraft/item/EntityBucketItem entityType Lnet/minecraft/entity/EntityType;
 accessible field net/minecraft/item/SpawnEggItem type Lnet/minecraft/entity/EntityType;
 accessible field net/minecraft/client/gui/tooltip/OrderedTextTooltipComponent text Lnet/minecraft/text/OrderedText;

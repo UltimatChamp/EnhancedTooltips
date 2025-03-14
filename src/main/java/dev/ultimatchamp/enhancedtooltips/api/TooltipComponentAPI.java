@@ -1,4 +1,4 @@
-package dev.ultimatchamp.enhancedtooltips.kaleido.render.tooltip.api;
+package dev.ultimatchamp.enhancedtooltips.api;
 
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;

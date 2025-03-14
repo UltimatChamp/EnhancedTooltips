@@ -1,9 +1,9 @@
 {
   "required": true,
   "package": "dev.ultimatchamp.enhancedtooltips.mixin",
-  "compatibilityLevel": "JAVA_17",
+  "compatibilityLevel": "JAVA_21",
   "mixins": [
-    "kaleido.DrawContextMixin"
+    "DrawContextMixin"
   ],
   "injectors": {
     "defaultRequire": 1

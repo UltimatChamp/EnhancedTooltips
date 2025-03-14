@@ -1,8 +1,9 @@
-package dev.ultimatchamp.enhancedtooltips;
+package dev.ultimatchamp.enhancedtooltips.tooltip;
 
+import dev.ultimatchamp.enhancedtooltips.EnhancedTooltips;
 import dev.ultimatchamp.enhancedtooltips.component.TooltipBackgroundComponent;
 import dev.ultimatchamp.enhancedtooltips.config.EnhancedTooltipsConfig;
-import dev.ultimatchamp.enhancedtooltips.kaleido.render.tooltip.api.TooltipDrawerProvider;
+import dev.ultimatchamp.enhancedtooltips.api.TooltipDrawerProvider;
 import dev.ultimatchamp.enhancedtooltips.util.EnhancedTooltipsTextVisitor;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
@@ -45,7 +46,6 @@ public class EnhancedTooltipsDrawer implements TooltipDrawerProvider.ITooltipDra
 
         float scale = EnhancedTooltipsConfig.load().scaleFactor;
 
-        int pageWidth = 0;
         int maxWidth = (int) (getMaxWidth() / scale);
         int totalWidth = 0;
 
@@ -76,7 +76,7 @@ public class EnhancedTooltipsDrawer implements TooltipDrawerProvider.ITooltipDra
 
                     page.components.add(wrappedComponent);
                     page.height = pageHeight += wrappedHeight;
-                    page.width = pageWidth = Math.max(page.width, wrappedWidth);
+                    page.width = Math.max(page.width, wrappedWidth);
                 }
             } else {
                 if (pageHeight + height > maxHeight) {
@@ -88,7 +88,7 @@ public class EnhancedTooltipsDrawer implements TooltipDrawerProvider.ITooltipDra
 
                 page.components.add(tooltipComponent);
                 page.height = pageHeight += height;
-                page.width = pageWidth = Math.max(page.width, width);
+                page.width = Math.max(page.width, width);
             }
         }
 
@@ -109,6 +109,16 @@ public class EnhancedTooltipsDrawer implements TooltipDrawerProvider.ITooltipDra
         }
 
         matrices.push();
+
+        if (EnhancedTooltipsConfig.load().popUpAnimation) {
+            matrices.translate(x, y, 0);
+
+            float time = ((float) System.nanoTime() / 1_000_000 % 3000.0f) / 3000.0f;
+            float pop = 1.0f + Math.abs((float) Math.sin(time * Math.PI * 2)) * (0.075f * scale);
+
+            matrices.scale(pop, pop, 1);
+            matrices.translate(-x, -y, 0);
+        }
 
         matrices.scale(scale, scale, scale);
 

@@ -21,6 +21,12 @@ public class EnhancedTooltipsConfig {
     public float scaleFactor = 1f;
 
     @Comment("(default: true)")
+    public boolean popUpAnimation = true;
+
+    @Comment("(default: true)")
+    public boolean itemPreviewAnimation = true;
+
+    @Comment("(default: true)")
     public boolean itemBadges = true;
 
     @Comment("-> Border\nRARITY/ITEM_NAME/CUSTOM (default: RARITY)")
@@ -119,7 +125,10 @@ public class EnhancedTooltipsConfig {
         }
     }
 
-    @Comment("-> Mobs\n(default: true)")
+    @Comment("-> Mobs\n(default: 0.2)")
+    public float rotationSpeed = 0.2f;
+
+    @Comment("(default: true)")
     public boolean armorTooltip = true;
 
     @Comment("(default: true)")
@@ -127,6 +136,12 @@ public class EnhancedTooltipsConfig {
 
     @Comment("(default: true)")
     public boolean spawnEggTooltip = true;
+
+    @Comment("-> Map\n(default: true)")
+    public boolean mapTooltip = true;
+
+    @Comment("-> Painting\n(default: true)")
+    public boolean paintingTooltip = true;
 
     @Comment("-> Durability\nOFF/VALUE/PERCENTAGE (default: VALUE)")
     public DurabilityTooltipMode durabilityTooltip = DurabilityTooltipMode.VALUE;

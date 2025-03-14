@@ -28,7 +28,7 @@ public class ItemGroupsUtils {
         return itemGroups;
     }
 
-    public static final List<Item> BUILDING_BLOCKS = List.of(
+    public static List<Item> BUILDING_BLOCKS = List.of(
             Items.OAK_LOG,
             Items.OAK_WOOD,
             Items.STRIPPED_OAK_LOG,
@@ -256,7 +256,6 @@ public class ItemGroupsUtils {
             Items.DEEPSLATE_TILE_WALL,
             Items.REINFORCED_DEEPSLATE,
             Items.TUFF,
-            //? if >1.21.1 {
             Items.TUFF_STAIRS,
             Items.TUFF_SLAB,
             Items.TUFF_WALL,
@@ -270,7 +269,6 @@ public class ItemGroupsUtils {
             Items.TUFF_BRICK_SLAB,
             Items.TUFF_BRICK_WALL,
             Items.CHISELED_TUFF_BRICKS,
-            //?}
             Items.BRICKS,
             Items.BRICK_STAIRS,
             Items.BRICK_SLAB,
@@ -385,111 +383,79 @@ public class ItemGroupsUtils {
             Items.AMETHYST_BLOCK,
             Items.COPPER_BLOCK,
             Items.CHISELED_COPPER,
-            //? if >1.21.1 {
             Items.COPPER_GRATE,
-            //?}
             Items.CUT_COPPER,
             Items.CUT_COPPER_STAIRS,
             Items.CUT_COPPER_SLAB,
-            //? if >1.21.1 {
             Items.COPPER_DOOR,
             Items.COPPER_TRAPDOOR,
             Items.COPPER_BULB,
-            //?}
             Items.EXPOSED_COPPER,
             Items.EXPOSED_CHISELED_COPPER,
-            //? if >1.21.1 {
             Items.EXPOSED_COPPER_GRATE,
-            //?}
             Items.EXPOSED_CUT_COPPER,
             Items.EXPOSED_CUT_COPPER_STAIRS,
             Items.EXPOSED_CUT_COPPER_SLAB,
-            //? if >1.21.1 {
             Items.EXPOSED_COPPER_DOOR,
             Items.EXPOSED_COPPER_TRAPDOOR,
             Items.EXPOSED_COPPER_BULB,
-            //?}
             Items.WEATHERED_COPPER,
             Items.WEATHERED_CHISELED_COPPER,
-            //? if >1.21.1 {
             Items.WEATHERED_COPPER_GRATE,
-            //?}
             Items.WEATHERED_CUT_COPPER,
             Items.WEATHERED_CUT_COPPER_STAIRS,
             Items.WEATHERED_CUT_COPPER_SLAB,
-            //? if >1.21.1 {
             Items.WEATHERED_COPPER_DOOR,
             Items.WEATHERED_COPPER_TRAPDOOR,
             Items.WEATHERED_COPPER_BULB,
-            //?}
             Items.OXIDIZED_COPPER,
             Items.OXIDIZED_CHISELED_COPPER,
-            //? if >1.21.1 {
             Items.OXIDIZED_COPPER_GRATE,
-            //?}
             Items.OXIDIZED_CUT_COPPER,
             Items.OXIDIZED_CUT_COPPER_STAIRS,
             Items.OXIDIZED_CUT_COPPER_SLAB,
-            //? if >1.21.1 {
             Items.OXIDIZED_COPPER_DOOR,
             Items.OXIDIZED_COPPER_TRAPDOOR,
             Items.OXIDIZED_COPPER_BULB,
-            //?}
             Items.WAXED_COPPER_BLOCK,
             Items.WAXED_CHISELED_COPPER,
-            //? if >1.21.1 {
             Items.WAXED_COPPER_GRATE,
-            //?}
             Items.WAXED_CUT_COPPER,
             Items.WAXED_CUT_COPPER_STAIRS,
             Items.WAXED_CUT_COPPER_SLAB,
-            //? if >1.21.1 {
             Items.WAXED_COPPER_DOOR,
             Items.WAXED_COPPER_TRAPDOOR,
             Items.WAXED_COPPER_BULB,
-            //?}
             Items.WAXED_EXPOSED_COPPER,
             Items.WAXED_EXPOSED_CHISELED_COPPER,
-            //? if >1.21.1 {
             Items.WAXED_EXPOSED_COPPER_GRATE,
-            //?}
             Items.WAXED_EXPOSED_CUT_COPPER,
             Items.WAXED_EXPOSED_CUT_COPPER_STAIRS,
             Items.WAXED_EXPOSED_CUT_COPPER_SLAB,
-            //? if >1.21.1 {
             Items.WAXED_EXPOSED_COPPER_DOOR,
             Items.WAXED_EXPOSED_COPPER_TRAPDOOR,
             Items.WAXED_EXPOSED_COPPER_BULB,
-            //?}
             Items.WAXED_WEATHERED_COPPER,
             Items.WAXED_WEATHERED_CHISELED_COPPER,
-            //? if >1.21.1 {
             Items.WAXED_WEATHERED_COPPER_GRATE,
-            //?}
             Items.WAXED_WEATHERED_CUT_COPPER,
             Items.WAXED_WEATHERED_CUT_COPPER_STAIRS,
             Items.WAXED_WEATHERED_CUT_COPPER_SLAB,
-            //? if >1.21.1 {
             Items.WAXED_WEATHERED_COPPER_DOOR,
             Items.WAXED_WEATHERED_COPPER_TRAPDOOR,
             Items.WAXED_WEATHERED_COPPER_BULB,
-            //?}
             Items.WAXED_OXIDIZED_COPPER,
             Items.WAXED_OXIDIZED_CHISELED_COPPER,
-            //? if >1.21.1 {
             Items.WAXED_OXIDIZED_COPPER_GRATE,
-            //?}
             Items.WAXED_OXIDIZED_CUT_COPPER,
             Items.WAXED_OXIDIZED_CUT_COPPER_STAIRS,
-            Items.WAXED_OXIDIZED_CUT_COPPER_SLAB
-            //? if >1.21.1 {
-            , Items.WAXED_OXIDIZED_COPPER_DOOR,
+            Items.WAXED_OXIDIZED_CUT_COPPER_SLAB,
+            Items.WAXED_OXIDIZED_COPPER_DOOR,
             Items.WAXED_OXIDIZED_COPPER_TRAPDOOR,
             Items.WAXED_OXIDIZED_COPPER_BULB
-            //?}
     );
 
-    public static final List<Item> COLORED_BLOCKS = List.of(
+    public static List<Item> COLORED_BLOCKS = List.of(
             Items.WHITE_WOOL,
             Items.LIGHT_GRAY_WOOL,
             Items.GRAY_WOOL,
@@ -690,7 +656,7 @@ public class ItemGroupsUtils {
             Items.PINK_BANNER
     );
 
-    public static final List<Item> NATURAL_BLOCKS = List.of(
+    public static List<Item> NATURAL_BLOCKS = List.of(
             Items.GRASS_BLOCK,
             Items.PODZOL,
             Items.MYCELIUM,
@@ -940,7 +906,7 @@ public class ItemGroupsUtils {
             Items.BEDROCK
     );
 
-    public static final List<Item> FUNCTIONAL_BLOCKS = List.of(
+    public static List<Item> FUNCTIONAL_BLOCKS = List.of(
             Items.TORCH,
             Items.SOUL_TORCH,
             Items.REDSTONE_TORCH,
@@ -950,7 +916,6 @@ public class ItemGroupsUtils {
             Items.END_ROD,
             Items.SEA_LANTERN,
             Items.REDSTONE_LAMP,
-            //? if >1.21.1 {
             Items.COPPER_BULB,
             Items.EXPOSED_COPPER_BULB,
             Items.WEATHERED_COPPER_BULB,
@@ -959,7 +924,6 @@ public class ItemGroupsUtils {
             Items.WAXED_EXPOSED_COPPER_BULB,
             Items.WAXED_WEATHERED_COPPER_BULB,
             Items.WAXED_OXIDIZED_COPPER_BULB,
-            //?}
             Items.GLOWSTONE,
             Items.SHROOMLIGHT,
             Items.OCHRE_FROGLIGHT,
@@ -1117,9 +1081,7 @@ public class ItemGroupsUtils {
             Items.DRAGON_EGG,
             Items.END_PORTAL_FRAME,
             Items.ENDER_EYE,
-            //? if >1.21.1 {
             Items.VAULT,
-            //?}
             Items.INFESTED_STONE,
             Items.INFESTED_COBBLESTONE,
             Items.INFESTED_STONE_BRICKS,
@@ -1129,19 +1091,17 @@ public class ItemGroupsUtils {
             Items.INFESTED_DEEPSLATE
     );
 
-    public static final List<Item> REDSTONE_BLOCKS = List.of(
+    public static List<Item> REDSTONE_BLOCKS = List.of(
             Items.REDSTONE,
             Items.REDSTONE_TORCH,
             Items.REDSTONE_BLOCK,
             Items.REPEATER,
             Items.COMPARATOR,
             Items.TARGET,
-            //? if >1.21.1 {
             Items.WAXED_COPPER_BULB,
             Items.WAXED_EXPOSED_COPPER_BULB,
             Items.WAXED_WEATHERED_COPPER_BULB,
             Items.WAXED_OXIDIZED_COPPER_BULB,
-            //?}
             Items.LEVER,
             Items.OAK_BUTTON,
             Items.STONE_BUTTON,
@@ -1165,9 +1125,7 @@ public class ItemGroupsUtils {
             Items.HONEY_BLOCK,
             Items.DISPENSER,
             Items.DROPPER,
-            //? if >1.21.1 {
             Items.CRAFTER,
-            //?}
             Items.HOPPER,
             Items.CHEST,
             Items.BARREL,
@@ -1204,7 +1162,7 @@ public class ItemGroupsUtils {
             Items.REDSTONE_ORE
     );
 
-    public static final List<Item> TOOLS = List.of(
+    public static List<Item> TOOLS = List.of(
             Items.WOODEN_SHOVEL,
             Items.WOODEN_PICKAXE,
             Items.WOODEN_AXE,
@@ -1273,9 +1231,7 @@ public class ItemGroupsUtils {
             Items.SPYGLASS,
             Items.MAP,
             Items.WRITABLE_BOOK,
-            //? if >1.21.1 {
             Items.WIND_CHARGE,
-            //?}
             Items.ENDER_PEARL,
             Items.ENDER_EYE,
             Items.ELYTRA,
@@ -1315,7 +1271,7 @@ public class ItemGroupsUtils {
             Items.TNT_MINECART
     );
 
-    public static final List<Item> COMBAT = List.of(
+    public static List<Item> COMBAT = List.of(
             Items.WOODEN_SWORD,
             Items.STONE_SWORD,
             Items.IRON_SWORD,
@@ -1329,9 +1285,7 @@ public class ItemGroupsUtils {
             Items.DIAMOND_AXE,
             Items.NETHERITE_AXE,
             Items.TRIDENT,
-            //? if >1.21.1 {
             Items.MACE,
-            //?}
             Items.SHIELD,
             Items.LEATHER_HELMET,
             Items.LEATHER_CHESTPLATE,
@@ -1368,16 +1322,14 @@ public class ItemGroupsUtils {
             Items.END_CRYSTAL,
             Items.SNOWBALL,
             Items.EGG,
-            //? if >1.21.1 {
             Items.WIND_CHARGE,
-            //?}
             Items.BOW,
             Items.CROSSBOW,
             Items.ARROW,
             Items.SPECTRAL_ARROW
     );
 
-    public static final List<Item> FOOD_AND_DRINK = List.of(
+    public static List<Item> FOOD_AND_DRINK = List.of(
             Items.APPLE,
             Items.GOLDEN_APPLE,
             Items.ENCHANTED_GOLDEN_APPLE,
@@ -1421,7 +1373,7 @@ public class ItemGroupsUtils {
             Items.HONEY_BOTTLE
     );
 
-    public static final List<Item> INGREDIENTS = List.of(
+    public static List<Item> INGREDIENTS = List.of(
             Items.COAL,
             Items.CHARCOAL,
             Items.RAW_IRON,
@@ -1467,10 +1419,8 @@ public class ItemGroupsUtils {
             Items.HEART_OF_THE_SEA,
             Items.FIRE_CHARGE,
             Items.BLAZE_ROD,
-            //? if >1.21.1 {
             Items.BREEZE_ROD,
             Items.HEAVY_CORE,
-            //?}
             Items.NETHER_STAR,
             Items.ENDER_PEARL,
             Items.ENDER_EYE,
@@ -1521,18 +1471,14 @@ public class ItemGroupsUtils {
             Items.GHAST_TEAR,
             Items.TURTLE_HELMET,
             Items.PHANTOM_MEMBRANE,
-            Items.EXPERIENCE_BOTTLE
-            //? if >1.21.1 {
-            , Items.TRIAL_KEY,
+            Items.EXPERIENCE_BOTTLE,
+            Items.TRIAL_KEY,
             Items.OMINOUS_TRIAL_KEY
-            //?}
     );
 
-    public static final List<Item> SPAWN_EGGS = List.of(
+    public static List<Item> SPAWN_EGGS = List.of(
             Items.SPAWNER,
-            //? if >1.21.1 {
             Items.TRIAL_SPAWNER,
-            //?}
             //? if >1.21.3 {
             Items.CREAKING_HEART,
             //?}
@@ -1543,9 +1489,7 @@ public class ItemGroupsUtils {
             Items.BEE_SPAWN_EGG,
             Items.BLAZE_SPAWN_EGG,
             Items.BOGGED_SPAWN_EGG,
-            //? if >1.21.1 {
             Items.BREEZE_SPAWN_EGG,
-            //?}
             Items.CAMEL_SPAWN_EGG,
             Items.CAT_SPAWN_EGG,
             Items.CAVE_SPIDER_SPAWN_EGG,
@@ -1621,7 +1565,7 @@ public class ItemGroupsUtils {
             Items.ZOMBIFIED_PIGLIN_SPAWN_EGG
     );
 
-    public static final List<Item> OPERATOR = List.of(
+    public static List<Item> OPERATOR = List.of(
             Items.COMMAND_BLOCK,
             Items.CHAIN_COMMAND_BLOCK,
             Items.REPEATING_COMMAND_BLOCK,
