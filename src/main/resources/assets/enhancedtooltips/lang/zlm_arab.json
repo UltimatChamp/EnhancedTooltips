@@ -6,6 +6,7 @@
   "enhancedtooltips.config.scaleFactor.desc": "ملارسکن ساٴيز ڤتوا الت. سکالا 100% مماڤرکن ڤتوا الت ڤد ساٴيز لالايڽ.",
   "enhancedtooltips.config.popUpAnimation": "Pop-up Animation",
   "enhancedtooltips.config.popUpAnimation.desc": "Toggles the tooltip pop-up animation.",
+  "enhancedtooltips.config.popUpAnimation.magnitude": "Magnitude",
   "enhancedtooltips.config.itemPreviewAnimation": "Item Preview Animation",
   "enhancedtooltips.config.itemPreviewAnimation.desc": "Toggles the item preview bouncing animation.",
   "enhancedtooltips.config.itemBadges": "لنچان اٴيتم",

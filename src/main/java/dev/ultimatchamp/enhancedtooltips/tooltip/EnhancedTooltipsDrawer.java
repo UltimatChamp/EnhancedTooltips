@@ -113,8 +113,10 @@ public class EnhancedTooltipsDrawer implements TooltipDrawerProvider.ITooltipDra
         if (EnhancedTooltipsConfig.load().popUpAnimation) {
             matrices.translate(x, y, 0);
 
-            float time = ((float) System.nanoTime() / 1_000_000 % 3000.0f) / 3000.0f;
-            float pop = 1.0f + Math.abs((float) Math.sin(time * Math.PI * 2)) * (0.075f * scale);
+            float sec = EnhancedTooltipsConfig.load().popUpAnimationTime * 1000;
+            float time = ((float) System.nanoTime() / 1_000_000 % sec) / sec;
+
+            float pop = 1.0f + Math.abs((float) Math.sin(time * Math.PI * 2)) * ((EnhancedTooltipsConfig.load().popUpAnimationMagnitude / 10) * scale);
 
             matrices.scale(pop, pop, 1);
             matrices.translate(-x, -y, 0);

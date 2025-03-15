@@ -6,6 +6,7 @@
   "enhancedtooltips.config.scaleFactor.desc": "Melaraskan saiz petua alat. Skala 100% memaparkan petua alat pada saiz lalainya.",
   "enhancedtooltips.config.popUpAnimation": "Pop-up Animation",
   "enhancedtooltips.config.popUpAnimation.desc": "Toggles the tooltip pop-up animation.",
+  "enhancedtooltips.config.popUpAnimation.magnitude": "Magnitude",
   "enhancedtooltips.config.itemPreviewAnimation": "Item Preview Animation",
   "enhancedtooltips.config.itemPreviewAnimation.desc": "Toggles the item preview bouncing animation.",
   "enhancedtooltips.config.itemBadges": "Lencana Item",

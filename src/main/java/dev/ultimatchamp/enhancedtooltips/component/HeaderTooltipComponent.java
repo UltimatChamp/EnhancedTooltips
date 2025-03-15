@@ -99,8 +99,10 @@ public class HeaderTooltipComponent implements TooltipComponent {
         int startDrawY = y + (TEXTURE_SIZE - ITEM_MODEL_SIZE) / 2;
 
         if (config.itemPreviewAnimation) {
-            float time = (System.currentTimeMillis() % 1000) / 1000.0f;
-            float bounce = (float) Math.sin(time * Math.PI * 2) * 2.0f;
+            int sec = (int) (config.itemPreviewAnimationTime * 1000);
+            float time = (float) (System.currentTimeMillis() % sec) / sec;
+
+            float bounce = (float) Math.sin(time * Math.PI * 2) * (config.itemPreviewAnimationMagnitude * config.scaleFactor);
 
             MatrixStack matrixStack = new MatrixStack();
             matrixStack.translate(0, bounce, 0);

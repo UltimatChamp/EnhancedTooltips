@@ -31,7 +31,7 @@ public class EnhancedTooltips implements ClientModInitializer {
             list.add(1, new FoodTooltipComponent(stack));
 
             if (stack.getItem() instanceof ArmorItem || stack.getItem() instanceof EntityBucketItem || stack.getItem() instanceof SpawnEggItem) {
-                list.add(new ModelViewerComponent(stack));
+                list.add(new ModelViewerTooltipComponent(stack));
             } else {
                 list.add(new TooltipBorderColorComponent(stack));
             }

@@ -6,6 +6,7 @@
   "enhancedtooltips.config.scaleFactor.desc": "Adjusts the size of tooltips. A scale of 100% displays the tooltip at its default size.",
   "enhancedtooltips.config.popUpAnimation": "Pop-up Animation",
   "enhancedtooltips.config.popUpAnimation.desc": "Toggles the tooltip pop-up animation.",
+  "enhancedtooltips.config.popUpAnimation.magnitude": "Magnitude",
   "enhancedtooltips.config.itemPreviewAnimation": "Item Preview Animation",
   "enhancedtooltips.config.itemPreviewAnimation.desc": "Toggles the item preview bouncing animation.",
   "enhancedtooltips.config.itemBadges": "Emblemas de Itens",

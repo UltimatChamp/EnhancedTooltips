@@ -18,7 +18,7 @@ import net.minecraft.nbt.NbtCompound;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 
-public class ModelViewerComponent extends TooltipBorderColorComponent {
+public class ModelViewerTooltipComponent extends TooltipBorderColorComponent {
     private static float currentRotation = 0f;
 
     private static final int ENTITY_SIZE = 30;
@@ -30,7 +30,7 @@ public class ModelViewerComponent extends TooltipBorderColorComponent {
     private final EnhancedTooltipsConfig config;
     private final float ROTATION_INCREMENT;
 
-    public ModelViewerComponent(ItemStack stack) {
+    public ModelViewerTooltipComponent(ItemStack stack) {
         super(stack);
         this.stack = stack;
         this.config = EnhancedTooltipsConfig.load();
@@ -160,7 +160,7 @@ public class ModelViewerComponent extends TooltipBorderColorComponent {
 
         var dispatcher = MinecraftClient.getInstance().getEntityRenderDispatcher();
         dispatcher.setRenderShadows(false);
-        dispatcher.render(entity, 0.0, 0.0, 0.0,/*? if 1.21.1 {*//* 0.0F,*//*?}*/ 1.0F, context.getMatrices(), context.vertexConsumers, SHADOW_LIGHT_COLOR);
+        dispatcher.render(entity, 0.0, 0.0, 0.0,/*? if 1.21.1 {*//* 0.0F,*//*?}*/ 0.0F, context.getMatrices(), context.vertexConsumers, SHADOW_LIGHT_COLOR);
         dispatcher.setRenderShadows(true);
 
         context.getMatrices().pop();

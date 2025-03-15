@@ -32,6 +32,18 @@ public class EnhancedTooltipsGui {
                                         )
                                         .controller(TickBoxControllerBuilder::create)
                                         .build())
+                                .option(Option.<Boolean>createBuilder()
+                                        .name(Text.translatable("enhancedtooltips.config.itemBadges"))
+                                        .description(OptionDescription.createBuilder()
+                                                .text(Text.translatable("enhancedtooltips.config.itemBadges.desc"))
+                                                .build())
+                                        .binding(
+                                                true,
+                                                () -> config.itemBadges,
+                                                (value) -> config.itemBadges = value
+                                        )
+                                        .controller(TickBoxControllerBuilder::create)
+                                        .build())
                                 .option(Option.<Float>createBuilder()
                                         .name(Text.translatable("enhancedtooltips.config.scaleFactor"))
                                         .description(OptionDescription.createBuilder()
@@ -44,8 +56,11 @@ public class EnhancedTooltipsGui {
                                         )
                                         .customController(opt -> new FloatSliderController(opt, 0.25f, 2f, 0.05f, value -> Text.literal(String.format("%." + 0 /* decimal places */ + "f%%", value * 100.0F))))
                                         .build())
+                                .build())
+                        .group(OptionGroup.createBuilder()
+                                .name(Text.translatable("enhancedtooltips.config.popUpAnimation"))
                                 .option(Option.<Boolean>createBuilder()
-                                        .name(Text.translatable("enhancedtooltips.config.popUpAnimation"))
+                                        .name(Text.translatable("addServer.resourcePack.enabled"))
                                         .description(OptionDescription.createBuilder()
                                                 .text(Text.translatable("enhancedtooltips.config.popUpAnimation.desc"))
                                                 .build())
@@ -56,8 +71,29 @@ public class EnhancedTooltipsGui {
                                         )
                                         .controller(TickBoxControllerBuilder::create)
                                         .build())
+                                .option(Option.<Float>createBuilder()
+                                        .name(Text.translatable("stat.minecraft.play_time"))
+                                        .binding(
+                                                1.5f,
+                                                () -> config.popUpAnimationTime,
+                                                (value) -> config.popUpAnimationTime = value
+                                        )
+                                        .customController(opt -> new FloatSliderController(opt, 1f, 10f, 0.5f, value -> Text.literal(String.format("%." + 1 /* decimal places */ + "f seconds", value))))
+                                        .build())
+                                .option(Option.<Float>createBuilder()
+                                        .name(Text.translatable("enhancedtooltips.config.popUpAnimation.magnitude"))
+                                        .binding(
+                                                0.4f,
+                                                () -> config.popUpAnimationMagnitude,
+                                                (value) -> config.popUpAnimationMagnitude = value
+                                        )
+                                        .customController(opt -> new FloatSliderController(opt, 0.25f, 2f, 0.05f, value -> Text.literal(String.format("%." + 0 /* decimal places */ + "f%%", value * 100.0F))))
+                                        .build())
+                                .build())
+                        .group(OptionGroup.createBuilder()
+                                .name(Text.translatable("enhancedtooltips.config.itemPreviewAnimation"))
                                 .option(Option.<Boolean>createBuilder()
-                                        .name(Text.translatable("enhancedtooltips.config.itemPreviewAnimation"))
+                                        .name(Text.translatable("addServer.resourcePack.enabled"))
                                         .description(OptionDescription.createBuilder()
                                                 .text(Text.translatable("enhancedtooltips.config.itemPreviewAnimation.desc"))
                                                 .build())
@@ -68,17 +104,23 @@ public class EnhancedTooltipsGui {
                                         )
                                         .controller(TickBoxControllerBuilder::create)
                                         .build())
-                                .option(Option.<Boolean>createBuilder()
-                                        .name(Text.translatable("enhancedtooltips.config.itemBadges"))
-                                        .description(OptionDescription.createBuilder()
-                                                .text(Text.translatable("enhancedtooltips.config.itemBadges.desc"))
-                                                .build())
+                                .option(Option.<Float>createBuilder()
+                                        .name(Text.translatable("stat.minecraft.play_time"))
                                         .binding(
-                                                true,
-                                                () -> config.itemBadges,
-                                                (value) -> config.itemBadges = value
+                                                1f,
+                                                () -> config.itemPreviewAnimationTime,
+                                                (value) -> config.itemPreviewAnimationTime = value
                                         )
-                                        .controller(TickBoxControllerBuilder::create)
+                                        .customController(opt -> new FloatSliderController(opt, 0.25f, 2f, 0.05f, value -> Text.literal(String.format("%." + 2 /* decimal places */ + "f seconds", value))))
+                                        .build())
+                                .option(Option.<Float>createBuilder()
+                                        .name(Text.translatable("enhancedtooltips.config.popUpAnimation.magnitude"))
+                                        .binding(
+                                                2f,
+                                                () -> config.itemPreviewAnimationMagnitude,
+                                                (value) -> config.itemPreviewAnimationMagnitude = value
+                                        )
+                                        .customController(opt -> new FloatSliderController(opt, 0.5f, 4f, 0.5f, value -> Text.literal(String.format("%." + 0 /* decimal places */ + "f%%", value * 100.0F))))
                                         .build())
                                 .build())
                         .group(OptionGroup.createBuilder()

@@ -17,17 +17,29 @@ public class EnhancedTooltipsConfig {
     @Comment("-> General\n(default: true)")
     public boolean rarityTooltip = true;
 
+    @Comment("(default: true)")
+    public boolean itemBadges = true;
+
     @Comment("(default: 1.0)")
     public float scaleFactor = 1f;
 
-    @Comment("(default: true)")
+    @Comment("-> Pop-up Animation\n(default: true)")
     public boolean popUpAnimation = true;
 
-    @Comment("(default: true)")
+    @Comment("(default: 1.5)")
+    public float popUpAnimationTime = 1.5f;
+
+    @Comment("(default: 0.4)")
+    public float popUpAnimationMagnitude = 0.4f;
+
+    @Comment("-> Item Preview Animation\n(default: true)")
     public boolean itemPreviewAnimation = true;
 
-    @Comment("(default: true)")
-    public boolean itemBadges = true;
+    @Comment("(default: 1.0)")
+    public float itemPreviewAnimationTime = 1f;
+
+    @Comment("(default: 2.0)")
+    public float itemPreviewAnimationMagnitude = 2f;
 
     @Comment("-> Border\nRARITY/ITEM_NAME/CUSTOM (default: RARITY)")
     public BorderColorMode borderColor = BorderColorMode.RARITY;
