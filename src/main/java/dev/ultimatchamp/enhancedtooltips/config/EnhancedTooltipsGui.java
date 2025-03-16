@@ -78,12 +78,12 @@ public class EnhancedTooltipsGui {
                                                 () -> config.popUpAnimationTime,
                                                 (value) -> config.popUpAnimationTime = value
                                         )
-                                        .customController(opt -> new FloatSliderController(opt, 1f, 10f, 0.5f, value -> Text.literal(String.format("%." + 1 /* decimal places */ + "f seconds", value))))
+                                        .customController(opt -> new FloatSliderController(opt, 1f, 5f, 0.05f, value -> Text.literal(String.format("%." + 2 /* decimal places */ + "f seconds", value))))
                                         .build())
                                 .option(Option.<Float>createBuilder()
                                         .name(Text.translatable("enhancedtooltips.config.popUpAnimation.magnitude"))
                                         .binding(
-                                                0.4f,
+                                                1.0f,
                                                 () -> config.popUpAnimationMagnitude,
                                                 (value) -> config.popUpAnimationMagnitude = value
                                         )
@@ -120,7 +120,7 @@ public class EnhancedTooltipsGui {
                                                 () -> config.itemPreviewAnimationMagnitude,
                                                 (value) -> config.itemPreviewAnimationMagnitude = value
                                         )
-                                        .customController(opt -> new FloatSliderController(opt, 0.5f, 4f, 0.5f, value -> Text.literal(String.format("%." + 0 /* decimal places */ + "f%%", value * 100.0F))))
+                                        .customController(opt -> new FloatSliderController(opt, 0.5f, 4f, 0.05f, value -> Text.literal(String.format("%." + 0 /* decimal places */ + "f%%", value * 100.0F))))
                                         .build())
                                 .build())
                         .group(OptionGroup.createBuilder()
