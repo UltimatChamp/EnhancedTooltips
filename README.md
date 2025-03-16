@@ -32,6 +32,17 @@ _A mod that overhauls tooltips, and adds some extra information._
 
 ## Features
 
+### Highly Configurable
+
+---
+
+### Animated Tooltips
+
+- **Tooltip Pop-up Animation**
+- **Item Preview Bouncing Animation**
+
+---
+
 ### Food Item Tooltip
 
 <img alt="Image" width="500px" src="https://cdn.modrinth.com/data/8H6RXl2q/images/93c4d6db03ac21c321dfc1af32b9ec4f530a3084.png" />
@@ -58,7 +69,17 @@ _A mod that overhauls tooltips, and adds some extra information._
 
 ### Tooltip Badges
 
+_(Displays mod name if the item is not in vanilla)_
+
 <img alt="Image" width="500px" src="https://cdn.modrinth.com/data/8H6RXl2q/images/f138c81c5625ca5e92fa802afe4033cb9534f8be.png" />
+
+---
+
+### Map Tooltip Preview
+
+---
+
+### Painting Tooltip Preview
 
 ---
 
