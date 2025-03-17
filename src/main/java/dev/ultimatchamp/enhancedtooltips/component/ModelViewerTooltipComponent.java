@@ -10,13 +10,14 @@ import net.minecraft.entity.*;
 import net.minecraft.entity.decoration.ArmorStandEntity;
 import net.minecraft.entity.mob.GhastEntity;
 import net.minecraft.entity.passive.*;
-import net.minecraft.item.ArmorItem;
 import net.minecraft.item.EntityBucketItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.SpawnEggItem;
 import net.minecraft.nbt.NbtCompound;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
+
+/*? if <1.21.5 {*//*import net.minecraft.item.ArmorItem;*//*?}*/
 
 public class ModelViewerTooltipComponent extends TooltipBorderColorComponent {
     private static float currentRotation = 0f;
@@ -52,7 +53,11 @@ public class ModelViewerTooltipComponent extends TooltipBorderColorComponent {
 
         currentRotation = (currentRotation + ROTATION_INCREMENT) % 360;
 
-        if (stack.getItem() instanceof ArmorItem) {
+        //? if >1.21.4 {
+        if (getEquipmentSlot(stack).getType() == EquipmentSlot.Type.HUMANOID_ARMOR) {
+        //?} else {
+        /*if (stack.getItem() instanceof ArmorItem) {
+        *///?}
             if (!config.armorTooltip) return;
             renderArmorStand(context, x, y, z);
         } else if (stack.getItem() instanceof EntityBucketItem bucketItem) {
@@ -113,7 +118,7 @@ public class ModelViewerTooltipComponent extends TooltipBorderColorComponent {
             var nbt = nbtComponent.copyNbt();
 
             nbt.put("VillagerData", villagerData);
-            entity.readNbt(nbt);
+            if (entity != null) entity.readNbt(nbt);
         }
 
         if (entityType == EntityType.TROPICAL_FISH) return;
@@ -156,7 +161,11 @@ public class ModelViewerTooltipComponent extends TooltipBorderColorComponent {
         context.getMatrices().multiplyPositionMatrix(new Matrix4f().scaling(size, size, size));
         context.getMatrices().multiply(rotation);
 
-        DiffuseLighting.method_34742();
+        //? if >1.21.4 {
+        DiffuseLighting.enableGuiShaderLighting();
+        //?} else {
+        /*DiffuseLighting.method_34742();
+        *///?}
 
         var dispatcher = MinecraftClient.getInstance().getEntityRenderDispatcher();
         dispatcher.setRenderShadows(false);

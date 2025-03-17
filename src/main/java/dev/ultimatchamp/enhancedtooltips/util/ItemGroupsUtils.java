@@ -789,6 +789,10 @@ public class ItemGroupsUtils {
             Items.WARPED_FUNGUS,
             Items.SHORT_GRASS,
             Items.FERN,
+            //? if >1.21.4 {
+            Items.SHORT_DRY_GRASS,
+            Items.BUSH,
+            //?}
             Items.DEAD_BUSH,
             Items.DANDELION,
             Items.POPPY,
@@ -803,13 +807,23 @@ public class ItemGroupsUtils {
             Items.CORNFLOWER,
             Items.LILY_OF_THE_VALLEY,
             Items.TORCHFLOWER,
+            //? if >1.21.4 {
+            Items.CACTUS_FLOWER,
+            //?}
             //? if >1.21.3 {
             Items.CLOSED_EYEBLOSSOM,
             Items.OPEN_EYEBLOSSOM,
             //?}
             Items.WITHER_ROSE,
             Items.PINK_PETALS,
+            //? if >1.21.4 {
+            Items.WILDFLOWERS,
+            Items.LEAF_LITTER,
+            //?}
             Items.SPORE_BLOSSOM,
+            //? if >1.21.4 {
+            Items.FIREFLY_BUSH,
+            //?}
             Items.BAMBOO,
             Items.SUGAR_CANE,
             Items.CACTUS,
@@ -821,6 +835,9 @@ public class ItemGroupsUtils {
             Items.VINE,
             Items.TALL_GRASS,
             Items.LARGE_FERN,
+            //? if >1.21.4 {
+            Items.TALL_DRY_GRASS,
+            //?}
             Items.SUNFLOWER,
             Items.LILAC,
             Items.ROSE_BUSH,
@@ -1321,7 +1338,6 @@ public class ItemGroupsUtils {
             Items.TNT,
             Items.END_CRYSTAL,
             Items.SNOWBALL,
-            Items.EGG,
             Items.WIND_CHARGE,
             Items.BOW,
             Items.CROSSBOW,
@@ -1401,6 +1417,10 @@ public class ItemGroupsUtils {
             Items.FEATHER,
             Items.SNOWBALL,
             Items.EGG,
+            //? if >1.21.4 {
+            Items.BROWN_EGG,
+            Items.BLUE_EGG,
+            //?}
             Items.LEATHER,
             Items.RABBIT_HIDE,
             Items.HONEYCOMB,
@@ -1575,5 +1595,9 @@ public class ItemGroupsUtils {
             Items.STRUCTURE_VOID,
             Items.BARRIER,
             Items.DEBUG_STICK
+            //? if >1.21.4 {
+            , Items.TEST_BLOCK,
+            Items.TEST_INSTANCE_BLOCK
+            //?}
     );
 }

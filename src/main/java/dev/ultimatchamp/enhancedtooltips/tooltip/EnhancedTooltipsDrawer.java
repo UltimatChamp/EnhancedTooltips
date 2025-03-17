@@ -112,7 +112,7 @@ public class EnhancedTooltipsDrawer implements TooltipDrawerProvider.ITooltipDra
         }
 
         int scaledOffset = ((int) (12 * EnhancedTooltipsConfig.load().scaleFactor)) - 12;
-        Vector2ic vector2ic = positioner.getPosition(context.getScaledWindowWidth(), context.getScaledWindowHeight(), x + scaledOffset, y - scaledOffset, (int) (totalWidth * scale), (int) (pageList.get(0).height * scale));
+        Vector2ic vector2ic = positioner.getPosition(context.getScaledWindowWidth(), context.getScaledWindowHeight(), x + scaledOffset, y - scaledOffset, (int) (totalWidth * scale), (int) (pageList.getFirst().height * scale));
         int n = vector2ic.x();
         int o = vector2ic.y();
 
@@ -142,7 +142,7 @@ public class EnhancedTooltipsDrawer implements TooltipDrawerProvider.ITooltipDra
         matrices.scale(scale, scale, scale);
 
         for (TooltipPage p : pageList) {
-            if (pageList.get(0) == p) p.x = (int) (p.x / scale);
+            if (pageList.getFirst() == p) p.x = (int) (p.x / scale);
             p.y = (int) (p.y / scale);
 
             if (backgroundComponent == null) {
@@ -176,7 +176,7 @@ public class EnhancedTooltipsDrawer implements TooltipDrawerProvider.ITooltipDra
                     component.drawItems(textRenderer, cx, cy, /*? if >1.21.1 {*/p.width, p.height,/*?}*/ context);
                     cy += component.getHeight(/*? if >1.21.1 {*/textRenderer/*?}*/);
 
-                    if (p == pageList.get(0) && component == p.components.get(0) && components.size() > 1) {
+                    if (p == pageList.getFirst() && component == p.components.getFirst() && components.size() > 1) {
                         cy += spacing;
                     }
                 } catch (Exception e) {
