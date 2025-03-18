@@ -266,6 +266,30 @@ public class EnhancedTooltipsGui {
                                         .controller(TickBoxControllerBuilder::create)
                                         .build())
                                 .option(Option.<Boolean>createBuilder()
+                                        .name(Text.translatable("enhancedtooltips.config.horseArmorTooltip"))
+                                        .description(OptionDescription.createBuilder()
+                                                .text(Text.translatable("enhancedtooltips.config.horseArmorTooltip.desc"))
+                                                .build())
+                                        .binding(
+                                                true,
+                                                () -> config.horseArmorTooltip,
+                                                (value) -> config.horseArmorTooltip = value
+                                        )
+                                        .controller(TickBoxControllerBuilder::create)
+                                        .build())
+                                .option(Option.<Boolean>createBuilder()
+                                        .name(Text.translatable("enhancedtooltips.config.wolfArmorTooltip"))
+                                        .description(OptionDescription.createBuilder()
+                                                .text(Text.translatable("enhancedtooltips.config.wolfArmorTooltip.desc"))
+                                                .build())
+                                        .binding(
+                                                true,
+                                                () -> config.wolfArmorTooltip,
+                                                (value) -> config.wolfArmorTooltip = value
+                                        )
+                                        .controller(TickBoxControllerBuilder::create)
+                                        .build())
+                                .option(Option.<Boolean>createBuilder()
                                         .name(Text.translatable("enhancedtooltips.config.bucketTooltip"))
                                         .description(OptionDescription.createBuilder()
                                                 .text(Text.translatable("enhancedtooltips.config.bucketTooltip.desc"))

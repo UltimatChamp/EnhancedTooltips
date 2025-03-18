@@ -144,6 +144,12 @@ public class EnhancedTooltipsConfig {
     public boolean armorTooltip = true;
 
     @Comment("(default: true)")
+    public boolean horseArmorTooltip = true;
+
+    @Comment("(default: true)")
+    public boolean wolfArmorTooltip = true;
+
+    @Comment("(default: true)")
     public boolean bucketTooltip = true;
 
     @Comment("(default: true)")

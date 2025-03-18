@@ -16,6 +16,17 @@ public class BadgesUtils {
         return (alpha << 24) | (red << 16) | (green << 8) | blue;
     }
 
+    public static int getColorFromModName(String modName) {
+        int hash = modName.hashCode();
+
+        int r = (hash >> 16) & 0xFF;
+        int g = (hash >> 8) & 0xFF;
+        int b = hash & 0xFF;
+        int a = 0xFF;
+
+        return (a << 24) | (r << 16) | (g << 8) | b;
+    }
+
     public static void drawFrame(DrawContext context, int x, int y, int width, int height, int z, int color) {
         renderVerticalLine(context, x, y, height - 2, z, color);
         renderVerticalLine(context, x + width - 1, y, height - 2, z, color);

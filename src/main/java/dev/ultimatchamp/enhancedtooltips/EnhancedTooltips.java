@@ -11,11 +11,12 @@ import net.fabricmc.api.ClientModInitializer;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.tooltip.OrderedTextTooltipComponent;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.item.*;
 import net.minecraft.util.Identifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+/*? if >1.21.4 {*/import net.minecraft.entity.EquipmentSlot;/*?}*/
 
 public class EnhancedTooltips implements ClientModInitializer {
     public static final String MOD_ID = "enhancedtooltips";
@@ -35,6 +36,7 @@ public class EnhancedTooltips implements ClientModInitializer {
 
             //? if >1.21.4 {
             if (ModelViewerTooltipComponent.getEquipmentSlot(stack).getType() == EquipmentSlot.Type.HUMANOID_ARMOR ||
+                ModelViewerTooltipComponent.getEquipmentSlot(stack).getType() == EquipmentSlot.Type.ANIMAL_ARMOR ||
             //?} else {
             /*if (stack.getItem() instanceof ArmorItem ||
             *///?}
