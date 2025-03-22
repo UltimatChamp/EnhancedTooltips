@@ -29,8 +29,8 @@ public class EnhancedTooltipsConfig {
     @Comment("(default: 1.5)")
     public float popUpAnimationTime = 1.5f;
 
-    @Comment("(default: 0.4)")
-    public float popUpAnimationMagnitude = 0.4f;
+    @Comment("(default: 1.0)")
+    public float popUpAnimationMagnitude = 1.0f;
 
     @Comment("-> Item Preview Animation\n(default: true)")
     public boolean itemPreviewAnimation = true;
@@ -142,6 +142,12 @@ public class EnhancedTooltipsConfig {
 
     @Comment("(default: true)")
     public boolean armorTooltip = true;
+
+    @Comment("(default: true)")
+    public boolean horseArmorTooltip = true;
+
+    @Comment("(default: true)")
+    public boolean wolfArmorTooltip = true;
 
     @Comment("(default: true)")
     public boolean bucketTooltip = true;

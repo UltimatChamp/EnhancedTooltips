@@ -31,6 +31,8 @@ public class DrawContextMixin {
     /*@Inject(method = "drawTooltip(Lnet/minecraft/client/font/TextRenderer;Ljava/util/List;IILnet/minecraft/client/gui/tooltip/TooltipPositioner;)V", at = @At("HEAD"), cancellable = true)
     private void injectDrawTooltip(TextRenderer textRenderer, List<TooltipComponent> components, int x, int y, TooltipPositioner positioner, CallbackInfo ci) {
     *///?}
+        if (components.isEmpty()) return;
+
         List<TooltipComponent> tooltipComponents = new ArrayList<>(components);
         ItemStack cacheItemStack = TooltipItemStackCache.getItemStack();
 
@@ -41,7 +43,7 @@ public class DrawContextMixin {
 
         TooltipDrawerProvider.ITooltipDrawer drawer = TooltipDrawerProvider.getTooltipDrawer();
         if (drawer != null) {
-            drawer.drawTooltip((DrawContext) (Object) this, textRenderer, tooltipComponents, x, y, HoveredTooltipPositioner.INSTANCE);
+            drawer.drawTooltip((DrawContext) (Object) this, textRenderer, tooltipComponents, x, y, HoveredTooltipPositioner.INSTANCE, cacheItemStack);
             ci.cancel();
         }
     }

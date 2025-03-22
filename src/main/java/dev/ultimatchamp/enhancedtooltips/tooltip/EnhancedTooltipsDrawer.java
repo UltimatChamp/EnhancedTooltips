@@ -13,6 +13,7 @@ import net.minecraft.client.gui.tooltip.TooltipBackgroundRenderer;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
 import net.minecraft.client.gui.tooltip.TooltipPositioner;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.item.ItemStack;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -24,6 +25,8 @@ import java.util.List;
 public class EnhancedTooltipsDrawer implements TooltipDrawerProvider.ITooltipDrawer {
     private static final int EDGE_SPACING = 32;
     private static final int PAGE_SPACING = 12;
+    private long startTime = -1;
+    private ItemStack lastStack = null;
 
     private static int getMaxHeight() {
         return MinecraftClient.getInstance().getWindow().getScaledHeight() - EDGE_SPACING * 2;
@@ -34,8 +37,19 @@ public class EnhancedTooltipsDrawer implements TooltipDrawerProvider.ITooltipDra
     }
 
     @Override
-    public void drawTooltip(DrawContext context, TextRenderer textRenderer, List<TooltipComponent> components, int x, int y, TooltipPositioner positioner) {
-        if (components.isEmpty()) return;
+    public void drawTooltip(DrawContext context, TextRenderer textRenderer, List<TooltipComponent> components, int x, int y, TooltipPositioner positioner, ItemStack currentStack) {
+        if (components.isEmpty() || currentStack == null || currentStack.isEmpty()) {
+            startTime = -1;
+            lastStack = null;
+            return;
+        }
+
+        if (lastStack == null || !ItemStack.areEqual(lastStack, currentStack)) {
+            startTime = System.nanoTime();
+            lastStack = currentStack.copy();
+        } else if (startTime == -1) {
+            startTime = System.nanoTime();
+        }
 
         TooltipBackgroundComponent backgroundComponent = getBackgroundComponent(components);
 
@@ -98,7 +112,7 @@ public class EnhancedTooltipsDrawer implements TooltipDrawerProvider.ITooltipDra
         }
 
         int scaledOffset = ((int) (12 * EnhancedTooltipsConfig.load().scaleFactor)) - 12;
-        Vector2ic vector2ic = positioner.getPosition(context.getScaledWindowWidth(), context.getScaledWindowHeight(), x + scaledOffset, y - scaledOffset, (int) (totalWidth * scale), (int) (pageList.get(0).height * scale));
+        Vector2ic vector2ic = positioner.getPosition(context.getScaledWindowWidth(), context.getScaledWindowHeight(), x + scaledOffset, y - scaledOffset, (int) (totalWidth * scale), (int) (pageList.getFirst().height * scale));
         int n = vector2ic.x();
         int o = vector2ic.y();
 
@@ -114,9 +128,12 @@ public class EnhancedTooltipsDrawer implements TooltipDrawerProvider.ITooltipDra
             matrices.translate(x, y, 0);
 
             float sec = EnhancedTooltipsConfig.load().popUpAnimationTime * 1000;
-            float time = ((float) System.nanoTime() / 1_000_000 % sec) / sec;
+            float elapsedTime = ((float) (System.nanoTime() - startTime) / 1_000_000) / sec;
 
-            float pop = 1.0f + Math.abs((float) Math.sin(time * Math.PI * 2)) * ((EnhancedTooltipsConfig.load().popUpAnimationMagnitude / 10) * scale);
+            float pop = 1.0f;
+            if (elapsedTime < 0.5f) {
+                pop = 1.0f + Math.abs((float) Math.sin(elapsedTime * Math.PI * 2)) * ((EnhancedTooltipsConfig.load().popUpAnimationMagnitude / 10) * scale);
+            }
 
             matrices.scale(pop, pop, 1);
             matrices.translate(-x, -y, 0);
@@ -125,7 +142,7 @@ public class EnhancedTooltipsDrawer implements TooltipDrawerProvider.ITooltipDra
         matrices.scale(scale, scale, scale);
 
         for (TooltipPage p : pageList) {
-            if (pageList.get(0) == p) p.x = (int) (p.x / scale);
+            if (pageList.getFirst() == p) p.x = (int) (p.x / scale);
             p.y = (int) (p.y / scale);
 
             if (backgroundComponent == null) {
@@ -159,7 +176,7 @@ public class EnhancedTooltipsDrawer implements TooltipDrawerProvider.ITooltipDra
                     component.drawItems(textRenderer, cx, cy, /*? if >1.21.1 {*/p.width, p.height,/*?}*/ context);
                     cy += component.getHeight(/*? if >1.21.1 {*/textRenderer/*?}*/);
 
-                    if (p == pageList.get(0) && component == p.components.get(0) && components.size() > 1) {
+                    if (p == pageList.getFirst() && component == p.components.getFirst() && components.size() > 1) {
                         cy += spacing;
                     }
                 } catch (Exception e) {

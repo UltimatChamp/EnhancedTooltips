@@ -16,6 +16,8 @@ import net.minecraft.util.Identifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/*? if >1.21.4 {*/import net.minecraft.entity.EquipmentSlot;/*?}*/
+
 public class EnhancedTooltips implements ClientModInitializer {
     public static final String MOD_ID = "enhancedtooltips";
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
@@ -25,12 +27,22 @@ public class EnhancedTooltips implements ClientModInitializer {
         new TooltipModule().load();
 
         TooltipComponentAPI.EVENT.register((list, stack) -> {
-            list.remove(0);
+            if (list.isEmpty()) return;
+
+            list.removeFirst();
             list.add(0, new HeaderTooltipComponent(stack));
 
             list.add(1, new FoodTooltipComponent(stack));
 
-            if (stack.getItem() instanceof ArmorItem || stack.getItem() instanceof EntityBucketItem || stack.getItem() instanceof SpawnEggItem) {
+            //? if >1.21.4 {
+            if (ModelViewerTooltipComponent.getEquipmentSlot(stack).getType() == EquipmentSlot.Type.HUMANOID_ARMOR ||
+                ModelViewerTooltipComponent.getEquipmentSlot(stack).getType() == EquipmentSlot.Type.ANIMAL_ARMOR ||
+            //?} else {
+            /*if (stack.getItem() instanceof ArmorItem ||
+            *///?}
+                stack.getItem() instanceof EntityBucketItem ||
+                stack.getItem() instanceof SpawnEggItem
+            ) {
                 list.add(new ModelViewerTooltipComponent(stack));
             } else {
                 list.add(new TooltipBorderColorComponent(stack));

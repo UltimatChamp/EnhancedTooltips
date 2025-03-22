@@ -132,7 +132,7 @@ public class HeaderTooltipComponent implements TooltipComponent {
             String namespace = Registries.ITEM.getId(stack.getItem()).getNamespace();
             translation = this.mods.getOrDefault(namespace, "gamerule.category.misc");
 
-            if (!translation.equals("gamerule.category.misc")) fillColor = 0xff0d5e7b;
+            if (!translation.equals("gamerule.category.misc")) fillColor = BadgesUtils.getColorFromModName(namespace);
         }
 
         drawBadge(textRenderer, Text.translatable(translation), x, y, context, fillColor);
