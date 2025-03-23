@@ -50,8 +50,10 @@ public class HeaderTooltipComponent implements TooltipComponent {
 
     @Override
     public int getWidth(TextRenderer textRenderer) {
-        int badgeWidth = 0;
+        int rarityWidth = 0;
+        if (config.rarityTooltip) rarityWidth = textRenderer.getWidth(this.rarityName);
 
+        int badgeWidth = 0;
         if (config.itemBadges) {
             String badgeText = "gamerule.category.misc";
 
@@ -70,7 +72,14 @@ public class HeaderTooltipComponent implements TooltipComponent {
             }
         }
 
-        return Math.max(textRenderer.getWidth(this.nameText) + badgeWidth, textRenderer.getWidth(this.rarityName)) + SPACING + TEXTURE_SIZE;
+        int titleWidth;
+        if (config.rarityTooltip) {
+            titleWidth = textRenderer.getWidth(this.nameText) + badgeWidth;
+        } else {
+            titleWidth = Math.max(textRenderer.getWidth(this.nameText), badgeWidth);
+        }
+
+        return Math.max(titleWidth, rarityWidth) + SPACING + TEXTURE_SIZE;
     }
 
     public int getTitleOffset() {
@@ -81,6 +90,7 @@ public class HeaderTooltipComponent implements TooltipComponent {
     public void drawText(TextRenderer textRenderer, int x, int y, Matrix4f matrix, VertexConsumerProvider.Immediate vertexConsumers) {
         float startDrawX = (float) x + getTitleOffset();
         float startDrawY = y + 1;
+        if (!config.rarityTooltip && !config.itemBadges) startDrawY += (float) (textRenderer.fontHeight + SPACING) / 2;
         textRenderer.draw(this.nameText, startDrawX, startDrawY, -1, true, matrix, vertexConsumers, TextRenderer.TextLayerType.NORMAL, 0, 0xF000F0);
 
         if (config.rarityTooltip) {
@@ -116,6 +126,7 @@ public class HeaderTooltipComponent implements TooltipComponent {
         if (config.itemPreviewAnimation) context.getMatrices().pop();
 
         if (!config.itemBadges) return;
+        if (!config.rarityTooltip) y += 1 + textRenderer.fontHeight + SPACING;
 
         String translation = "gamerule.category.misc";
         int fillColor = -6250336;
@@ -142,7 +153,7 @@ public class HeaderTooltipComponent implements TooltipComponent {
         int textWidth = textRenderer.getWidth(text);
         int textHeight = textRenderer.fontHeight;
 
-        int textX = x + getTitleOffset() + textRenderer.getWidth(this.nameText) + SPACING + 2;
+        int textX = x + getTitleOffset() + (!config.rarityTooltip ? 4 : textRenderer.getWidth(this.nameText) + SPACING + 2);
         int textY = y - textRenderer.fontHeight + SPACING * 2 + 2;
 
         context.fill(

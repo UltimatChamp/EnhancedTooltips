@@ -44,7 +44,7 @@ public class DurabilityTooltipComponent implements TooltipComponent {
     @Override
     public int getHeight(/*? if >1.21.1 {*/TextRenderer textRenderer/*?}*/) {
         if (isDurabilityDisabled()) return 0;
-        return config.durabilityBar ? 14 : 9;
+        return config.durabilityBar ? 18 : 17;
     }
 
     @Override
@@ -66,11 +66,13 @@ public class DurabilityTooltipComponent implements TooltipComponent {
     *///?}
         if (isDurabilityDisabled()) return;
 
+        y += (config.durabilityBar) ? SPACING : SPACING * 2;
+
         if (config.durabilityBar) y += 2;
         int textHeight = textRenderer.fontHeight;
         int textY = config.durabilityBar ? y - textHeight + SPACING * 2 + 2 : y;
 
-        context.drawText(textRenderer, Text.translatable("enhancedtooltips.tooltip.durability"), x, textY, 0xffffffff, true);
+        context.drawText(textRenderer, Text.translatable("enhancedtooltips.tooltip.durability"), x, textY, -8355712, true);
 
         x += textRenderer.getWidth(Text.translatable("enhancedtooltips.tooltip.durability")) + SPACING;
         int damaged = stack.getMaxDamage() - stack.getDamage();
