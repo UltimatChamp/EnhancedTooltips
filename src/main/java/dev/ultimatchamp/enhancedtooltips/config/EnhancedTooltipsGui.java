@@ -27,8 +27,8 @@ public class EnhancedTooltipsGui {
                                                 .build())
                                         .binding(
                                                 true,
-                                                () -> config.rarityTooltip,
-                                                (value) -> config.rarityTooltip = value
+                                                () -> config.general.rarityTooltip,
+                                                (value) -> config.general.rarityTooltip = value
                                         )
                                         .controller(TickBoxControllerBuilder::create)
                                         .build())
@@ -39,8 +39,8 @@ public class EnhancedTooltipsGui {
                                                 .build())
                                         .binding(
                                                 true,
-                                                () -> config.itemBadges,
-                                                (value) -> config.itemBadges = value
+                                                () -> config.general.itemBadges,
+                                                (value) -> config.general.itemBadges = value
                                         )
                                         .controller(TickBoxControllerBuilder::create)
                                         .build())
@@ -51,8 +51,8 @@ public class EnhancedTooltipsGui {
                                                 .build())
                                         .binding(
                                                 1f,
-                                                () -> config.scaleFactor,
-                                                (value) -> config.scaleFactor = value
+                                                () -> config.general.scaleFactor,
+                                                (value) -> config.general.scaleFactor = value
                                         )
                                         .customController(opt -> new FloatSliderController(opt, 0.25f, 2f, 0.05f, value -> Text.literal(String.format("%." + 0 /* decimal places */ + "f%%", value * 100.0F))))
                                         .build())
@@ -66,8 +66,8 @@ public class EnhancedTooltipsGui {
                                                 .build())
                                         .binding(
                                                 true,
-                                                () -> config.popUpAnimation,
-                                                (value) -> config.popUpAnimation = value
+                                                () -> config.popUpAnimation.enabled,
+                                                (value) -> config.popUpAnimation.enabled = value
                                         )
                                         .controller(TickBoxControllerBuilder::create)
                                         .build())
@@ -75,8 +75,8 @@ public class EnhancedTooltipsGui {
                                         .name(Text.translatable("stat.minecraft.play_time"))
                                         .binding(
                                                 1.5f,
-                                                () -> config.popUpAnimationTime,
-                                                (value) -> config.popUpAnimationTime = value
+                                                () -> config.popUpAnimation.time,
+                                                (value) -> config.popUpAnimation.time = value
                                         )
                                         .customController(opt -> new FloatSliderController(opt, 1f, 5f, 0.05f, value -> Text.literal(String.format("%." + 2 /* decimal places */ + "f seconds", value))))
                                         .build())
@@ -84,8 +84,8 @@ public class EnhancedTooltipsGui {
                                         .name(Text.translatable("enhancedtooltips.config.popUpAnimation.magnitude"))
                                         .binding(
                                                 1.0f,
-                                                () -> config.popUpAnimationMagnitude,
-                                                (value) -> config.popUpAnimationMagnitude = value
+                                                () -> config.popUpAnimation.magnitude,
+                                                (value) -> config.popUpAnimation.magnitude = value
                                         )
                                         .customController(opt -> new FloatSliderController(opt, 0.25f, 2f, 0.05f, value -> Text.literal(String.format("%." + 0 /* decimal places */ + "f%%", value * 100.0F))))
                                         .build())
@@ -99,8 +99,8 @@ public class EnhancedTooltipsGui {
                                                 .build())
                                         .binding(
                                                 true,
-                                                () -> config.itemPreviewAnimation,
-                                                (value) -> config.itemPreviewAnimation = value
+                                                () -> config.itemPreviewAnimation.enabled,
+                                                (value) -> config.itemPreviewAnimation.enabled = value
                                         )
                                         .controller(TickBoxControllerBuilder::create)
                                         .build())
@@ -108,8 +108,8 @@ public class EnhancedTooltipsGui {
                                         .name(Text.translatable("stat.minecraft.play_time"))
                                         .binding(
                                                 1f,
-                                                () -> config.itemPreviewAnimationTime,
-                                                (value) -> config.itemPreviewAnimationTime = value
+                                                () -> config.itemPreviewAnimation.time,
+                                                (value) -> config.itemPreviewAnimation.time = value
                                         )
                                         .customController(opt -> new FloatSliderController(opt, 0.25f, 2f, 0.05f, value -> Text.literal(String.format("%." + 2 /* decimal places */ + "f seconds", value))))
                                         .build())
@@ -117,8 +117,8 @@ public class EnhancedTooltipsGui {
                                         .name(Text.translatable("enhancedtooltips.config.popUpAnimation.magnitude"))
                                         .binding(
                                                 2f,
-                                                () -> config.itemPreviewAnimationMagnitude,
-                                                (value) -> config.itemPreviewAnimationMagnitude = value
+                                                () -> config.itemPreviewAnimation.magnitude,
+                                                (value) -> config.itemPreviewAnimation.magnitude = value
                                         )
                                         .customController(opt -> new FloatSliderController(opt, 0.5f, 4f, 0.05f, value -> Text.literal(String.format("%." + 0 /* decimal places */ + "f%%", value * 100.0F))))
                                         .build())
@@ -132,8 +132,8 @@ public class EnhancedTooltipsGui {
                                                 .build())
                                         .binding(
                                                 EnhancedTooltipsConfig.BorderColorMode.RARITY,
-                                                () -> config.borderColor,
-                                                (value) -> config.borderColor = value
+                                                () -> config.border.borderColor,
+                                                (value) -> config.border.borderColor = value
                                         )
                                         .customController(opt -> new EnumController<>(opt, EnhancedTooltipsConfig.BorderColorMode.class))
                                         .build())
@@ -141,51 +141,51 @@ public class EnhancedTooltipsGui {
                                         .name(Text.translatable("enhancedtooltips.rarity.common"))
                                         .binding(
                                                 EnhancedTooltipsConfig.BorderColor.COMMON.getColor(),
-                                                () -> config.customBorderColors.common,
-                                                (value) -> config.customBorderColors.common = value
+                                                () -> config.border.customBorderColors.common,
+                                                (value) -> config.border.customBorderColors.common = value
                                         )
                                         .controller(opt -> ColorControllerBuilder.create(opt).allowAlpha(true))
-                                        .available(config.borderColor == EnhancedTooltipsConfig.BorderColorMode.CUSTOM)
+                                        .available(config.border.borderColor == EnhancedTooltipsConfig.BorderColorMode.CUSTOM)
                                         .build())
                                 .option(Option.<Color>createBuilder()
                                         .name(Text.translatable("enhancedtooltips.rarity.uncommon"))
                                         .binding(
                                                 EnhancedTooltipsConfig.BorderColor.UNCOMMON.getColor(),
-                                                () -> config.customBorderColors.uncommon,
-                                                (value) -> config.customBorderColors.uncommon = value
+                                                () -> config.border.customBorderColors.uncommon,
+                                                (value) -> config.border.customBorderColors.uncommon = value
                                         )
                                         .controller(opt -> ColorControllerBuilder.create(opt).allowAlpha(true))
-                                        .available(config.borderColor == EnhancedTooltipsConfig.BorderColorMode.CUSTOM)
+                                        .available(config.border.borderColor == EnhancedTooltipsConfig.BorderColorMode.CUSTOM)
                                         .build())
                                 .option(Option.<Color>createBuilder()
                                         .name(Text.translatable("enhancedtooltips.rarity.rare"))
                                         .binding(
                                                 EnhancedTooltipsConfig.BorderColor.RARE.getColor(),
-                                                () -> config.customBorderColors.rare,
-                                                (value) -> config.customBorderColors.rare = value
+                                                () -> config.border.customBorderColors.rare,
+                                                (value) -> config.border.customBorderColors.rare = value
                                         )
                                         .controller(opt -> ColorControllerBuilder.create(opt).allowAlpha(true))
-                                        .available(config.borderColor == EnhancedTooltipsConfig.BorderColorMode.CUSTOM)
+                                        .available(config.border.borderColor == EnhancedTooltipsConfig.BorderColorMode.CUSTOM)
                                         .build())
                                 .option(Option.<Color>createBuilder()
                                         .name(Text.translatable("enhancedtooltips.rarity.epic"))
                                         .binding(
                                                 EnhancedTooltipsConfig.BorderColor.EPIC.getColor(),
-                                                () -> config.customBorderColors.epic,
-                                                (value) -> config.customBorderColors.epic = value
+                                                () -> config.border.customBorderColors.epic,
+                                                (value) -> config.border.customBorderColors.epic = value
                                         )
                                         .controller(opt -> ColorControllerBuilder.create(opt).allowAlpha(true))
-                                        .available(config.borderColor == EnhancedTooltipsConfig.BorderColorMode.CUSTOM)
+                                        .available(config.border.borderColor == EnhancedTooltipsConfig.BorderColorMode.CUSTOM)
                                         .build())
                                 .option(Option.<Color>createBuilder()
                                         .name(Text.translatable("enhancedtooltips.config.customBorderColors.endColor"))
                                         .binding(
                                                 EnhancedTooltipsConfig.BorderColor.END_COLOR.getColor(),
-                                                () -> config.customBorderColors.endColor,
-                                                (value) -> config.customBorderColors.endColor = value
+                                                () -> config.border.customBorderColors.endColor,
+                                                (value) -> config.border.customBorderColors.endColor = value
                                         )
                                         .controller(opt -> ColorControllerBuilder.create(opt).allowAlpha(true))
-                                        .available(config.borderColor == EnhancedTooltipsConfig.BorderColorMode.CUSTOM)
+                                        .available(config.border.borderColor == EnhancedTooltipsConfig.BorderColorMode.CUSTOM)
                                         .build())
                                 .build())
                         .group(OptionGroup.createBuilder()
@@ -194,8 +194,8 @@ public class EnhancedTooltipsGui {
                                         .name(Text.translatable("enhancedtooltips.config.backgroundColor"))
                                         .binding(
                                                 new Color(0xF0100010, true),
-                                                () -> config.backgroundColor,
-                                                (value) -> config.backgroundColor = value
+                                                () -> config.background.backgroundColor,
+                                                (value) -> config.background.backgroundColor = value
                                         )
                                         .controller(opt -> ColorControllerBuilder.create(opt).allowAlpha(true))
                                         .build())
@@ -209,8 +209,8 @@ public class EnhancedTooltipsGui {
                                                 .build())
                                         .binding(
                                                 true,
-                                                () -> config.hungerTooltip,
-                                                (value) -> config.hungerTooltip = value
+                                                () -> config.foodAndDrinks.hungerTooltip,
+                                                (value) -> config.foodAndDrinks.hungerTooltip = value
                                         )
                                         .controller(TickBoxControllerBuilder::create)
                                         .build())
@@ -221,8 +221,8 @@ public class EnhancedTooltipsGui {
                                                 .build())
                                         .binding(
                                                 true,
-                                                () -> config.saturationTooltip,
-                                                (value) -> config.saturationTooltip = value
+                                                () -> config.foodAndDrinks.saturationTooltip,
+                                                (value) -> config.foodAndDrinks.saturationTooltip = value
                                         )
                                         .controller(TickBoxControllerBuilder::create)
                                         .build())
@@ -233,8 +233,8 @@ public class EnhancedTooltipsGui {
                                                 .build())
                                         .binding(
                                                 EnhancedTooltipsConfig.EffectsTooltipMode.WITH_ICONS,
-                                                () -> config.effectsTooltip,
-                                                (value) -> config.effectsTooltip = value
+                                                () -> config.foodAndDrinks.effectsTooltip,
+                                                (value) -> config.foodAndDrinks.effectsTooltip = value
                                         )
                                         .customController(opt -> new EnumController<>(opt, EnhancedTooltipsConfig.EffectsTooltipMode.class))
                                         .build())
@@ -248,8 +248,8 @@ public class EnhancedTooltipsGui {
                                                 .build())
                                         .binding(
                                                 0.2f,
-                                                () -> config.rotationSpeed,
-                                                (value) -> config.rotationSpeed = value
+                                                () -> config.mobs.rotationSpeed,
+                                                (value) -> config.mobs.rotationSpeed = value
                                         )
                                         .customController(opt -> new FloatSliderController(opt, 0, 1, 0.05f, value -> Text.literal(String.format("%." + 0 /* decimal places */ + "f%%", value * 100.0F))))
                                         .build())
@@ -260,8 +260,8 @@ public class EnhancedTooltipsGui {
                                                 .build())
                                         .binding(
                                                 true,
-                                                () -> config.armorTooltip,
-                                                (value) -> config.armorTooltip = value
+                                                () -> config.mobs.armorTooltip,
+                                                (value) -> config.mobs.armorTooltip = value
                                         )
                                         .controller(TickBoxControllerBuilder::create)
                                         .build())
@@ -272,8 +272,8 @@ public class EnhancedTooltipsGui {
                                                 .build())
                                         .binding(
                                                 true,
-                                                () -> config.horseArmorTooltip,
-                                                (value) -> config.horseArmorTooltip = value
+                                                () -> config.mobs.horseArmorTooltip,
+                                                (value) -> config.mobs.horseArmorTooltip = value
                                         )
                                         .controller(TickBoxControllerBuilder::create)
                                         .build())
@@ -284,8 +284,8 @@ public class EnhancedTooltipsGui {
                                                 .build())
                                         .binding(
                                                 true,
-                                                () -> config.wolfArmorTooltip,
-                                                (value) -> config.wolfArmorTooltip = value
+                                                () -> config.mobs.wolfArmorTooltip,
+                                                (value) -> config.mobs.wolfArmorTooltip = value
                                         )
                                         .controller(TickBoxControllerBuilder::create)
                                         .build())
@@ -296,8 +296,8 @@ public class EnhancedTooltipsGui {
                                                 .build())
                                         .binding(
                                                 true,
-                                                () -> config.bucketTooltip,
-                                                (value) -> config.bucketTooltip = value
+                                                () -> config.mobs.bucketTooltip,
+                                                (value) -> config.mobs.bucketTooltip = value
                                         )
                                         .controller(TickBoxControllerBuilder::create)
                                         .build())
@@ -308,8 +308,8 @@ public class EnhancedTooltipsGui {
                                                 .build())
                                         .binding(
                                                 true,
-                                                () -> config.spawnEggTooltip,
-                                                (value) -> config.spawnEggTooltip = value
+                                                () -> config.mobs.spawnEggTooltip,
+                                                (value) -> config.mobs.spawnEggTooltip = value
                                         )
                                         .controller(TickBoxControllerBuilder::create)
                                         .build())
@@ -323,8 +323,8 @@ public class EnhancedTooltipsGui {
                                                 .build())
                                         .binding(
                                                 true,
-                                                () -> config.mapTooltip,
-                                                (value) -> config.mapTooltip = value
+                                                () -> config.mapTooltip.enabled,
+                                                (value) -> config.mapTooltip.enabled = value
                                         )
                                         .controller(TickBoxControllerBuilder::create)
                                         .build())
@@ -338,8 +338,8 @@ public class EnhancedTooltipsGui {
                                                 .build())
                                         .binding(
                                                 true,
-                                                () -> config.paintingTooltip,
-                                                (value) -> config.paintingTooltip = value
+                                                () -> config.paintingTooltip.enabled,
+                                                (value) -> config.paintingTooltip.enabled = value
                                         )
                                         .controller(TickBoxControllerBuilder::create)
                                         .build())
@@ -353,8 +353,8 @@ public class EnhancedTooltipsGui {
                                                 .build())
                                         .binding(
                                                 EnhancedTooltipsConfig.DurabilityTooltipMode.VALUE,
-                                                () -> config.durabilityTooltip,
-                                                (value) -> config.durabilityTooltip = value
+                                                () -> config.durability.durabilityTooltip,
+                                                (value) -> config.durability.durabilityTooltip = value
                                         )
                                         .customController(opt -> new EnumController<>(opt, EnhancedTooltipsConfig.DurabilityTooltipMode.class))
                                         .build())
@@ -365,8 +365,8 @@ public class EnhancedTooltipsGui {
                                                 .build())
                                         .binding(
                                                 false,
-                                                () -> config.durabilityBar,
-                                                (value) -> config.durabilityBar = value
+                                                () -> config.durability.durabilityBar,
+                                                (value) -> config.durability.durabilityBar = value
                                         )
                                         .controller(TickBoxControllerBuilder::create)
                                         .build())

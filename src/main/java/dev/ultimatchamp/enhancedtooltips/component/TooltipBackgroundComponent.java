@@ -14,7 +14,7 @@ public class TooltipBackgroundComponent implements TooltipComponent {
         int k = width + INNER_PADDING * 2;
         int l = height + INNER_PADDING * 2;
 
-        int bgColor = EnhancedTooltipsConfig.load().backgroundColor.getRGB();
+        int bgColor = EnhancedTooltipsConfig.load().background.backgroundColor.getRGB();
 
         renderHorizontalLine(context, i, j - 1, k, z, bgColor);
         renderHorizontalLine(context, i, j + l, k, z, bgColor);
@@ -28,9 +28,9 @@ public class TooltipBackgroundComponent implements TooltipComponent {
         int startColor = EnhancedTooltipsConfig.BorderColor.COMMON.getColor().getRGB();
         int endColor = EnhancedTooltipsConfig.BorderColor.END_COLOR.getColor().getRGB();
 
-        if (EnhancedTooltipsConfig.load().borderColor == EnhancedTooltipsConfig.BorderColorMode.CUSTOM) {
-            startColor = EnhancedTooltipsConfig.load().customBorderColors.common.getRGB();
-            endColor = EnhancedTooltipsConfig.load().customBorderColors.endColor.getRGB();
+        if (EnhancedTooltipsConfig.load().border.borderColor == EnhancedTooltipsConfig.BorderColorMode.CUSTOM) {
+            startColor = EnhancedTooltipsConfig.load().border.customBorderColors.common.getRGB();
+            endColor = EnhancedTooltipsConfig.load().border.customBorderColors.endColor.getRGB();
         }
 
         renderVerticalLine(context, x, y, height - 2, z, startColor, endColor);
@@ -48,7 +48,7 @@ public class TooltipBackgroundComponent implements TooltipComponent {
     }
 
     protected void renderRectangle(DrawContext context, int x, int y, int width, int height, int z) {
-        context.fill(x, y, x + width, y + height, z, EnhancedTooltipsConfig.load().backgroundColor.getRGB());
+        context.fill(x, y, x + width, y + height, z, EnhancedTooltipsConfig.load().background.backgroundColor.getRGB());
     }
 
     @Override

@@ -51,10 +51,10 @@ public class HeaderTooltipComponent implements TooltipComponent {
     @Override
     public int getWidth(TextRenderer textRenderer) {
         int rarityWidth = 0;
-        if (config.rarityTooltip) rarityWidth = textRenderer.getWidth(this.rarityName);
+        if (config.general.rarityTooltip) rarityWidth = textRenderer.getWidth(this.rarityName);
 
         int badgeWidth = 0;
-        if (config.itemBadges) {
+        if (config.general.itemBadges) {
             String badgeText = "gamerule.category.misc";
 
             for (Map.Entry<List<Item>, Pair<String, Integer>> entry : ItemGroupsUtils.getItemGroups().entrySet()) {
@@ -73,7 +73,7 @@ public class HeaderTooltipComponent implements TooltipComponent {
         }
 
         int titleWidth;
-        if (config.rarityTooltip) {
+        if (config.general.rarityTooltip) {
             titleWidth = textRenderer.getWidth(this.nameText) + badgeWidth;
         } else {
             titleWidth = Math.max(textRenderer.getWidth(this.nameText), badgeWidth);
@@ -90,10 +90,10 @@ public class HeaderTooltipComponent implements TooltipComponent {
     public void drawText(TextRenderer textRenderer, int x, int y, Matrix4f matrix, VertexConsumerProvider.Immediate vertexConsumers) {
         float startDrawX = (float) x + getTitleOffset();
         float startDrawY = y + 1;
-        if (!config.rarityTooltip && !config.itemBadges) startDrawY += (float) (textRenderer.fontHeight + SPACING) / 2;
+        if (!config.general.rarityTooltip && !config.general.itemBadges) startDrawY += (float) (textRenderer.fontHeight + SPACING) / 2;
         textRenderer.draw(this.nameText, startDrawX, startDrawY, -1, true, matrix, vertexConsumers, TextRenderer.TextLayerType.NORMAL, 0, 0xF000F0);
 
-        if (config.rarityTooltip) {
+        if (config.general.rarityTooltip) {
             startDrawY += textRenderer.fontHeight + SPACING;
             textRenderer.draw(this.rarityName, startDrawX, startDrawY, -1, true, matrix, vertexConsumers, TextRenderer.TextLayerType.NORMAL, 0, 0xF000F0);
         }
@@ -108,11 +108,11 @@ public class HeaderTooltipComponent implements TooltipComponent {
         int startDrawX = x + (TEXTURE_SIZE - ITEM_MODEL_SIZE) / 2;
         int startDrawY = y + (TEXTURE_SIZE - ITEM_MODEL_SIZE) / 2;
 
-        if (config.itemPreviewAnimation) {
-            int sec = (int) (config.itemPreviewAnimationTime * 1000);
+        if (config.itemPreviewAnimation.enabled) {
+            int sec = (int) (config.itemPreviewAnimation.time * 1000);
             float time = (float) (System.currentTimeMillis() % sec) / sec;
 
-            float bounce = (float) Math.sin(time * Math.PI * 2) * (config.itemPreviewAnimationMagnitude * config.scaleFactor);
+            float bounce = (float) Math.sin(time * Math.PI * 2) * (config.itemPreviewAnimation.magnitude * config.general.scaleFactor);
 
             MatrixStack matrixStack = new MatrixStack();
             matrixStack.translate(0, bounce, 0);
@@ -123,10 +123,10 @@ public class HeaderTooltipComponent implements TooltipComponent {
 
         context.drawItem(this.stack, startDrawX, startDrawY);
 
-        if (config.itemPreviewAnimation) context.getMatrices().pop();
+        if (config.itemPreviewAnimation.enabled) context.getMatrices().pop();
 
-        if (!config.itemBadges) return;
-        if (!config.rarityTooltip) y += 1 + textRenderer.fontHeight + SPACING;
+        if (!config.general.itemBadges) return;
+        if (!config.general.rarityTooltip) y += 1 + textRenderer.fontHeight + SPACING;
 
         String translation = "gamerule.category.misc";
         int fillColor = -6250336;
@@ -153,7 +153,7 @@ public class HeaderTooltipComponent implements TooltipComponent {
         int textWidth = textRenderer.getWidth(text);
         int textHeight = textRenderer.fontHeight;
 
-        int textX = x + getTitleOffset() + (!config.rarityTooltip ? 4 : textRenderer.getWidth(this.nameText) + SPACING + 2);
+        int textX = x + getTitleOffset() + (!config.general.rarityTooltip ? 4 : textRenderer.getWidth(this.nameText) + SPACING + 2);
         int textY = y - textRenderer.fontHeight + SPACING * 2 + 2;
 
         context.fill(

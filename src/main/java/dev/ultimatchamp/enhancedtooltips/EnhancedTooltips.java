@@ -28,6 +28,7 @@ public class EnhancedTooltips implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         new TooltipModule().load();
+        EnhancedTooltipsConfig.load();
 
         TooltipComponentAPI.EVENT.register((list, stack) -> {
             if (list.isEmpty()) return;
@@ -37,7 +38,7 @@ public class EnhancedTooltips implements ClientModInitializer {
 
             list.add(1, new FoodTooltipComponent(stack));
 
-            if (EnhancedTooltipsConfig.load().itemBadges) {
+            if (EnhancedTooltipsConfig.load().general.itemBadges) {
                 List<String> itemGroups = List.of(
                         "itemGroup.combat",
                         "itemGroup.tools",
@@ -88,7 +89,7 @@ public class EnhancedTooltips implements ClientModInitializer {
             if (MinecraftClient.getInstance().options.advancedItemTooltips) {
                 list.removeIf(component ->
                         component instanceof OrderedTextTooltipComponent orderedTextTooltipComponent &&
-                        (!EnhancedTooltipsConfig.load().durabilityTooltip.equals(EnhancedTooltipsConfig.DurabilityTooltipMode.OFF) || EnhancedTooltipsConfig.load().durabilityBar) &&
+                        (!EnhancedTooltipsConfig.load().durability.durabilityTooltip.equals(EnhancedTooltipsConfig.DurabilityTooltipMode.OFF) || EnhancedTooltipsConfig.load().durability.durabilityBar) &&
                         EnhancedTooltipsTextVisitor.get(orderedTextTooltipComponent.text).getString().contains((stack.getMaxDamage() - stack.getDamage()) + " / " + stack.getMaxDamage()));
             }
             list.add(new DurabilityTooltipComponent(stack));

@@ -42,13 +42,13 @@ public class PaintingTooltipComponent implements TooltipComponent {
 
     @Override
     public int getHeight(/*? if >1.21.1 {*/TextRenderer textRenderer/*?}*/) {
-        if (!config.paintingTooltip) return 0;
+        if (!config.paintingTooltip.enabled) return 0;
         return this.height;
     }
 
     @Override
     public int getWidth(TextRenderer textRenderer) {
-        if (!config.paintingTooltip) return 0;
+        if (!config.paintingTooltip.enabled) return 0;
         return this.width;
     }
 
@@ -58,7 +58,7 @@ public class PaintingTooltipComponent implements TooltipComponent {
     //?} else {
     /*public void drawItems(TextRenderer textRenderer, int x, int y, DrawContext context) {
     *///?}
-        if (this.variant == null || !config.paintingTooltip) return;
+        if (this.variant == null || !config.paintingTooltip.enabled) return;
         PaintingManager paintingManager = MinecraftClient.getInstance().getPaintingManager();
         Sprite sprite = paintingManager.getPaintingSprite(this.variant);
         //? if >1.21.1 {

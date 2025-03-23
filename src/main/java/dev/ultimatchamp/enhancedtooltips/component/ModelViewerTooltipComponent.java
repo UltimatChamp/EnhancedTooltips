@@ -31,7 +31,7 @@ public class ModelViewerTooltipComponent extends TooltipBorderColorComponent {
         super(stack);
         this.stack = stack;
         this.config = EnhancedTooltipsConfig.load();
-        this.ROTATION_INCREMENT = config.rotationSpeed;
+        this.ROTATION_INCREMENT = config.mobs.rotationSpeed;
     }
 
     //? if >1.21.1 {
@@ -54,19 +54,19 @@ public class ModelViewerTooltipComponent extends TooltipBorderColorComponent {
         //?} else {
         /*if (EntityType.ARMOR_STAND.create(MinecraftClient.getInstance().world).getPreferredEquipmentSlot(stack).getType() == EquipmentSlot.Type.HUMANOID_ARMOR) {
         *///?}
-            if (!config.armorTooltip) return;
+            if (!config.mobs.armorTooltip) return;
             renderArmorStand(context, x, y, z);
         } else if (stack.getItem().toString().contains("horse_armor")) {
-            if (!config.horseArmorTooltip) return;
+            if (!config.mobs.horseArmorTooltip) return;
             renderHorseArmor(context, x, y, z);
         } else if (stack.getItem().toString().contains("wolf_armor")) {
-            if (!config.wolfArmorTooltip) return;
+            if (!config.mobs.wolfArmorTooltip) return;
             renderWolfArmor(context, x, y, z);
         } else if (stack.getItem() instanceof EntityBucketItem bucketItem) {
-            if (!config.bucketTooltip) return;
+            if (!config.mobs.bucketTooltip) return;
             renderBucketEntity(context, x, y, z, bucketItem);
         } else if (stack.getItem() instanceof SpawnEggItem spawnEggItem) {
-            if (!config.spawnEggTooltip) return;
+            if (!config.mobs.spawnEggTooltip) return;
             renderSpawnEggEntity(context, x, y, z, spawnEggItem);
         }
     }

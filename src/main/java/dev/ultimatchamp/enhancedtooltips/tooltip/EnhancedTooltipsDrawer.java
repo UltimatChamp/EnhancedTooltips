@@ -58,7 +58,7 @@ public class EnhancedTooltipsDrawer implements TooltipDrawerProvider.ITooltipDra
         MatrixStack matrices = context.getMatrices();
         List<TooltipPage> pageList = new ArrayList<>();
 
-        float scale = EnhancedTooltipsConfig.load().scaleFactor;
+        float scale = EnhancedTooltipsConfig.load().general.scaleFactor;
 
         int maxWidth = (int) (getMaxWidth() / scale);
         int totalWidth = 0;
@@ -111,7 +111,7 @@ public class EnhancedTooltipsDrawer implements TooltipDrawerProvider.ITooltipDra
             totalWidth += page.width;
         }
 
-        int scaledOffset = ((int) (12 * EnhancedTooltipsConfig.load().scaleFactor)) - 12;
+        int scaledOffset = ((int) (12 * EnhancedTooltipsConfig.load().general.scaleFactor)) - 12;
         Vector2ic vector2ic = positioner.getPosition(context.getScaledWindowWidth(), context.getScaledWindowHeight(), x + scaledOffset, y - scaledOffset, (int) (totalWidth * scale), (int) (pageList.getFirst().height * scale));
         int n = vector2ic.x();
         int o = vector2ic.y();
@@ -124,15 +124,15 @@ public class EnhancedTooltipsDrawer implements TooltipDrawerProvider.ITooltipDra
 
         matrices.push();
 
-        if (EnhancedTooltipsConfig.load().popUpAnimation) {
+        if (EnhancedTooltipsConfig.load().popUpAnimation.enabled) {
             matrices.translate(x, y, 0);
 
-            float sec = EnhancedTooltipsConfig.load().popUpAnimationTime * 1000;
+            float sec = EnhancedTooltipsConfig.load().popUpAnimation.time * 1000;
             float elapsedTime = ((float) (System.nanoTime() - startTime) / 1_000_000) / sec;
 
             float pop = 1.0f;
             if (elapsedTime < 0.5f) {
-                pop = 1.0f + Math.abs((float) Math.sin(elapsedTime * Math.PI * 2)) * ((EnhancedTooltipsConfig.load().popUpAnimationMagnitude / 10) * scale);
+                pop = 1.0f + Math.abs((float) Math.sin(elapsedTime * Math.PI * 2)) * ((EnhancedTooltipsConfig.load().popUpAnimation.magnitude / 10) * scale);
             }
 
             matrices.scale(pop, pop, 1);

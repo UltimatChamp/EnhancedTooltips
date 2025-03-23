@@ -28,13 +28,13 @@ public class MapTooltipComponent implements TooltipComponent {
 
     @Override
     public int getHeight(/*? if >1.21.1 {*/TextRenderer textRenderer/*?}*/) {
-        if (!config.mapTooltip) return 0;
+        if (!config.mapTooltip.enabled) return 0;
         return 128 + 2;
     }
 
     @Override
     public int getWidth(TextRenderer textRenderer) {
-        if (!config.mapTooltip) return 0;
+        if (!config.mapTooltip.enabled) return 0;
         return 128;
     }
 
@@ -44,7 +44,7 @@ public class MapTooltipComponent implements TooltipComponent {
     //?} else {
     /*public void drawItems(TextRenderer textRenderer, int x, int y, DrawContext context) {
     *///?}
-        if (!config.mapTooltip) return;
+        if (!config.mapTooltip.enabled) return;
         VertexConsumerProvider vertexConsumers = MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers();
         //? if >1.21.1 {
         MapRenderer mapRenderer = MinecraftClient.getInstance().getMapRenderer();

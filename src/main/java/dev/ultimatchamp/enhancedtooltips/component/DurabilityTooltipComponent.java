@@ -21,13 +21,13 @@ public class DurabilityTooltipComponent implements TooltipComponent {
     }
 
     public boolean isDurabilityDisabled() {
-        return !stack.isDamageable() || (config.durabilityTooltip.equals(EnhancedTooltipsConfig.DurabilityTooltipMode.OFF) && !config.durabilityBar);
+        return !stack.isDamageable() || (config.durability.durabilityTooltip.equals(EnhancedTooltipsConfig.DurabilityTooltipMode.OFF) && !config.durability.durabilityBar);
     }
 
     private Text getDurabilityText() {
         int damaged = stack.getMaxDamage() - stack.getDamage();
-        return switch (config.durabilityTooltip) {
-            case VALUE -> config.durabilityBar
+        return switch (config.durability.durabilityTooltip) {
+            case VALUE -> config.durability.durabilityBar
                     ? Text.literal(" " + damaged + " / " + stack.getMaxDamage())
                     : Text.literal(" ")
                     .append(Text.literal(String.valueOf(damaged)).setStyle(Style.EMPTY.withColor(stack.getItemBarColor())))
@@ -35,7 +35,7 @@ public class DurabilityTooltipComponent implements TooltipComponent {
                     .append(Text.literal(String.valueOf(stack.getMaxDamage())).setStyle(Style.EMPTY.withColor(0xFF00FF00)));
             case PERCENTAGE -> {
                 Text percentageText = Text.literal(" " + (damaged * 100 / stack.getMaxDamage()) + "%");
-                yield config.durabilityBar ? percentageText : percentageText.getWithStyle(Style.EMPTY.withColor(stack.getItemBarColor())).get(0);
+                yield config.durability.durabilityBar ? percentageText : percentageText.getWithStyle(Style.EMPTY.withColor(stack.getItemBarColor())).getFirst();
             }
             default -> Text.empty();
         };
@@ -44,7 +44,7 @@ public class DurabilityTooltipComponent implements TooltipComponent {
     @Override
     public int getHeight(/*? if >1.21.1 {*/TextRenderer textRenderer/*?}*/) {
         if (isDurabilityDisabled()) return 0;
-        return config.durabilityBar ? 18 : 17;
+        return config.durability.durabilityBar ? 18 : 17;
     }
 
     @Override
@@ -52,7 +52,7 @@ public class DurabilityTooltipComponent implements TooltipComponent {
         if (isDurabilityDisabled()) return 0;
 
         int durabilityTextWidth = textRenderer.getWidth(Text.translatable("enhancedtooltips.tooltip.durability"));
-        if (config.durabilityBar) return durabilityTextWidth + SPACING + WIDTH + 1;
+        if (config.durability.durabilityBar) return durabilityTextWidth + SPACING + WIDTH + 1;
 
         Text durability = getDurabilityText();
         return durabilityTextWidth + textRenderer.getWidth(durability);
@@ -66,18 +66,18 @@ public class DurabilityTooltipComponent implements TooltipComponent {
     *///?}
         if (isDurabilityDisabled()) return;
 
-        y += (config.durabilityBar) ? SPACING : SPACING * 2;
+        y += (config.durability.durabilityBar) ? SPACING : SPACING * 2;
 
-        if (config.durabilityBar) y += 2;
+        if (config.durability.durabilityBar) y += 2;
         int textHeight = textRenderer.fontHeight;
-        int textY = config.durabilityBar ? y - textHeight + SPACING * 2 + 2 : y;
+        int textY = config.durability.durabilityBar ? y - textHeight + SPACING * 2 + 2 : y;
 
         context.drawText(textRenderer, Text.translatable("enhancedtooltips.tooltip.durability"), x, textY, -8355712, true);
 
         x += textRenderer.getWidth(Text.translatable("enhancedtooltips.tooltip.durability")) + SPACING;
         int damaged = stack.getMaxDamage() - stack.getDamage();
 
-        if  (config.durabilityBar)
+        if  (config.durability.durabilityBar)
             context.fill(
                     x,
                     textY - SPACING / 2,
@@ -88,11 +88,11 @@ public class DurabilityTooltipComponent implements TooltipComponent {
 
         Text durabilityText = getDurabilityText();
         if  (!durabilityText.equals(Text.empty())) {
-            int textX = config.durabilityBar ? x + ((WIDTH - textRenderer.getWidth(durabilityText)) / 2) : x - SPACING;
+            int textX = config.durability.durabilityBar ? x + ((WIDTH - textRenderer.getWidth(durabilityText)) / 2) : x - SPACING;
             context.drawText(textRenderer, durabilityText, textX, textY, 0xFFFFFFFF, true);
         }
 
-        if  (config.durabilityBar)
+        if  (config.durability.durabilityBar)
             BadgesUtils.drawFrame(
                     context,
                     x,

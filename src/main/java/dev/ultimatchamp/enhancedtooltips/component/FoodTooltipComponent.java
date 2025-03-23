@@ -92,10 +92,10 @@ public class FoodTooltipComponent implements TooltipComponent {
         //?} else {
         /*if (foodComponent != null) {
         *///?}
-            if (config.hungerTooltip) height += 9 + 1;
-            if (config.saturationTooltip) height += 9 + 1;
+            if (config.foodAndDrinks.hungerTooltip) height += 9 + 1;
+            if (config.foodAndDrinks.saturationTooltip) height += 9 + 1;
 
-            if (config.effectsTooltip == EnhancedTooltipsConfig.EffectsTooltipMode.OFF) return height;
+            if (config.foodAndDrinks.effectsTooltip == EnhancedTooltipsConfig.EffectsTooltipMode.OFF) return height;
 
             //? if >1.21.1 {
             for (ConsumeEffect entry : consumableComponent.onConsumeEffects()) {
@@ -126,14 +126,14 @@ public class FoodTooltipComponent implements TooltipComponent {
         int hunger = getHunger();
 
         int hungerLine = 0;
-        if (config.hungerTooltip) hungerLine = (int) (textRenderer.getWidth(Text.translatable(EnhancedTooltips.identifier("tooltip.hunger").toTranslationKey())) + 1 + ((textRenderer.fontHeight - 2) * (hunger / 2f)));
+        if (config.foodAndDrinks.hungerTooltip) hungerLine = (int) (textRenderer.getWidth(Text.translatable(EnhancedTooltips.identifier("tooltip.hunger").toTranslationKey())) + 1 + ((textRenderer.fontHeight - 2) * (hunger / 2f)));
 
         int saturationLine = 0;
-        if (config.saturationTooltip) saturationLine = textRenderer.getWidth(Text.translatable(EnhancedTooltips.identifier("tooltip.saturation").toTranslationKey(), "100%")) - textRenderer.fontHeight;
+        if (config.foodAndDrinks.saturationTooltip) saturationLine = textRenderer.getWidth(Text.translatable(EnhancedTooltips.identifier("tooltip.saturation").toTranslationKey(), "100%")) - textRenderer.fontHeight;
 
         foodWidth = Math.max(hungerLine, saturationLine);
 
-        if (config.effectsTooltip == EnhancedTooltipsConfig.EffectsTooltipMode.OFF) return foodWidth;
+        if (config.foodAndDrinks.effectsTooltip == EnhancedTooltipsConfig.EffectsTooltipMode.OFF) return foodWidth;
 
         if (foodComponent == null) return 0;
 
@@ -162,7 +162,7 @@ public class FoodTooltipComponent implements TooltipComponent {
         *///?}
         }
 
-        if (effectsWidth != 0 && config.effectsTooltip == EnhancedTooltipsConfig.EffectsTooltipMode.WITH_ICONS) effectsWidth += textRenderer.fontHeight + 2;
+        if (effectsWidth != 0 && config.foodAndDrinks.effectsTooltip == EnhancedTooltipsConfig.EffectsTooltipMode.WITH_ICONS) effectsWidth += textRenderer.fontHeight + 2;
 
         return Math.max(foodWidth, effectsWidth);
     }
@@ -189,7 +189,7 @@ public class FoodTooltipComponent implements TooltipComponent {
 
         var lineY = y;
 
-        if (config.hungerTooltip) {
+        if (config.foodAndDrinks.hungerTooltip) {
             context.drawText(textRenderer, hungerText, x, lineY, 0xffffffff, true);
 
             Identifier fullHunger = Identifier.of("minecraft", "hud/food_full");
@@ -220,12 +220,12 @@ public class FoodTooltipComponent implements TooltipComponent {
             lineY += textRenderer.fontHeight + 1;
         }
 
-        if (config.saturationTooltip) {
+        if (config.foodAndDrinks.saturationTooltip) {
             textRenderer.draw(saturationText, (float) (x + 0.75), lineY, 0xff00ffff, true, context.getMatrices().peek().getPositionMatrix(), context.vertexConsumers, TextRenderer.TextLayerType.NORMAL, 0, 15728880);
             lineY += textRenderer.fontHeight + 1;
         }
 
-        if (config.effectsTooltip == EnhancedTooltipsConfig.EffectsTooltipMode.OFF) return;
+        if (config.foodAndDrinks.effectsTooltip == EnhancedTooltipsConfig.EffectsTooltipMode.OFF) return;
 
         //? if >1.21.1 {
         for (ConsumeEffect entry : consumableComponent.onConsumeEffects()) {
@@ -260,7 +260,7 @@ public class FoodTooltipComponent implements TooltipComponent {
 
                 }
 
-                if (config.effectsTooltip == EnhancedTooltipsConfig.EffectsTooltipMode.WITH_ICONS) {
+                if (config.foodAndDrinks.effectsTooltip == EnhancedTooltipsConfig.EffectsTooltipMode.WITH_ICONS) {
                     //? if >1.21.1 {
                     context.drawSpriteStretched(RenderLayer::getGuiTextured, effectTexture, x - 1, lineY - 1, textRenderer.fontHeight, textRenderer.fontHeight);
                     //?} else {
