@@ -14,35 +14,57 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 public class EnhancedTooltipsConfig {
-    @Comment("-> General\n(default: true)")
-    public boolean rarityTooltip = true;
+    public GeneralConfig general = new GeneralConfig();
+    public PopUpAnimationConfig popUpAnimation = new PopUpAnimationConfig();
+    public ItemPreviewAnimationConfig itemPreviewAnimation = new ItemPreviewAnimationConfig();
+    public BorderConfig border = new BorderConfig();
+    public BackgroundConfig background = new BackgroundConfig();
+    public FoodAndDrinksConfig foodAndDrinks = new FoodAndDrinksConfig();
+    public MobsConfig mobs = new MobsConfig();
+    public MapConfig mapTooltip = new MapConfig();
+    public PaintingConfig paintingTooltip = new PaintingConfig();
+    public DurabilityConfig durability = new DurabilityConfig();
 
-    @Comment("(default: true)")
-    public boolean itemBadges = true;
+    public static class GeneralConfig {
+        @Comment("Shows the rarity of an item in its tooltip.\n(default: true)")
+        public boolean rarityTooltip = true;
 
-    @Comment("(default: 1.0)")
-    public float scaleFactor = 1f;
+        @Comment("Shows the category of an item in a badge on its tooltip.\n(default: true)")
+        public boolean itemBadges = true;
 
-    @Comment("-> Pop-up Animation\n(default: true)")
-    public boolean popUpAnimation = true;
+        @Comment("Adjusts the size of tooltips.\nA scale of 100% displays the tooltip at its default size.\n(default: 1.0)")
+        public float scaleFactor = 1f;
+    }
 
-    @Comment("(default: 1.5)")
-    public float popUpAnimationTime = 1.5f;
+    public static class PopUpAnimationConfig {
+        @Comment("Toggles the tooltip pop-up animation.\n(default: true)")
+        public boolean enabled = true;
 
-    @Comment("(default: 1.0)")
-    public float popUpAnimationMagnitude = 1.0f;
+        @Comment("Duration of the pop-up animation in seconds.\n(default: 1.5)")
+        public float time = 1.5f;
 
-    @Comment("-> Item Preview Animation\n(default: true)")
-    public boolean itemPreviewAnimation = true;
+        @Comment("Magnitude of the pop-up animation.\n(default: 1.0)")
+        public float magnitude = 1.0f;
+    }
 
-    @Comment("(default: 1.0)")
-    public float itemPreviewAnimationTime = 1f;
+    public static class ItemPreviewAnimationConfig {
+        @Comment("Toggles the item preview bouncing animation.\n(default: true)")
+        public boolean enabled = true;
 
-    @Comment("(default: 2.0)")
-    public float itemPreviewAnimationMagnitude = 2f;
+        @Comment("Duration of the item preview animation in seconds.\n(default: 1.0)")
+        public float time = 1f;
 
-    @Comment("-> Border\nRARITY/ITEM_NAME/CUSTOM (default: RARITY)")
-    public BorderColorMode borderColor = BorderColorMode.RARITY;
+        @Comment("Magnitude of the item preview animation.\n(default: 2.0)")
+        public float magnitude = 2f;
+    }
+
+    public static class BorderConfig {
+        @Comment("Determines how the border color of tooltips is set.\nRARITY/ITEM_NAME/CUSTOM (default: RARITY)")
+        public BorderColorMode borderColor = BorderColorMode.RARITY;
+
+        @Comment("Custom border colors when borderColor is set to CUSTOM.")
+        public CustomBorderColorsConfig customBorderColors = new CustomBorderColorsConfig();
+    }
 
     public enum BorderColorMode implements TranslatableOption {
         RARITY(0, "enhancedtooltips.config.borderColor.rarity"),
@@ -66,22 +88,20 @@ public class EnhancedTooltipsConfig {
         }
     }
 
-    public CustomBorderColorsConfig customBorderColors = new CustomBorderColorsConfig();
-
     public static class CustomBorderColorsConfig {
-        @Comment("(default: #5000FF50)")
+        @Comment("'Common' rarity border color.\n(default: #5000FF50)")
         public Color common = BorderColor.COMMON.getColor();
 
-        @Comment("(default: #FFFF55FF)")
+        @Comment("'Uncommon' rarity border color.\n(default: #FFFF55FF)")
         public Color uncommon = BorderColor.UNCOMMON.getColor();
 
-        @Comment("(default: #55FFFFFF)")
+        @Comment("'Rare' rarity border color.\n(default: #55FFFFFF)")
         public Color rare = BorderColor.RARE.getColor();
 
-        @Comment("(default: #FF00FFFF)")
+        @Comment("'Epic' rarity border color.\n(default: #FF00FFFF)")
         public Color epic = BorderColor.EPIC.getColor();
 
-        @Comment("(default: #5000FF50)")
+        @Comment("Gradient end color for the border.\n(default: #5000FF50)")
         public Color endColor = BorderColor.END_COLOR.getColor();
     }
 
@@ -103,17 +123,21 @@ public class EnhancedTooltipsConfig {
         }
     }
 
-    @Comment("-> Background\n(default: #100010F0)")
-    public Color backgroundColor = new Color(0xF0100010, true);
+    public static class BackgroundConfig {
+        @Comment("Background color of the tooltip.\n(default: #100010F0)")
+        public Color backgroundColor = new Color(0xF0100010, true);
+    }
 
-    @Comment("-> Food & Drinks\n(default: true)")
-    public boolean hungerTooltip = true;
+    public static class FoodAndDrinksConfig {
+        @Comment("Shows the maximum hunger which can be gained from an item in its tooltip.\n(default: true)")
+        public boolean hungerTooltip = true;
 
-    @Comment("(default: true)")
-    public boolean saturationTooltip = true;
+        @Comment("Shows the maximum saturation which can be gained from an item in its tooltip.\n(default: true)")
+        public boolean saturationTooltip = true;
 
-    @Comment("OFF/WITHOUT_ICONS/WITH_ICONS (default: WITH_ICONS)")
-    public EffectsTooltipMode effectsTooltip = EffectsTooltipMode.WITH_ICONS;
+        @Comment("Shows a list of effects applied on consuming an item in its tooltip.\nOFF/WITHOUT_ICONS/WITH_ICONS (default: WITH_ICONS)")
+        public EffectsTooltipMode effectsTooltip = EffectsTooltipMode.WITH_ICONS;
+    }
 
     public enum EffectsTooltipMode implements TranslatableOption {
         OFF(0, "options.off"),
@@ -137,32 +161,43 @@ public class EnhancedTooltipsConfig {
         }
     }
 
-    @Comment("-> Mobs\n(default: 0.2)")
-    public float rotationSpeed = 0.2f;
+    public static class MobsConfig {
+        @Comment("The rotation speed of the model.\n(default: 0.2)")
+        public float rotationSpeed = 0.2f;
 
-    @Comment("(default: true)")
-    public boolean armorTooltip = true;
+        @Comment("Shows a preview of the armor piece on an armor stand.\n(default: true)")
+        public boolean armorTooltip = true;
 
-    @Comment("(default: true)")
-    public boolean horseArmorTooltip = true;
+        @Comment("Shows a preview of the horse armor on a horse.\n(default: true)")
+        public boolean horseArmorTooltip = true;
 
-    @Comment("(default: true)")
-    public boolean wolfArmorTooltip = true;
+        @Comment("Shows a preview of the wolf armor on a wolf.\n(default: true)")
+        public boolean wolfArmorTooltip = true;
 
-    @Comment("(default: true)")
-    public boolean bucketTooltip = true;
+        @Comment("Shows a preview of the bucket entity in a bucket.\n(default: true)")
+        public boolean bucketTooltip = true;
 
-    @Comment("(default: true)")
-    public boolean spawnEggTooltip = true;
+        @Comment("Shows a preview of the spawn egg entity.\n(default: true)")
+        public boolean spawnEggTooltip = true;
+    }
 
-    @Comment("-> Map\n(default: true)")
-    public boolean mapTooltip = true;
+    public static class MapConfig {
+        @Comment("Shows a preview of the filled map in its tooltip.\n(default: true)")
+        public boolean enabled = true;
+    }
 
-    @Comment("-> Painting\n(default: true)")
-    public boolean paintingTooltip = true;
+    public static class PaintingConfig {
+        @Comment("Shows a preview of the painting in its tooltip.\n(default: true)")
+        public boolean enabled = true;
+    }
 
-    @Comment("-> Durability\nOFF/VALUE/PERCENTAGE (default: VALUE)")
-    public DurabilityTooltipMode durabilityTooltip = DurabilityTooltipMode.VALUE;
+    public static class DurabilityConfig {
+        @Comment("Shows the durability of an item in its tooltip.\nOFF/VALUE/PERCENTAGE (default: VALUE)")
+        public DurabilityTooltipMode durabilityTooltip = DurabilityTooltipMode.VALUE;
+
+        @Comment("Shows the durability of an item, represented by a bar, in its tooltip.\n(default: false)")
+        public boolean durabilityBar = false;
+    }
 
     public enum DurabilityTooltipMode implements TranslatableOption {
         OFF(0, "options.off"),
@@ -185,9 +220,6 @@ public class EnhancedTooltipsConfig {
             return this.translationKey;
         }
     }
-
-    @Comment("(default: false)")
-    public boolean durabilityBar = false;
 
     private static final Jankson JANKSON = Jankson.builder()
             .registerSerializer(Color.class, (color, marshaller) -> new JsonPrimitive(String.format("#%02X%02X%02X%02X", color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()))) // in RRGGBBAA

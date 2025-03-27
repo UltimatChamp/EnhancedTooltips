@@ -8,9 +8,11 @@ import net.minecraft.util.Rarity;
 
 public class TooltipBorderColorComponent extends TooltipBackgroundComponent {
     private final ItemStack stack;
+    private final EnhancedTooltipsConfig config;
 
     public TooltipBorderColorComponent(ItemStack stack) {
         this.stack = stack;
+        this.config = EnhancedTooltipsConfig.load();
     }
 
     @Override
@@ -20,18 +22,18 @@ public class TooltipBorderColorComponent extends TooltipBackgroundComponent {
 
         int endColor = EnhancedTooltipsConfig.BorderColor.END_COLOR.getColor().getRGB();
 
-        if (EnhancedTooltipsConfig.load().borderColor == EnhancedTooltipsConfig.BorderColorMode.CUSTOM) {
+        if (config.border.borderColor == EnhancedTooltipsConfig.BorderColorMode.CUSTOM) {
             if (stack.getRarity() == Rarity.UNCOMMON) {
-                startColor = EnhancedTooltipsConfig.load().customBorderColors.uncommon.getRGB();
+                startColor = config.border.customBorderColors.uncommon.getRGB();
             } else if (stack.getRarity() == Rarity.RARE) {
-                startColor = EnhancedTooltipsConfig.load().customBorderColors.rare.getRGB();
+                startColor = config.border.customBorderColors.rare.getRGB();
             } else if (stack.getRarity() == Rarity.EPIC) {
-                startColor = EnhancedTooltipsConfig.load().customBorderColors.epic.getRGB();
+                startColor = config.border.customBorderColors.epic.getRGB();
             } else {
-                startColor = EnhancedTooltipsConfig.load().customBorderColors.common.getRGB();
+                startColor = config.border.customBorderColors.common.getRGB();
             }
 
-            endColor = EnhancedTooltipsConfig.load().customBorderColors.endColor.getRGB();
+            endColor = config.border.customBorderColors.endColor.getRGB();
         }
 
         renderVerticalLine(context, x, y, height - 2, z, startColor, endColor);

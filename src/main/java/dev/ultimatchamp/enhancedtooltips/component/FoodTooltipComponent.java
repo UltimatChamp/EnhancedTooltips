@@ -92,10 +92,10 @@ public class FoodTooltipComponent implements TooltipComponent {
         //?} else {
         /*if (foodComponent != null) {
         *///?}
-            if (config.hungerTooltip) height += 9 + 1;
-            if (config.saturationTooltip) height += 9 + 1;
+            if (config.foodAndDrinks.hungerTooltip) height += 9 + 1;
+            if (config.foodAndDrinks.saturationTooltip) height += 9 + 1;
 
-            if (config.effectsTooltip == EnhancedTooltipsConfig.EffectsTooltipMode.OFF) return height;
+            if (config.foodAndDrinks.effectsTooltip == EnhancedTooltipsConfig.EffectsTooltipMode.OFF) return height;
 
             //? if >1.21.1 {
             for (ConsumeEffect entry : consumableComponent.onConsumeEffects()) {
@@ -126,14 +126,14 @@ public class FoodTooltipComponent implements TooltipComponent {
         int hunger = getHunger();
 
         int hungerLine = 0;
-        if (config.hungerTooltip) hungerLine = textRenderer.getWidth(Text.translatable(EnhancedTooltips.identifier("tooltip.hunger").toTranslationKey())) + 1 + ((textRenderer.fontHeight - 2) * hunger);
+        if (config.foodAndDrinks.hungerTooltip) hungerLine = (int) (textRenderer.getWidth(Text.translatable(EnhancedTooltips.identifier("tooltip.hunger").toTranslationKey())) + 1 + ((textRenderer.fontHeight - 2) * (hunger / 2f)));
 
         int saturationLine = 0;
-        if (config.saturationTooltip) saturationLine = textRenderer.getWidth(Text.translatable(EnhancedTooltips.identifier("tooltip.saturation").toTranslationKey(), "100%"));
+        if (config.foodAndDrinks.saturationTooltip) saturationLine = textRenderer.getWidth(Text.translatable(EnhancedTooltips.identifier("tooltip.saturation").toTranslationKey(), "100%")) - textRenderer.fontHeight;
 
         foodWidth = Math.max(hungerLine, saturationLine);
 
-        if (config.effectsTooltip == EnhancedTooltipsConfig.EffectsTooltipMode.OFF) return foodWidth + 4;
+        if (config.foodAndDrinks.effectsTooltip == EnhancedTooltipsConfig.EffectsTooltipMode.OFF) return foodWidth;
 
         if (foodComponent == null) return 0;
 
@@ -148,7 +148,13 @@ public class FoodTooltipComponent implements TooltipComponent {
             }
 
             for (StatusEffectInstance statusEffect : applyEffectsConsumeEffect.effects()) {
-                effectsWidth = Math.max(effectsWidth, textRenderer.getWidth(Text.translatable(statusEffect.getTranslationKey()).append(" (99:99)")));
+                //? if >1.21.1 {
+                float probability = applyEffectsConsumeEffect.probability();
+                //?} else {
+                /*float probability = entry.probability();
+                *///?}
+
+                effectsWidth = Math.max(effectsWidth, textRenderer.getWidth(Text.translatable(statusEffect.getTranslationKey()).append(" (99:99)")) + (probability >= 1f ? 0 : textRenderer.getWidth(" [100%]")));
             }
         //?} else {
         /*for (FoodComponent.StatusEffectEntry entry : foodComponent.effects()) {
@@ -156,7 +162,9 @@ public class FoodTooltipComponent implements TooltipComponent {
         *///?}
         }
 
-        return Math.max(foodWidth, effectsWidth) + 4;
+        if (effectsWidth != 0 && config.foodAndDrinks.effectsTooltip == EnhancedTooltipsConfig.EffectsTooltipMode.WITH_ICONS) effectsWidth += textRenderer.fontHeight + 2;
+
+        return Math.max(foodWidth, effectsWidth);
     }
 
     @Override
@@ -181,7 +189,7 @@ public class FoodTooltipComponent implements TooltipComponent {
 
         var lineY = y;
 
-        if (config.hungerTooltip) {
+        if (config.foodAndDrinks.hungerTooltip) {
             context.drawText(textRenderer, hungerText, x, lineY, 0xffffffff, true);
 
             Identifier fullHunger = Identifier.of("minecraft", "hud/food_full");
@@ -212,9 +220,12 @@ public class FoodTooltipComponent implements TooltipComponent {
             lineY += textRenderer.fontHeight + 1;
         }
 
-        if (config.saturationTooltip) context.drawText(textRenderer, saturationText, x, lineY, 0xff00ffff, true); else lineY -= textRenderer.fontHeight + 1;
+        if (config.foodAndDrinks.saturationTooltip) {
+            textRenderer.draw(saturationText, (float) (x + 0.75), lineY, 0xff00ffff, true, context.getMatrices().peek().getPositionMatrix(), context.vertexConsumers, TextRenderer.TextLayerType.NORMAL, 0, 15728880);
+            lineY += textRenderer.fontHeight + 1;
+        }
 
-        if (config.effectsTooltip == EnhancedTooltipsConfig.EffectsTooltipMode.OFF) return;
+        if (config.foodAndDrinks.effectsTooltip == EnhancedTooltipsConfig.EffectsTooltipMode.OFF) return;
 
         //? if >1.21.1 {
         for (ConsumeEffect entry : consumableComponent.onConsumeEffects()) {
@@ -249,11 +260,9 @@ public class FoodTooltipComponent implements TooltipComponent {
 
                 }
 
-                lineY += textRenderer.fontHeight + 1;
-
-                if (config.effectsTooltip == EnhancedTooltipsConfig.EffectsTooltipMode.WITH_ICONS) {
+                if (config.foodAndDrinks.effectsTooltip == EnhancedTooltipsConfig.EffectsTooltipMode.WITH_ICONS) {
                     //? if >1.21.1 {
-                    context.drawSpriteStretched(RenderLayer::getGuiTextured, effectTexture, x - 2, lineY, textRenderer.fontHeight, textRenderer.fontHeight);
+                    context.drawSpriteStretched(RenderLayer::getGuiTextured, effectTexture, x - 1, lineY - 1, textRenderer.fontHeight, textRenderer.fontHeight);
                     //?} else {
                     /*context.drawSprite(x - 2, lineY, 0, textRenderer.fontHeight, textRenderer.fontHeight, effectTexture);
                     *///?}
@@ -261,6 +270,8 @@ public class FoodTooltipComponent implements TooltipComponent {
                 } else {
                     context.drawText(textRenderer, effectText, x, lineY, c, true);
                 }
+
+                lineY += textRenderer.fontHeight + 1;
             }
         //? if >1.21.1 {
         }

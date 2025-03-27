@@ -23,7 +23,7 @@ public class TooltipHelper {
     public static int getItemBorderColor(ItemStack stack) {
         Integer color = null;
 
-        if (EnhancedTooltipsConfig.load().borderColor == EnhancedTooltipsConfig.BorderColorMode.ITEM_NAME) {
+        if (EnhancedTooltipsConfig.load().border.borderColor == EnhancedTooltipsConfig.BorderColorMode.ITEM_NAME) {
             color = TranslationStringColorParser.getColorFromTranslation(getDisplayName(stack));
         }
 
