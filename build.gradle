@@ -181,6 +181,20 @@ publishMods {
         }
     }
 
+    if (project.property("deps.minecraft_version") == "1.21.5") {
+        modrinth("m1.21.5") {
+            from mrOptions
+
+            minecraftVersions.add("1.21.5")
+        }
+
+        curseforge("c1.21.5") {
+            from cfOptions
+
+            minecraftVersions.add("1.21.5")
+        }
+    }
+
     github {
         accessToken = providers.environmentVariable("GITHUB_TOKEN")
         repository = "UltimatChamp/EnhancedTooltips"
