@@ -31,7 +31,7 @@ public class DurabilityTooltipComponent implements TooltipComponent {
                     ? Text.literal(" " + damaged + " / " + stack.getMaxDamage())
                     : Text.literal(" ")
                     .append(Text.literal(String.valueOf(damaged)).setStyle(Style.EMPTY.withColor(stack.getItemBarColor())))
-                    .append(Text.literal(" / ").setStyle(Style.EMPTY.withColor(-8355712)))
+                    .append(Text.literal(" / ").setStyle(Style.EMPTY.withColor(-4539718)))
                     .append(Text.literal(String.valueOf(stack.getMaxDamage())).setStyle(Style.EMPTY.withColor(0xFF00FF00)));
             case PERCENTAGE -> {
                 Text percentageText = Text.literal(" " + (damaged * 100 / stack.getMaxDamage()) + "%");
@@ -72,7 +72,7 @@ public class DurabilityTooltipComponent implements TooltipComponent {
         int textHeight = textRenderer.fontHeight;
         int textY = config.durability.durabilityBar ? y - textHeight + SPACING * 2 + 2 : y;
 
-        context.drawText(textRenderer, Text.translatable("enhancedtooltips.tooltip.durability"), x, textY, -8355712, true);
+        context.drawText(textRenderer, Text.translatable("enhancedtooltips.tooltip.durability"), x, textY, -4539718, true);
 
         x += textRenderer.getWidth(Text.translatable("enhancedtooltips.tooltip.durability")) + SPACING;
         int damaged = stack.getMaxDamage() - stack.getDamage();

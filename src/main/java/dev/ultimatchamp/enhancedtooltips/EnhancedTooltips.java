@@ -57,7 +57,7 @@ public class EnhancedTooltips implements ClientModInitializer {
                     if (component instanceof OrderedTextTooltipComponent textComponent) {
                         Text text = EnhancedTooltipsTextVisitor.get(textComponent.text);
                         for (String group : itemGroups) {
-                            if (text.contains(Text.translatable(group))) {
+                            if (text.getString().equals(Text.translatable(group).getString())) {
                                 return true;
                             }
                         }
