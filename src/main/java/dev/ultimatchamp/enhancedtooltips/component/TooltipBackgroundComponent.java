@@ -18,7 +18,7 @@ public class TooltipBackgroundComponent implements TooltipComponent {
 
         renderHorizontalLine(context, i, j - 1, k, z, bgColor);
         renderHorizontalLine(context, i, j + l, k, z, bgColor);
-        renderRectangle(context, i, j, k, l, z);
+        renderRectangle(context, i, j, k, l, z, bgColor);
         renderVerticalLine(context, i - 1, j, l, z, bgColor, bgColor);
         renderVerticalLine(context, i + k, j, l, z, bgColor, bgColor);
         renderBorder(context, i, j + 1, k, l, z, page);
@@ -47,8 +47,8 @@ public class TooltipBackgroundComponent implements TooltipComponent {
         context.fill(x, y, x + width, y + 1, z, color);
     }
 
-    protected void renderRectangle(DrawContext context, int x, int y, int width, int height, int z) {
-        context.fill(x, y, x + width, y + height, z, EnhancedTooltipsConfig.load().background.backgroundColor.getRGB());
+    protected void renderRectangle(DrawContext context, int x, int y, int width, int height, int z, int bgColor) {
+        context.fill(x, y, x + width, y + height, z, bgColor);
     }
 
     @Override

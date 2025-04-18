@@ -24,6 +24,7 @@ public class EnhancedTooltipsConfig {
     public MapConfig mapTooltip = new MapConfig();
     public PaintingConfig paintingTooltip = new PaintingConfig();
     public DurabilityConfig durability = new DurabilityConfig();
+    public HeldItemTooltipConfig heldItemTooltip = new HeldItemTooltipConfig();
 
     public static class GeneralConfig {
         @Comment("Shows the rarity of an item in its tooltip.\n(default: true)")
@@ -219,6 +220,20 @@ public class EnhancedTooltipsConfig {
         public String getTranslationKey() {
             return this.translationKey;
         }
+    }
+
+    public static class HeldItemTooltipConfig {
+        @Comment("Toggles the improved held items tooltips feature.\n(default: true)")
+        public boolean enabled = true;
+
+        @Comment("Shows a neat background behind the held item tooltip text.\n(default: true)")
+        public boolean showBackground = true;
+
+        @Comment("Shows a dynamic tilt animation for the held item tooltip when scrolling the hotbar.\n(default: true)")
+        public boolean tiltAnimation = true;
+
+        @Comment("Defines the line limit for the held item tooltip.\n(default: 10)")
+        public int maxLines = 10;
     }
 
     private static final Jankson JANKSON = Jankson.builder()

@@ -3,7 +3,9 @@
   "package": "dev.ultimatchamp.enhancedtooltips.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
-    "DrawContextMixin"
+    "DrawContextMixin",
+    "InGameHudMixin",
+    "ItemStackMixin"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -2,10 +2,7 @@ package dev.ultimatchamp.enhancedtooltips;
 
 import dev.ultimatchamp.enhancedtooltips.component.*;
 import dev.ultimatchamp.enhancedtooltips.config.EnhancedTooltipsConfig;
-import dev.ultimatchamp.enhancedtooltips.api.TooltipComponentAPI;
-import dev.ultimatchamp.enhancedtooltips.api.TooltipDrawerProvider;
-import dev.ultimatchamp.enhancedtooltips.tooltip.EnhancedTooltipsDrawer;
-import dev.ultimatchamp.enhancedtooltips.tooltip.TooltipModule;
+import dev.ultimatchamp.enhancedtooltips.tooltip.TooltipComponentManager;
 import dev.ultimatchamp.enhancedtooltips.util.EnhancedTooltipsTextVisitor;
 import net.fabricmc.api.ClientModInitializer;
 import net.minecraft.client.MinecraftClient;
@@ -13,7 +10,6 @@ import net.minecraft.client.gui.tooltip.OrderedTextTooltipComponent;
 import net.minecraft.entity.EntityType;
 import net.minecraft.item.*;
 import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,11 +23,15 @@ public class EnhancedTooltips implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
-        new TooltipModule().load();
         EnhancedTooltipsConfig.load();
 
-        TooltipComponentAPI.EVENT.register((list, stack) -> {
+        TooltipComponentManager.register((list, stack) -> {
             if (list.isEmpty()) return;
+
+            if (stack.isEmpty()) {
+                list.add(new TooltipBackgroundComponent());
+                return;
+            }
 
             list.removeFirst();
             list.add(0, new HeaderTooltipComponent(stack));
@@ -84,7 +84,9 @@ public class EnhancedTooltips implements ClientModInitializer {
 
             if (stack.getItem() instanceof FilledMapItem) list.add(new MapTooltipComponent(stack));
 
-            if (stack.getItem() instanceof DecorationItem decorationItem && decorationItem.entityType == EntityType.PAINTING) list.add(new PaintingTooltipComponent(stack));
+            if (stack.getItem() instanceof DecorationItem decorationItem &&
+                decorationItem.entityType == EntityType.PAINTING
+            ) list.add(new PaintingTooltipComponent(stack));
 
             if (MinecraftClient.getInstance().options.advancedItemTooltips) {
                 list.removeIf(component ->
@@ -94,11 +96,5 @@ public class EnhancedTooltips implements ClientModInitializer {
             }
             list.add(new DurabilityTooltipComponent(stack));
         });
-
-        TooltipDrawerProvider.setTooltipDrawerProvider(new EnhancedTooltipsDrawer());
-    }
-
-    public static Identifier identifier(String path) {
-        return Identifier.of(MOD_ID, path);
     }
 }

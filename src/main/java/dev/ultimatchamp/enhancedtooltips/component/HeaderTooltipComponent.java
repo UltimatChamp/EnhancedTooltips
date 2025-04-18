@@ -3,23 +3,16 @@ package dev.ultimatchamp.enhancedtooltips.component;
 import dev.ultimatchamp.enhancedtooltips.tooltip.TooltipHelper;
 import dev.ultimatchamp.enhancedtooltips.config.EnhancedTooltipsConfig;
 import dev.ultimatchamp.enhancedtooltips.util.*;
-import net.fabricmc.loader.api.FabricLoader;
-import net.fabricmc.loader.api.ModContainer;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.*;
-import net.minecraft.registry.Registries;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Pair;
 import org.joml.Matrix4f;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class HeaderTooltipComponent implements TooltipComponent {
     private static final int TEXTURE_SIZE = 16;
@@ -27,7 +20,6 @@ public class HeaderTooltipComponent implements TooltipComponent {
     private final ItemStack stack;
     private final OrderedText nameText;
     private final OrderedText rarityName;
-    private final Map<String, String> mods = new HashMap<>();
     private final EnhancedTooltipsConfig config;
 
     public HeaderTooltipComponent(ItemStack stack) {
@@ -35,11 +27,6 @@ public class HeaderTooltipComponent implements TooltipComponent {
         this.nameText = TooltipHelper.getDisplayName(stack).asOrderedText();
         this.rarityName = TooltipHelper.getRarityName(stack).asOrderedText();
         this.config = EnhancedTooltipsConfig.load();
-
-        for (ModContainer modContainer : FabricLoader.getInstance().getAllMods()) {
-            if (modContainer.getMetadata().getId().equals("minecraft")) continue;
-            this.mods.put(modContainer.getMetadata().getId(), modContainer.getMetadata().getName());
-        }
     }
 
     @Override
@@ -53,23 +40,8 @@ public class HeaderTooltipComponent implements TooltipComponent {
         if (config.general.rarityTooltip) rarityWidth = textRenderer.getWidth(this.rarityName);
 
         int badgeWidth = 0;
-        if (config.general.itemBadges) {
-            String badgeText = "gamerule.category.misc";
-
-            for (Map.Entry<List<Item>, Pair<String, Integer>> entry : ItemGroupsUtils.getItemGroups().entrySet()) {
-                if (entry.getKey().contains(stack.getItem())) {
-                    badgeText = entry.getValue().getLeft();
-                    badgeWidth = textRenderer.getWidth(Text.translatable(badgeText)) + SPACING * 2;
-                    break;
-                }
-            }
-
-            if (badgeText.equals("gamerule.category.misc")) {
-                String namespace = Registries.ITEM.getId(stack.getItem()).getNamespace();
-                badgeText = this.mods.getOrDefault(namespace, "gamerule.category.misc");
-                badgeWidth = textRenderer.getWidth(Text.translatable(badgeText)) + SPACING * 2;
-            }
-        }
+        String badgeText = BadgesUtils.getBadgeText(stack).getLeft();
+        if (config.general.itemBadges && !badgeText.isEmpty()) badgeWidth = textRenderer.getWidth(Text.translatable(badgeText)) + SPACING * 2;
 
         int titleWidth;
         if (config.general.rarityTooltip) {
@@ -128,25 +100,8 @@ public class HeaderTooltipComponent implements TooltipComponent {
         if (!config.general.itemBadges) return;
         if (!config.general.rarityTooltip) y += textRenderer.fontHeight + SPACING;
 
-        String translation = "gamerule.category.misc";
-        int fillColor = -6250336;
-
-        for (Map.Entry<List<Item>, Pair<String, Integer>> entry : ItemGroupsUtils.getItemGroups().entrySet()) {
-            if (entry.getKey().contains(stack.getItem())) {
-                translation = entry.getValue().getLeft();
-                fillColor = entry.getValue().getRight();
-                break;
-            }
-        }
-
-        if (translation.equals("gamerule.category.misc")) {
-            String namespace = Registries.ITEM.getId(stack.getItem()).getNamespace();
-            translation = this.mods.getOrDefault(namespace, "gamerule.category.misc");
-
-            if (!translation.equals("gamerule.category.misc")) fillColor = BadgesUtils.getColorFromModName(namespace);
-        }
-
-        drawBadge(textRenderer, Text.translatable(translation), x, y, context, fillColor);
+        Pair<String, Integer> badgeText = BadgesUtils.getBadgeText(stack);
+        if (!badgeText.getLeft().isEmpty()) drawBadge(textRenderer, Text.translatable(badgeText.getLeft()), x, y, context, badgeText.getRight());
     }
 
     private void drawBadge(TextRenderer textRenderer, Text text, int x, int y, DrawContext context, int fillColor) {

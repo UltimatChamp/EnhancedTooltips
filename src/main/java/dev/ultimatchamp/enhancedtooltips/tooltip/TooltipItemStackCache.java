@@ -4,7 +4,7 @@ import net.minecraft.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
 public class TooltipItemStackCache {
-    private static ItemStack cache = null;
+    private static ItemStack cache = ItemStack.EMPTY;
 
     public static void saveItemStack(ItemStack stack) {
         cache = stack;
