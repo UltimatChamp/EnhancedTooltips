@@ -16,7 +16,7 @@
   "enhancedtooltips.config.borderColor.desc": "Alet ipuçlarının çerçeve renginin nasıl belirleneceğini ayarlar.",
   "enhancedtooltips.config.borderColor.rarity": "Nadirlik",
   "enhancedtooltips.config.borderColor.itemName": "Eşya İsmi",
-  "enhancedtooltips.config.customBorderColors.endColor": "Gradient End Color",
+  "enhancedtooltips.config.customBorderColors.endColor": "Gradyan Bitiş Rengi",
   "enhancedtooltips.config.group.background": "Arka Plan",
   "enhancedtooltips.config.backgroundColor": "Arka plan Rengi",
   "enhancedtooltips.config.hungerTooltip": "Açlık Alet İpucu",
