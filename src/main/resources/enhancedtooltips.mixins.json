@@ -5,7 +5,13 @@
   "mixins": [
     "DrawContextMixin",
     "InGameHudMixin",
-    "ItemStackMixin"
+    "ItemStackMixin",
+    "accessors.BucketItemEntityTypeAccessor",
+    "accessors.DecorationItemEntityTypeAccessor",
+    "accessors.OrderedTextTooltipComponentAccessor",
+    "accessors.PlayerInventoryAccessor",
+    "accessors.SpawnEggItemEntityTypeAccessor",
+    "accessors.DrawContextAccessor"
   ],
   "injectors": {
     "defaultRequire": 1

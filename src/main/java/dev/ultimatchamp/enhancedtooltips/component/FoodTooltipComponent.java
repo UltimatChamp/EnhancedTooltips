@@ -1,6 +1,7 @@
 package dev.ultimatchamp.enhancedtooltips.component;
 
 import dev.ultimatchamp.enhancedtooltips.config.EnhancedTooltipsConfig;
+import dev.ultimatchamp.enhancedtooltips.mixin.accessors.DrawContextAccessor;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
@@ -220,7 +221,7 @@ public class FoodTooltipComponent implements TooltipComponent {
         }
 
         if (config.foodAndDrinks.saturationTooltip) {
-            textRenderer.draw(saturationText, (float) (x + 0.75), lineY, 0xff00ffff, true, context.getMatrices().peek().getPositionMatrix(), context.vertexConsumers, TextRenderer.TextLayerType.NORMAL, 0, 15728880);
+            textRenderer.draw(saturationText, (float) (x + 0.75), lineY, 0xff00ffff, true, context.getMatrices().peek().getPositionMatrix(), ((DrawContextAccessor) context).getVertexConsumers(), TextRenderer.TextLayerType.NORMAL, 0, 15728880);
             lineY += textRenderer.fontHeight + 1;
         }
 

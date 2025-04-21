@@ -3,7 +3,6 @@ package dev.ultimatchamp.enhancedtooltips.config;
 import blue.endless.jankson.*;
 import blue.endless.jankson.api.SyntaxError;
 import dev.ultimatchamp.enhancedtooltips.EnhancedTooltips;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.util.TranslatableOption;
 
@@ -12,6 +11,13 @@ import java.io.IOException;
 import java.lang.reflect.Modifier;
 import java.nio.file.Files;
 import java.nio.file.Path;
+
+//? if fabric {
+import net.fabricmc.loader.api.FabricLoader;
+//?} else neoforge {
+/*import net.neoforged.fml.loading.FMLPaths;
+import net.neoforged.fml.ModList;
+*///?}
 
 public class EnhancedTooltipsConfig {
     public GeneralConfig general = new GeneralConfig();
@@ -256,7 +262,12 @@ public class EnhancedTooltipsConfig {
             })
             .build();
 
-    private static final Path CONFIG_PATH = FabricLoader.getInstance().getConfigDir().resolve("enhancedtooltips.json5");
+    public static final Path CONFIG_PATH =
+            //? if fabric {
+            FabricLoader.getInstance().getConfigDir().resolve("enhancedtooltips.json5");
+            //?} else if neoforge {
+            /*FMLPaths.CONFIGDIR.get().resolve("enhancedtooltips.json5");
+            *///?}
 
     private static EnhancedTooltipsConfig cachedConfig;
 
@@ -335,7 +346,11 @@ public class EnhancedTooltipsConfig {
     }
 
     public static Screen createConfigScreen(Screen parent) {
+        //? if fabric {
         if (FabricLoader.getInstance().isModLoaded("yet_another_config_lib_v3")) {
+        //?} else if neoforge {
+        /*if (ModList.get().isLoaded("yet_another_config_lib_v3")) {
+        *///?}
             return EnhancedTooltipsGui.createConfigScreen(parent);
         } else {
             return new NoConfigScreenWarning(parent);

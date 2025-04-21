@@ -9,7 +9,6 @@ import net.minecraft.client.gui.tooltip.TooltipComponent;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.*;
-import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Pair;
 import org.joml.Matrix4f;
@@ -18,14 +17,14 @@ public class HeaderTooltipComponent implements TooltipComponent {
     private static final int TEXTURE_SIZE = 16;
     private static final int SPACING = 4;
     private final ItemStack stack;
-    private final OrderedText nameText;
-    private final OrderedText rarityName;
+    private final Text nameText;
+    private final Text rarityName;
     private final EnhancedTooltipsConfig config;
 
     public HeaderTooltipComponent(ItemStack stack) {
         this.stack = stack;
-        this.nameText = TooltipHelper.getDisplayName(stack).asOrderedText();
-        this.rarityName = TooltipHelper.getRarityName(stack).asOrderedText();
+        this.nameText = TooltipHelper.getDisplayName(stack);
+        this.rarityName = TooltipHelper.getRarityName(stack);
         this.config = EnhancedTooltipsConfig.load();
     }
 

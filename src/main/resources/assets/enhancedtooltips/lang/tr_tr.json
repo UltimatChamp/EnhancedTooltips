@@ -58,6 +58,7 @@
   "enhancedtooltips.config.heldItemTooltipMaxLines": "Maximum Lines",
   "enhancedtooltips.config.heldItemTooltipMaxLines.desc": "Defines the line limit for the held item tooltip.",
   "enhancedtooltips.config.screen.warn": "§cEnhancedTooltips, YetAnotherConfigLib modu yüklü olmadığı için bir konfigürasyon ekranı görüntüleyemiyor. Lütfen bunun yerine konfigürasyon dosyasını kullanın. Rahatsızlık için özür dileriz!",
+  "enhancedtooltips.config.screen.open": "Open File...",
   "enhancedtooltips.rarity.common": "Yaygın",
   "enhancedtooltips.rarity.uncommon": "Yaygın Olmayan",
   "enhancedtooltips.rarity.rare": "Nadir",

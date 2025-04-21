@@ -2,11 +2,11 @@ package dev.ultimatchamp.enhancedtooltips;
 
 import dev.ultimatchamp.enhancedtooltips.component.*;
 import dev.ultimatchamp.enhancedtooltips.config.EnhancedTooltipsConfig;
+import dev.ultimatchamp.enhancedtooltips.mixin.accessors.DecorationItemEntityTypeAccessor;
+import dev.ultimatchamp.enhancedtooltips.mixin.accessors.OrderedTextTooltipComponentAccessor;
 import dev.ultimatchamp.enhancedtooltips.tooltip.TooltipComponentManager;
 import dev.ultimatchamp.enhancedtooltips.util.EnhancedTooltipsTextVisitor;
-import net.fabricmc.api.ClientModInitializer;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.tooltip.OrderedTextTooltipComponent;
 import net.minecraft.entity.EntityType;
 import net.minecraft.item.*;
 import net.minecraft.text.Text;
@@ -17,12 +17,11 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
-public class EnhancedTooltips implements ClientModInitializer {
+public class EnhancedTooltips {
     public static final String MOD_ID = "enhancedtooltips";
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
-    @Override
-    public void onInitializeClient() {
+    public static void init() {
         EnhancedTooltipsConfig.load();
 
         TooltipComponentManager.register((list, stack) -> {
@@ -54,8 +53,8 @@ public class EnhancedTooltips implements ClientModInitializer {
                 );
 
                 list.removeIf(component -> {
-                    if (component instanceof OrderedTextTooltipComponent textComponent) {
-                        Text text = EnhancedTooltipsTextVisitor.get(textComponent.text);
+                    if (component instanceof OrderedTextTooltipComponentAccessor textComponent) {
+                        Text text = EnhancedTooltipsTextVisitor.get(textComponent.getText());
                         for (String group : itemGroups) {
                             if (text.getString().equals(Text.translatable(group).getString())) {
                                 return true;
@@ -84,15 +83,15 @@ public class EnhancedTooltips implements ClientModInitializer {
 
             if (stack.getItem() instanceof FilledMapItem) list.add(new MapTooltipComponent(stack));
 
-            if (stack.getItem() instanceof DecorationItem decorationItem &&
-                decorationItem.entityType == EntityType.PAINTING
+            if (stack.getItem() instanceof DecorationItemEntityTypeAccessor decorationItem &&
+                decorationItem.get() == EntityType.PAINTING
             ) list.add(new PaintingTooltipComponent(stack));
 
             if (MinecraftClient.getInstance().options.advancedItemTooltips) {
                 list.removeIf(component ->
-                        component instanceof OrderedTextTooltipComponent orderedTextTooltipComponent &&
+                        component instanceof OrderedTextTooltipComponentAccessor orderedTextTooltipComponent &&
                         (!EnhancedTooltipsConfig.load().durability.durabilityTooltip.equals(EnhancedTooltipsConfig.DurabilityTooltipMode.OFF) || EnhancedTooltipsConfig.load().durability.durabilityBar) &&
-                        EnhancedTooltipsTextVisitor.get(orderedTextTooltipComponent.text).getString().contains((stack.getMaxDamage() - stack.getDamage()) + " / " + stack.getMaxDamage()));
+                        EnhancedTooltipsTextVisitor.get(orderedTextTooltipComponent.getText()).getString().contains((stack.getMaxDamage() - stack.getDamage()) + " / " + stack.getMaxDamage()));
             }
             list.add(new DurabilityTooltipComponent(stack));
         });

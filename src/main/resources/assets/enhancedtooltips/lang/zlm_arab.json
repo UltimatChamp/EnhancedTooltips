@@ -58,6 +58,7 @@
   "enhancedtooltips.config.heldItemTooltipMaxLines": "Maximum Lines",
   "enhancedtooltips.config.heldItemTooltipMaxLines.desc": "Defines the line limit for the held item tooltip.",
   "enhancedtooltips.config.screen.warn": "§cEnhancedTooltips تيدق داڤت مماڤرکن سکرين کونفيݢوراسي کران مود YetAnotherConfigLib تيدق دڤاسڠ. سيلا ݢوناکن فاٴيل کونفيݢوراسي. معاف اتس کسوليتن اين!",
+  "enhancedtooltips.config.screen.open": "Open File...",
   "enhancedtooltips.rarity.common": "بياسا",
   "enhancedtooltips.rarity.uncommon": "تيدق بياسا",
   "enhancedtooltips.rarity.rare": "جارڠ",

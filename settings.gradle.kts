@@ -1,7 +1,9 @@
 pluginManagement {
     repositories {
         gradlePluginPortal()
+        maven("https://maven.architectury.dev")
         maven("https://maven.fabricmc.net")
+        maven("https://maven.neoforged.net/releases")
         maven("https://maven.kikugie.dev/snapshots")
     }
 }
@@ -12,8 +14,19 @@ plugins {
 
 stonecutter {
     create(rootProject) {
-        versions("1.21.1", "1.21.3", "1.21.4", "1.21.5")
-        vcsVersion = "1.21.5"
+        vers("1.21.5-fabric", "1.21.5")
+        vers("1.21.5-neo", "1.21.5")
+
+        vers("1.21.4-fabric", "1.21.4")
+        vers("1.21.4-neo", "1.21.4")
+
+        vers("1.21.3-fabric", "1.21.3")
+        vers("1.21.3-neo", "1.21.3")
+
+        vers("1.21.1-fabric", "1.21.1")
+        vers("1.21.1-neo", "1.21.1")
+
+        vcsVersion = "1.21.5-fabric"
     }
 }
 

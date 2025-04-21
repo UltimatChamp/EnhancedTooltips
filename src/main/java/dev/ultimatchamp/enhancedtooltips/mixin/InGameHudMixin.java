@@ -1,7 +1,7 @@
 package dev.ultimatchamp.enhancedtooltips.mixin;
 
-import com.llamalad7.mixinextras.sugar.Local;
 import dev.ultimatchamp.enhancedtooltips.config.EnhancedTooltipsConfig;
+import dev.ultimatchamp.enhancedtooltips.mixin.accessors.PlayerInventoryAccessor;
 import dev.ultimatchamp.enhancedtooltips.tooltip.TooltipHelper;
 import dev.ultimatchamp.enhancedtooltips.tooltip.TooltipItemStackCache;
 import dev.ultimatchamp.enhancedtooltips.util.BadgesUtils;
@@ -47,17 +47,26 @@ import net.minecraft.component.type.FoodComponent;
 
 @Mixin(InGameHud.class)
 public abstract class InGameHudMixin {
-    @Unique private long tiltStartTime = 0;
-    @Unique private int lastTiltSlot = -1;
-    @Unique private float tiltDirection = 0;
-    @Unique private static final int SPACING = 4;
+    @Unique private long enhancedTooltips$tiltStartTime = 0;
+    @Unique private int enhancedTooltips$lastTiltSlot = -1;
+    @Unique private float enhancedTooltips$tiltDirection = 0;
+    @Unique private static final int enhancedTooltips$SPACING = 4;
 
     @Shadow public abstract TextRenderer getTextRenderer();
     @Shadow private ItemStack currentStack;
     @Shadow @Final private MinecraftClient client;
+    @Shadow private int heldItemTooltipFade;
 
-    @Inject(method = "renderHeldItemTooltip", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/DrawContext;drawTextWithBackground(Lnet/minecraft/client/font/TextRenderer;Lnet/minecraft/text/Text;IIII)I"), cancellable = true)
-    private void enhancedTooltips$renderHeldItemTooltipBackground(DrawContext context, CallbackInfo ci, @Local(ordinal = 2) int y, @Local(ordinal = 3) int alpha) {
+    @Inject(
+            //? if fabric {
+            method = "renderHeldItemTooltip",
+            //?} else if neoforge {
+            /*method = "renderSelectedItemName",
+            *///?}
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/DrawContext;drawTextWithBackground(Lnet/minecraft/client/font/TextRenderer;Lnet/minecraft/text/Text;IIII)I"),
+            cancellable = true
+    )
+    private void enhancedTooltips$renderHeldItemTooltipBackground(DrawContext context,/*? if neoforge {*/ /*int YShift,*//*?}*/ CallbackInfo ci) {
         EnhancedTooltipsConfig config = EnhancedTooltipsConfig.load();
         if (!config.heldItemTooltip.enabled) return;
 
@@ -68,18 +77,18 @@ public abstract class InGameHudMixin {
 
         TextRenderer textRenderer = this.getTextRenderer();
 
-        int currentSlot = client.player != null ? client.player.getInventory().selectedSlot : lastTiltSlot;
-        if (currentSlot != lastTiltSlot) {
-            int delta = currentSlot - lastTiltSlot;
-            if (lastTiltSlot == 8 && currentSlot == 0) {
+        int currentSlot = client.player != null ? ((PlayerInventoryAccessor) client.player.getInventory()).getSelectedSlot() : enhancedTooltips$lastTiltSlot;
+        if (currentSlot != enhancedTooltips$lastTiltSlot) {
+            int delta = currentSlot - enhancedTooltips$lastTiltSlot;
+            if (enhancedTooltips$lastTiltSlot == 8 && currentSlot == 0) {
                 delta = 1;
-            } else if (lastTiltSlot == 0 && currentSlot == 8) {
+            } else if (enhancedTooltips$lastTiltSlot == 0 && currentSlot == 8) {
                 delta = -1;
             }
 
-            tiltDirection = Math.signum(delta);
-            tiltStartTime = System.currentTimeMillis();
-            lastTiltSlot = currentSlot;
+            enhancedTooltips$tiltDirection = Math.signum(delta);
+            enhancedTooltips$tiltStartTime = System.currentTimeMillis();
+            enhancedTooltips$lastTiltSlot = currentSlot;
         }
 
         Pair<String, Integer> badgeText = BadgesUtils.getBadgeText(currentStack);
@@ -94,7 +103,7 @@ public abstract class InGameHudMixin {
         if (config.general.rarityTooltip)
             tooltip.add(1, TooltipHelper.getRarityName(currentStack));
 
-        addFoodTooltip(tooltip::add);
+        enhancedTooltips$addFoodTooltip(tooltip::add);
 
         if (client.options.advancedItemTooltips) {
             tooltip.remove(Text.translatable("item.durability", currentStack.getMaxDamage() - currentStack.getDamage(), currentStack.getMaxDamage()));
@@ -103,7 +112,7 @@ public abstract class InGameHudMixin {
         }
 
         if ((!config.durability.durabilityTooltip.equals(EnhancedTooltipsConfig.DurabilityTooltipMode.OFF) || config.durability.durabilityBar) && currentStack.isDamageable())
-            tooltip.add(Text.translatable("enhancedtooltips.tooltip.durability").append(getDurabilityText()));
+            tooltip.add(Text.translatable("enhancedtooltips.tooltip.durability").append(enhancedTooltips$getDurabilityText()));
 
         int maxWidth = context.getScaledWindowWidth() / 2;
         for (Text component : new ArrayList<>(tooltip)) {
@@ -131,23 +140,29 @@ public abstract class InGameHudMixin {
         int width = tooltip.stream().mapToInt(textRenderer::getWidth).max().orElse(0);
         int x = (context.getScaledWindowWidth() - width) / 2;
 
-        y -= (textRenderer.fontHeight + SPACING / 2) * tooltip.size() - SPACING * 3 + SPACING / 2;
-        if (client.player.getArmor() > 0 && client.interactionManager.hasStatusBars()) y -= SPACING * 2;
+        int y = context.getScaledWindowHeight() - 59;
+        y -= (textRenderer.fontHeight + enhancedTooltips$SPACING / 2) * tooltip.size() - enhancedTooltips$SPACING * 3 + enhancedTooltips$SPACING / 2;
+        if (client.player.getArmor() > 0 && client.interactionManager.hasStatusBars()) y -= enhancedTooltips$SPACING * 2;
+
+        int alpha = (int) ((float) this.heldItemTooltipFade * 256.0F / 10.0F);
+        if (alpha > 255) {
+            alpha = 255;
+        }
 
         context.getMatrices().push();
-        drawTextWithBackground(textRenderer, tooltip, x, y, width, context, alpha);
+        enhancedTooltips$drawTextWithBackground(textRenderer, tooltip, x, y, width, context, alpha);
         context.getMatrices().pop();
 
         ci.cancel();
     }
 
     @Unique
-    public void addFoodTooltip(Consumer<Text> list) {
-        FoodComponent foodComponent = getFoodComponent();
+    public void enhancedTooltips$addFoodTooltip(Consumer<Text> list) {
+        FoodComponent foodComponent = enhancedTooltips$getFoodComponent();
         if (foodComponent == null) return;
 
-        int hunger = getHunger();
-        int saturation = getSaturation();
+        int hunger = enhancedTooltips$getHunger();
+        int saturation = enhancedTooltips$getSaturation();
 
         Text hungerText = Text.translatable("enhancedtooltips.tooltip.hunger").append(" " + hunger + " ").append(Text.translatable("effect.minecraft.hunger"));
         Text saturationText = Text.translatable("enhancedtooltips.tooltip.saturation", saturation).withColor(0xff00ffff);
@@ -156,7 +171,7 @@ public abstract class InGameHudMixin {
         if (EnhancedTooltipsConfig.load().foodAndDrinks.saturationTooltip) list.accept(saturationText);
 
         //? if >1.21.1 {
-        ConsumableComponent consumableComponent = getConsumableComponent();
+        ConsumableComponent consumableComponent = enhancedTooltips$getConsumableComponent();
         if (consumableComponent == null) return;
 
         List<ConsumeEffect> effects = consumableComponent.onConsumeEffects();
@@ -198,7 +213,7 @@ public abstract class InGameHudMixin {
     }
 
     @Unique
-    public FoodComponent getFoodComponent() {
+    public FoodComponent enhancedTooltips$getFoodComponent() {
         FoodComponent foodComponent;
 
         //? if >1.21.1 {
@@ -212,18 +227,18 @@ public abstract class InGameHudMixin {
 
     //? if >1.21.1 {
     @Unique
-    public ConsumableComponent getConsumableComponent() {
+    public ConsumableComponent enhancedTooltips$getConsumableComponent() {
         return currentStack.get(DataComponentTypes.CONSUMABLE);
     }
     //?}
 
     @Unique
-    public int getHunger() {
-        FoodComponent foodComponent = getFoodComponent();
+    public int enhancedTooltips$getHunger() {
+        FoodComponent foodComponent = enhancedTooltips$getFoodComponent();
         int hunger = 0;
 
         //? if >1.21.1 {
-        ConsumableComponent consumableComponent = getConsumableComponent();
+        ConsumableComponent consumableComponent = enhancedTooltips$getConsumableComponent();
         if (foodComponent != null && consumableComponent != null) {
             hunger = foodComponent.nutrition();
         //?} else {
@@ -236,10 +251,10 @@ public abstract class InGameHudMixin {
     }
 
     @Unique
-    public int getSaturation() {
-        FoodComponent foodComponent = getFoodComponent();
+    public int enhancedTooltips$getSaturation() {
+        FoodComponent foodComponent = enhancedTooltips$getFoodComponent();
         int saturation = 0;
-        int hunger = getHunger();
+        int hunger = enhancedTooltips$getHunger();
 
         if (foodComponent != null) {
             saturation = (int) ((foodComponent.saturation() / (hunger * 2.0)) * 100);
@@ -249,7 +264,7 @@ public abstract class InGameHudMixin {
     }
 
     @Unique
-    private Text getDurabilityText() {
+    private Text enhancedTooltips$getDurabilityText() {
         int remaining = currentStack.getMaxDamage() - currentStack.getDamage();
         return switch (EnhancedTooltipsConfig.load().durability.durabilityTooltip) {
             case VALUE -> Text.literal(" ")
@@ -278,19 +293,19 @@ public abstract class InGameHudMixin {
     }
 
     @Unique
-    private void drawTextWithBackground(TextRenderer textRenderer, List<Text> lines, int x, int y, int width, DrawContext context, int alpha) {
+    private void enhancedTooltips$drawTextWithBackground(TextRenderer textRenderer, List<Text> lines, int x, int y, int width, DrawContext context, int alpha) {
         int bgAlpha = (0x80 * alpha) / 255 << 24;
-        float tilt = getTilt();
+        float tilt = enhancedTooltips$getTilt();
 
         context.getMatrices().translate(x + width / 2f, y + (textRenderer.fontHeight * lines.size()) / 2f, 0);
         context.getMatrices().multiply(RotationAxis.POSITIVE_Z.rotationDegrees(tilt));
         context.getMatrices().translate(-(x + width / 2f), -(y + (textRenderer.fontHeight * lines.size()) / 2f), 0);
 
         if (EnhancedTooltipsConfig.load().heldItemTooltip.showBackground) context.fill(
-            x - SPACING + 1,
-            y - SPACING / 2,
-            x + width + SPACING - 1,
-            y + (textRenderer.fontHeight + SPACING / 2) * lines.size() - SPACING / 2,
+            x - enhancedTooltips$SPACING + 1,
+            y - enhancedTooltips$SPACING / 2,
+            x + width + enhancedTooltips$SPACING - 1,
+            y + (textRenderer.fontHeight + enhancedTooltips$SPACING / 2) * lines.size() - enhancedTooltips$SPACING / 2,
             bgAlpha
         );
 
@@ -298,23 +313,23 @@ public abstract class InGameHudMixin {
         for (Text line : lines) {
             int color = (line.getStyle().getColor() != null ? line.getStyle().getColor().getRgb() : 0xFFFFFF) | (alpha << 24);
             context.drawText(textRenderer, line.copy().withColor(color), (context.getScaledWindowWidth() - textRenderer.getWidth(line)) / 2, textY, color, true);
-            textY += textRenderer.fontHeight + SPACING / 2;
+            textY += textRenderer.fontHeight + enhancedTooltips$SPACING / 2;
         }
 
         int frameAlpha = (0x70 * alpha) / 255 << 24;
         if (EnhancedTooltipsConfig.load().heldItemTooltip.showBackground)
-            BadgesUtils.drawFrame(context, x - SPACING, y - SPACING / 2, width + SPACING * 2, (textRenderer.fontHeight + SPACING / 2) * lines.size() + SPACING / 2, 400, frameAlpha);
+            BadgesUtils.drawFrame(context, x - enhancedTooltips$SPACING, y - enhancedTooltips$SPACING / 2, width + enhancedTooltips$SPACING * 2, (textRenderer.fontHeight + enhancedTooltips$SPACING / 2) * lines.size() + enhancedTooltips$SPACING / 2, 400, frameAlpha);
     }
 
     @Unique
-    private float getTilt() {
-        if (!EnhancedTooltipsConfig.load().heldItemTooltip.tiltAnimation || tiltDirection == 0f) return 0f;
+    private float enhancedTooltips$getTilt() {
+        if (!EnhancedTooltipsConfig.load().heldItemTooltip.tiltAnimation || enhancedTooltips$tiltDirection == 0f) return 0f;
 
-        long elapsed = System.currentTimeMillis() - tiltStartTime;
+        long elapsed = System.currentTimeMillis() - enhancedTooltips$tiltStartTime;
         float duration = 300f;
         if (elapsed > duration) return 0f;
 
         float eased = (float) Math.pow(1f - (elapsed / duration), 2);
-        return tiltDirection * 10f * eased;
+        return enhancedTooltips$tiltDirection * 10f * eased;
     }
 }

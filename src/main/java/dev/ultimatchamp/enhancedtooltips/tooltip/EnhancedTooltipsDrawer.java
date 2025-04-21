@@ -3,11 +3,12 @@ package dev.ultimatchamp.enhancedtooltips.tooltip;
 import dev.ultimatchamp.enhancedtooltips.EnhancedTooltips;
 import dev.ultimatchamp.enhancedtooltips.component.TooltipBackgroundComponent;
 import dev.ultimatchamp.enhancedtooltips.config.EnhancedTooltipsConfig;
+import dev.ultimatchamp.enhancedtooltips.mixin.accessors.OrderedTextTooltipComponentAccessor;
+import dev.ultimatchamp.enhancedtooltips.mixin.accessors.DrawContextAccessor;
 import dev.ultimatchamp.enhancedtooltips.util.EnhancedTooltipsTextVisitor;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.tooltip.OrderedTextTooltipComponent;
 import net.minecraft.client.gui.tooltip.TooltipBackgroundRenderer;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
 import net.minecraft.client.gui.tooltip.TooltipPositioner;
@@ -173,7 +174,7 @@ public class EnhancedTooltipsDrawer {
 
             for (TooltipComponent component : p.components) {
                 try {
-                    component.drawText(textRenderer, cx, cy, matrices.peek().getPositionMatrix(), context.vertexConsumers);
+                    component.drawText(textRenderer, cx, cy, matrices.peek().getPositionMatrix(), ((DrawContextAccessor) context).getVertexConsumers());
                     component.drawItems(textRenderer, cx, cy, /*? if >1.21.1 {*/p.width, p.height,/*?}*/ context);
                     cy += component.getHeight(/*? if >1.21.1 {*/textRenderer/*?}*/);
 
@@ -202,8 +203,8 @@ public class EnhancedTooltipsDrawer {
     private static List<TooltipComponent> wrapComponent(TooltipComponent component, TextRenderer textRenderer, int maxWidth) {
         List<TooltipComponent> wrappedComponents = new ArrayList<>();
 
-        if (component instanceof OrderedTextTooltipComponent orderedTextTooltipComponent) {
-            Text text = EnhancedTooltipsTextVisitor.get(orderedTextTooltipComponent.text);
+        if (component instanceof OrderedTextTooltipComponentAccessor orderedTextTooltipComponent) {
+            Text text = EnhancedTooltipsTextVisitor.get(orderedTextTooltipComponent.getText());
 
             List<OrderedText> lines = textRenderer.wrapLines(text, maxWidth);
             for (OrderedText line : lines) {

@@ -1,7 +1,12 @@
 plugins {
-    id("fabric-loom") version "1.10-SNAPSHOT"
-    id("me.modmuss50.mod-publish-plugin") version "0.8.3"
+    id("dev.architectury.loom") version "1.10-SNAPSHOT"
+    id("me.modmuss50.mod-publish-plugin") version "0.8.4"
 }
+
+var loader = project.property("loom.platform")
+
+var isFabric = loader == "fabric"
+var isNeo = loader == "neoforge"
 
 var isSnapshot = false
 var mcVer: String = project.property("deps.minecraft_version") as String
@@ -10,7 +15,7 @@ if (mcVer.contains("-") || mcVer.contains("w")) {
     mcVer = mcVer.replace("-", "")
 }
 
-version = "${project.property("mod_version")}+fabric.$mcVer"
+version = "${project.property("mod_version")}+$loader.$mcVer"
 group = project.property("maven_group") as String
 
 base {
@@ -26,6 +31,7 @@ repositories {
             includeGroup("maven.modrinth")
         }
     }
+    maven("https://maven.neoforged.net/releases")
     maven("https://maven.isxander.dev/releases")
     mavenCentral()
 }
@@ -34,21 +40,33 @@ loom {
     runConfigs.all {
         ideConfigGenerated(true)
     }
-
-    accessWidenerPath.set(rootProject.file("src/main/resources/enhancedtooltips.accesswidener"))
 }
 
 dependencies {
     minecraft("com.mojang:minecraft:${project.property("deps.minecraft_version")}")
-    mappings("net.fabricmc:yarn:${project.property("deps.yarn_mappings")}:v2")
+    mappings(loom.layered {
+        mappings("net.fabricmc:yarn:${project.property("deps.yarn_mappings")}:v2")
+        if (isNeo) {
+            mappings("dev.architectury:yarn-mappings-patch-neoforge:${project.property("deps.layered_mappings")}")
+        }
+    })
 
-    modImplementation("net.fabricmc:fabric-loader:${project.property("loader_version")}")
+    if (isFabric) {
+        modImplementation("net.fabricmc:fabric-loader:${project.property("loader_version")}")
+        modImplementation("maven.modrinth:modmenu:${project.property("deps.modmenu_version")}")
+    } else if (isNeo) {
+        "neoForge"("net.neoforged:neoforge:${property("deps.neoforge")}")
+    }
 
-    modImplementation("maven.modrinth:modmenu:${project.property("deps.modmenu_version")}")
     modImplementation("dev.isxander:yet-another-config-lib:${project.property("deps.yacl_version")}")
 
     include("blue.endless:jankson:${project.property("deps.jankson_version")}")
     modImplementation("blue.endless:jankson:${project.property("deps.jankson_version")}")
+}
+
+stonecutter {
+    const("fabric", isFabric)
+    const("neoforge", isNeo)
 }
 
 tasks.processResources {
@@ -63,8 +81,18 @@ tasks.processResources {
     )
     replaceProperties.forEach { (key, value) -> inputs.property(key, value) }
 
-    filesMatching("fabric.mod.json") {
-        expand(replaceProperties)
+    if (isFabric) {
+        filesMatching("fabric.mod.json") {
+            expand(replaceProperties)
+        }
+
+        exclude("META-INF/neoforge.mods.toml")
+    } else if (isNeo) {
+        filesMatching("META-INF/neoforge.mods.toml") {
+            expand(replaceProperties)
+        }
+
+        exclude("fabric.mod.json")
     }
 }
 
@@ -93,7 +121,11 @@ publishMods {
     file.set(tasks.remapJar.get().archiveFile)
     displayName.set("EnhancedTooltips ${project.version}")
 
-    modLoaders.addAll("fabric", "quilt")
+    if (isFabric) {
+        modLoaders.addAll("fabric", "quilt")
+    } else if (isNeo) {
+        modLoaders.add("neoforge")
+    }
 
     val mrOptions = modrinthOptions {
         projectId.set(project.property("modrinthId") as String)

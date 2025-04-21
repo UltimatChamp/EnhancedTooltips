@@ -1,5 +1,6 @@
 package dev.ultimatchamp.enhancedtooltips.mixin;
 
+import dev.ultimatchamp.enhancedtooltips.mixin.accessors.OrderedTextTooltipComponentAccessor;
 import dev.ultimatchamp.enhancedtooltips.tooltip.TooltipComponentManager;
 import dev.ultimatchamp.enhancedtooltips.tooltip.EnhancedTooltipsDrawer;
 import dev.ultimatchamp.enhancedtooltips.tooltip.TooltipItemStackCache;
@@ -7,7 +8,6 @@ import dev.ultimatchamp.enhancedtooltips.util.EnhancedTooltipsTextVisitor;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.tooltip.HoveredTooltipPositioner;
-import net.minecraft.client.gui.tooltip.OrderedTextTooltipComponent;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
 import net.minecraft.client.gui.tooltip.TooltipPositioner;
 import net.minecraft.item.ItemStack;
@@ -42,8 +42,8 @@ public class DrawContextMixin {
         boolean isEmpty = cacheItemStack == null || cacheItemStack.isEmpty();
         if (isEmpty) cacheItemStack = ItemStack.EMPTY;
 
-        if (!isEmpty && components.getFirst() instanceof OrderedTextTooltipComponent ordered) {
-            Text name = EnhancedTooltipsTextVisitor.get(ordered.text);
+        if (!isEmpty && components.getFirst() instanceof OrderedTextTooltipComponentAccessor ordered) {
+            Text name = EnhancedTooltipsTextVisitor.get(ordered.getText());
             Text cachedName = cacheItemStack.getItem().getName(cacheItemStack);
 
             if (!name.getString().equals(cachedName.getString())) {

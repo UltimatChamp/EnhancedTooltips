@@ -58,6 +58,7 @@
   "enhancedtooltips.config.heldItemTooltipMaxLines": "Maximum Lines",
   "enhancedtooltips.config.heldItemTooltipMaxLines.desc": "Defines the line limit for the held item tooltip.",
   "enhancedtooltips.config.screen.warn": "§cEnhancedTooltips is unable to display a configuration screen because YetAnotherConfigLib mod is not installed. Please use the configuration file instead. Sorry for the inconvenience!",
+  "enhancedtooltips.config.screen.open": "Open File...",
   "enhancedtooltips.rarity.common": "Common",
   "enhancedtooltips.rarity.uncommon": "Uncommon",
   "enhancedtooltips.rarity.rare": "Rare",
