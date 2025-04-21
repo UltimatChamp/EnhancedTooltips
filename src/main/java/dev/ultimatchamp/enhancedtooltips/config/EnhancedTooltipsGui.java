@@ -5,6 +5,7 @@ import dev.isxander.yacl3.api.controller.ColorControllerBuilder;
 import dev.isxander.yacl3.api.controller.TickBoxControllerBuilder;
 import dev.isxander.yacl3.gui.controllers.cycling.EnumController;
 import dev.isxander.yacl3.gui.controllers.slider.FloatSliderController;
+import dev.isxander.yacl3.gui.controllers.slider.IntegerSliderController;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.text.Text;
 
@@ -369,6 +370,57 @@ public class EnhancedTooltipsGui {
                                                 (value) -> config.durability.durabilityBar = value
                                         )
                                         .controller(TickBoxControllerBuilder::create)
+                                        .build())
+                                .build())
+                        .group(OptionGroup.createBuilder()
+                                .name(Text.translatable("enhancedtooltips.config.group.heldItemTooltip"))
+                                .option(Option.<Boolean>createBuilder()
+                                        .name(Text.translatable("addServer.resourcePack.enabled"))
+                                        .description(OptionDescription.createBuilder()
+                                                .text(Text.translatable("enhancedtooltips.config.heldItemTooltip.desc"))
+                                                .build())
+                                        .binding(
+                                                true,
+                                                () -> config.heldItemTooltip.enabled,
+                                                (value) -> config.heldItemTooltip.enabled = value
+                                        )
+                                        .controller(TickBoxControllerBuilder::create)
+                                        .build())
+                                .option(Option.<Boolean>createBuilder()
+                                        .name(Text.translatable("enhancedtooltips.config.showHeldItemTooltipBackground"))
+                                        .description(OptionDescription.createBuilder()
+                                                .text(Text.translatable("enhancedtooltips.config.showHeldItemTooltipBackground.desc"))
+                                                .build())
+                                        .binding(
+                                                true,
+                                                () -> config.heldItemTooltip.showBackground,
+                                                (value) -> config.heldItemTooltip.showBackground = value
+                                        )
+                                        .controller(TickBoxControllerBuilder::create)
+                                        .build())
+                                .option(Option.<Boolean>createBuilder()
+                                        .name(Text.translatable("enhancedtooltips.config.heldItemTooltipTiltAnimation"))
+                                        .description(OptionDescription.createBuilder()
+                                                .text(Text.translatable("enhancedtooltips.config.heldItemTooltipTiltAnimation.desc"))
+                                                .build())
+                                        .binding(
+                                                true,
+                                                () -> config.heldItemTooltip.tiltAnimation,
+                                                (value) -> config.heldItemTooltip.tiltAnimation = value
+                                        )
+                                        .controller(TickBoxControllerBuilder::create)
+                                        .build())
+                                .option(Option.<Integer>createBuilder()
+                                        .name(Text.translatable("enhancedtooltips.config.heldItemTooltipMaxLines"))
+                                        .description(OptionDescription.createBuilder()
+                                                .text(Text.translatable("enhancedtooltips.config.heldItemTooltipMaxLines.desc"))
+                                                .build())
+                                        .binding(
+                                                10,
+                                                () -> config.heldItemTooltip.maxLines,
+                                                (value) -> config.heldItemTooltip.maxLines = value
+                                        )
+                                        .customController(opt -> new IntegerSliderController(opt, 5, 25, 1))
                                         .build())
                                 .build())
                         .build())

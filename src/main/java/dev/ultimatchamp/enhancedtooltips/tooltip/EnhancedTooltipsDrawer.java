@@ -3,12 +3,12 @@ package dev.ultimatchamp.enhancedtooltips.tooltip;
 import dev.ultimatchamp.enhancedtooltips.EnhancedTooltips;
 import dev.ultimatchamp.enhancedtooltips.component.TooltipBackgroundComponent;
 import dev.ultimatchamp.enhancedtooltips.config.EnhancedTooltipsConfig;
-import dev.ultimatchamp.enhancedtooltips.api.TooltipDrawerProvider;
+import dev.ultimatchamp.enhancedtooltips.mixin.accessors.OrderedTextTooltipComponentAccessor;
+import dev.ultimatchamp.enhancedtooltips.mixin.accessors.DrawContextAccessor;
 import dev.ultimatchamp.enhancedtooltips.util.EnhancedTooltipsTextVisitor;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.tooltip.OrderedTextTooltipComponent;
 import net.minecraft.client.gui.tooltip.TooltipBackgroundRenderer;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
 import net.minecraft.client.gui.tooltip.TooltipPositioner;
@@ -22,11 +22,11 @@ import org.joml.Vector2ic;
 import java.util.ArrayList;
 import java.util.List;
 
-public class EnhancedTooltipsDrawer implements TooltipDrawerProvider.ITooltipDrawer {
+public class EnhancedTooltipsDrawer {
     private static final int EDGE_SPACING = 32;
     private static final int PAGE_SPACING = 12;
-    private long startTime = -1;
-    private ItemStack lastStack = null;
+    private static long startTime = -1;
+    private static ItemStack lastStack = ItemStack.EMPTY;
 
     private static int getMaxHeight() {
         return MinecraftClient.getInstance().getWindow().getScaledHeight() - EDGE_SPACING * 2;
@@ -36,19 +36,21 @@ public class EnhancedTooltipsDrawer implements TooltipDrawerProvider.ITooltipDra
         return MinecraftClient.getInstance().getWindow().getScaledWidth() / 2 - EDGE_SPACING;
     }
 
-    @Override
-    public void drawTooltip(DrawContext context, TextRenderer textRenderer, List<TooltipComponent> components, int x, int y, TooltipPositioner positioner, ItemStack currentStack) {
-        if (components.isEmpty() || currentStack == null || currentStack.isEmpty()) {
+    public static void drawTooltip(DrawContext context, TextRenderer textRenderer, List<TooltipComponent> components, int x, int y, TooltipPositioner positioner, ItemStack currentStack) {
+        if (components.isEmpty() || currentStack.isEmpty()) {
             startTime = -1;
-            lastStack = null;
-            return;
+            lastStack = ItemStack.EMPTY;
         }
 
-        if (lastStack == null || !ItemStack.areEqual(lastStack, currentStack)) {
-            startTime = System.nanoTime();
-            lastStack = currentStack.copy();
-        } else if (startTime == -1) {
-            startTime = System.nanoTime();
+        if (components.isEmpty()) return;
+
+        if (!currentStack.isEmpty()) {
+            if (lastStack.isEmpty() || !ItemStack.areEqual(lastStack, currentStack)) {
+                startTime = System.nanoTime();
+                lastStack = currentStack.copy();
+            } else if (startTime == -1) {
+                startTime = System.nanoTime();
+            }
         }
 
         TooltipBackgroundComponent backgroundComponent = getBackgroundComponent(components);
@@ -124,7 +126,7 @@ public class EnhancedTooltipsDrawer implements TooltipDrawerProvider.ITooltipDra
 
         matrices.push();
 
-        if (EnhancedTooltipsConfig.load().popUpAnimation.enabled) {
+        if (!currentStack.isEmpty() && EnhancedTooltipsConfig.load().popUpAnimation.enabled) {
             matrices.translate(x, y, 0);
 
             float sec = EnhancedTooltipsConfig.load().popUpAnimation.time * 1000;
@@ -172,7 +174,7 @@ public class EnhancedTooltipsDrawer implements TooltipDrawerProvider.ITooltipDra
 
             for (TooltipComponent component : p.components) {
                 try {
-                    component.drawText(textRenderer, cx, cy, matrices.peek().getPositionMatrix(), context.vertexConsumers);
+                    component.drawText(textRenderer, cx, cy, matrices.peek().getPositionMatrix(), ((DrawContextAccessor) context).getVertexConsumers());
                     component.drawItems(textRenderer, cx, cy, /*? if >1.21.1 {*/p.width, p.height,/*?}*/ context);
                     cy += component.getHeight(/*? if >1.21.1 {*/textRenderer/*?}*/);
 
@@ -188,21 +190,21 @@ public class EnhancedTooltipsDrawer implements TooltipDrawerProvider.ITooltipDra
         matrices.pop();
     }
 
-    private TooltipBackgroundComponent getBackgroundComponent(List<TooltipComponent> components) {
+    private static TooltipBackgroundComponent getBackgroundComponent(List<TooltipComponent> components) {
         for (TooltipComponent component : components) {
-            if (component instanceof TooltipBackgroundComponent) {
-                return (TooltipBackgroundComponent) component;
+            if (component instanceof TooltipBackgroundComponent bgComponent) {
+                return bgComponent;
             }
         }
 
         return null;
     }
 
-    private List<TooltipComponent> wrapComponent(TooltipComponent component, TextRenderer textRenderer, int maxWidth) {
+    private static List<TooltipComponent> wrapComponent(TooltipComponent component, TextRenderer textRenderer, int maxWidth) {
         List<TooltipComponent> wrappedComponents = new ArrayList<>();
 
-        if (component instanceof OrderedTextTooltipComponent orderedTextTooltipComponent) {
-            Text text = EnhancedTooltipsTextVisitor.get(orderedTextTooltipComponent.text);
+        if (component instanceof OrderedTextTooltipComponentAccessor orderedTextTooltipComponent) {
+            Text text = EnhancedTooltipsTextVisitor.get(orderedTextTooltipComponent.getText());
 
             List<OrderedText> lines = textRenderer.wrapLines(text, maxWidth);
             for (OrderedText line : lines) {

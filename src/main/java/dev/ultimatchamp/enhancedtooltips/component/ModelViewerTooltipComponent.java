@@ -1,6 +1,9 @@
 package dev.ultimatchamp.enhancedtooltips.component;
 
 import dev.ultimatchamp.enhancedtooltips.config.EnhancedTooltipsConfig;
+import dev.ultimatchamp.enhancedtooltips.mixin.accessors.BucketItemEntityTypeAccessor;
+import dev.ultimatchamp.enhancedtooltips.mixin.accessors.SpawnEggItemEntityTypeAccessor;
+import dev.ultimatchamp.enhancedtooltips.mixin.accessors.DrawContextAccessor;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.DiffuseLighting;
@@ -128,7 +131,7 @@ public class ModelViewerTooltipComponent extends TooltipBorderColorComponent {
     }
 
     private void renderBucketEntity(DrawContext context, int x, int y, int z, EntityBucketItem bucketItem) throws Exception {
-        var entityType = bucketItem.entityType;
+        var entityType = ((BucketItemEntityTypeAccessor) bucketItem).get();
         //? if >1.21.1 {
         var entity = entityType.create(MinecraftClient.getInstance().world, SpawnReason.BUCKET);
         //?} else {
@@ -155,7 +158,7 @@ public class ModelViewerTooltipComponent extends TooltipBorderColorComponent {
     }
 
     private void renderSpawnEggEntity(DrawContext context, int x, int y, int z, SpawnEggItem spawnEggItem) throws Exception {
-        var entityType = spawnEggItem.type;
+        var entityType = ((SpawnEggItemEntityTypeAccessor) spawnEggItem).get();
         //? if >1.21.1 {
         var entity = entityType.create(MinecraftClient.getInstance().world, SpawnReason.BUCKET);
         //?} else {
@@ -233,7 +236,7 @@ public class ModelViewerTooltipComponent extends TooltipBorderColorComponent {
 
         var dispatcher = MinecraftClient.getInstance().getEntityRenderDispatcher();
         dispatcher.setRenderShadows(false);
-        dispatcher.render(entity, 0.0, 0.0, 0.0,/*? if 1.21.1 {*/ /*0.0F,*//*?}*/ 0.0F, context.getMatrices(), context.vertexConsumers, SHADOW_LIGHT_COLOR);
+        dispatcher.render(entity, 0.0, 0.0, 0.0,/*? if 1.21.1 {*/ /*0.0F,*//*?}*/ 0.0F, context.getMatrices(), ((DrawContextAccessor) context).getVertexConsumers(), SHADOW_LIGHT_COLOR);
         dispatcher.setRenderShadows(true);
 
         context.getMatrices().pop();

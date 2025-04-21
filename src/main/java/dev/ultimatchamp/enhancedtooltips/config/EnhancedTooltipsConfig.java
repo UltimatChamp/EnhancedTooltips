@@ -3,7 +3,6 @@ package dev.ultimatchamp.enhancedtooltips.config;
 import blue.endless.jankson.*;
 import blue.endless.jankson.api.SyntaxError;
 import dev.ultimatchamp.enhancedtooltips.EnhancedTooltips;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.util.TranslatableOption;
 
@@ -12,6 +11,13 @@ import java.io.IOException;
 import java.lang.reflect.Modifier;
 import java.nio.file.Files;
 import java.nio.file.Path;
+
+//? if fabric {
+import net.fabricmc.loader.api.FabricLoader;
+//?} else neoforge {
+/*import net.neoforged.fml.loading.FMLPaths;
+import net.neoforged.fml.ModList;
+*///?}
 
 public class EnhancedTooltipsConfig {
     public GeneralConfig general = new GeneralConfig();
@@ -24,6 +30,7 @@ public class EnhancedTooltipsConfig {
     public MapConfig mapTooltip = new MapConfig();
     public PaintingConfig paintingTooltip = new PaintingConfig();
     public DurabilityConfig durability = new DurabilityConfig();
+    public HeldItemTooltipConfig heldItemTooltip = new HeldItemTooltipConfig();
 
     public static class GeneralConfig {
         @Comment("Shows the rarity of an item in its tooltip.\n(default: true)")
@@ -221,6 +228,20 @@ public class EnhancedTooltipsConfig {
         }
     }
 
+    public static class HeldItemTooltipConfig {
+        @Comment("Toggles the improved held items tooltips feature.\n(default: true)")
+        public boolean enabled = true;
+
+        @Comment("Shows a neat background behind the held item tooltip text.\n(default: true)")
+        public boolean showBackground = true;
+
+        @Comment("Shows a dynamic tilt animation for the held item tooltip when scrolling the hotbar.\n(default: true)")
+        public boolean tiltAnimation = true;
+
+        @Comment("Defines the line limit for the held item tooltip.\n(default: 10)")
+        public int maxLines = 10;
+    }
+
     private static final Jankson JANKSON = Jankson.builder()
             .registerSerializer(Color.class, (color, marshaller) -> new JsonPrimitive(String.format("#%02X%02X%02X%02X", color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()))) // in RRGGBBAA
             .registerDeserializer(JsonPrimitive.class, Color.class, (json, marshaller) -> {
@@ -241,7 +262,12 @@ public class EnhancedTooltipsConfig {
             })
             .build();
 
-    private static final Path CONFIG_PATH = FabricLoader.getInstance().getConfigDir().resolve("enhancedtooltips.json5");
+    public static final Path CONFIG_PATH =
+            //? if fabric {
+            FabricLoader.getInstance().getConfigDir().resolve("enhancedtooltips.json5");
+            //?} else if neoforge {
+            /*FMLPaths.CONFIGDIR.get().resolve("enhancedtooltips.json5");
+            *///?}
 
     private static EnhancedTooltipsConfig cachedConfig;
 
@@ -320,7 +346,11 @@ public class EnhancedTooltipsConfig {
     }
 
     public static Screen createConfigScreen(Screen parent) {
+        //? if fabric {
         if (FabricLoader.getInstance().isModLoaded("yet_another_config_lib_v3")) {
+        //?} else if neoforge {
+        /*if (ModList.get().isLoaded("yet_another_config_lib_v3")) {
+        *///?}
             return EnhancedTooltipsGui.createConfigScreen(parent);
         } else {
             return new NoConfigScreenWarning(parent);

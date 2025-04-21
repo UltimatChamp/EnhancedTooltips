@@ -16,20 +16,18 @@
   "environment": "client",
   "entrypoints": {
     "client": [
-      "dev.ultimatchamp.enhancedtooltips.EnhancedTooltips"
+      "dev.ultimatchamp.enhancedtooltips.loaders.EnhancedTooltipsFabric"
     ],
     "modmenu": [
       "dev.ultimatchamp.enhancedtooltips.config.ModMenuAPIImpl"
     ]
   },
-  "accessWidener": "enhancedtooltips.accesswidener",
   "mixins": [
     "enhancedtooltips.mixins.json"
   ],
   "depends": {
     "minecraft": "${minecraft_range}",
-    "fabricloader": "*",
-    "fabric": "*"
+    "fabricloader": "*"
   },
   "recommends": {
     "yet_another_config_lib_v3": "*"

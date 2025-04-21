@@ -1,7 +1,7 @@
 package dev.ultimatchamp.enhancedtooltips.component;
 
-import dev.ultimatchamp.enhancedtooltips.EnhancedTooltips;
 import dev.ultimatchamp.enhancedtooltips.config.EnhancedTooltipsConfig;
+import dev.ultimatchamp.enhancedtooltips.mixin.accessors.DrawContextAccessor;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
@@ -126,10 +126,10 @@ public class FoodTooltipComponent implements TooltipComponent {
         int hunger = getHunger();
 
         int hungerLine = 0;
-        if (config.foodAndDrinks.hungerTooltip) hungerLine = (int) (textRenderer.getWidth(Text.translatable(EnhancedTooltips.identifier("tooltip.hunger").toTranslationKey())) + 1 + ((textRenderer.fontHeight - 2) * (hunger / 2f)));
+        if (config.foodAndDrinks.hungerTooltip) hungerLine = (int) (textRenderer.getWidth(Text.translatable("enhancedtooltips.tooltip.hunger")) + 1 + ((textRenderer.fontHeight - 2) * (hunger / 2f)));
 
         int saturationLine = 0;
-        if (config.foodAndDrinks.saturationTooltip) saturationLine = textRenderer.getWidth(Text.translatable(EnhancedTooltips.identifier("tooltip.saturation").toTranslationKey(), "100%")) - textRenderer.fontHeight;
+        if (config.foodAndDrinks.saturationTooltip) saturationLine = textRenderer.getWidth(Text.translatable("enhancedtooltips.tooltip.saturation"));
 
         foodWidth = Math.max(hungerLine, saturationLine);
 
@@ -184,8 +184,8 @@ public class FoodTooltipComponent implements TooltipComponent {
 
         if (foodComponent == null) return;
 
-        Text hungerText = Text.translatable(EnhancedTooltips.identifier("tooltip.hunger").toTranslationKey());
-        Text saturationText = Text.translatable(EnhancedTooltips.identifier("tooltip.saturation").toTranslationKey(), saturation);
+        Text hungerText = Text.translatable("enhancedtooltips.tooltip.hunger");
+        Text saturationText = Text.translatable("enhancedtooltips.tooltip.saturation", saturation);
 
         var lineY = y;
 
@@ -221,7 +221,7 @@ public class FoodTooltipComponent implements TooltipComponent {
         }
 
         if (config.foodAndDrinks.saturationTooltip) {
-            textRenderer.draw(saturationText, (float) (x + 0.75), lineY, 0xff00ffff, true, context.getMatrices().peek().getPositionMatrix(), context.vertexConsumers, TextRenderer.TextLayerType.NORMAL, 0, 15728880);
+            textRenderer.draw(saturationText, (float) (x + 0.75), lineY, 0xff00ffff, true, context.getMatrices().peek().getPositionMatrix(), ((DrawContextAccessor) context).getVertexConsumers(), TextRenderer.TextLayerType.NORMAL, 0, 15728880);
             lineY += textRenderer.fontHeight + 1;
         }
 

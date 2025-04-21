@@ -3,49 +3,34 @@ package dev.ultimatchamp.enhancedtooltips.component;
 import dev.ultimatchamp.enhancedtooltips.tooltip.TooltipHelper;
 import dev.ultimatchamp.enhancedtooltips.config.EnhancedTooltipsConfig;
 import dev.ultimatchamp.enhancedtooltips.util.*;
-import net.fabricmc.loader.api.FabricLoader;
-import net.fabricmc.loader.api.ModContainer;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.*;
-import net.minecraft.registry.Registries;
-import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Pair;
 import org.joml.Matrix4f;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 public class HeaderTooltipComponent implements TooltipComponent {
-    private static final int TEXTURE_SIZE = 20;
-    private static final int ITEM_MODEL_SIZE = 16;
+    private static final int TEXTURE_SIZE = 16;
     private static final int SPACING = 4;
     private final ItemStack stack;
-    private final OrderedText nameText;
-    private final OrderedText rarityName;
-    private final Map<String, String> mods = new HashMap<>();
+    private final Text nameText;
+    private final Text rarityName;
     private final EnhancedTooltipsConfig config;
 
     public HeaderTooltipComponent(ItemStack stack) {
         this.stack = stack;
-        this.nameText = TooltipHelper.getDisplayName(stack).asOrderedText();
-        this.rarityName = TooltipHelper.getRarityName(stack).asOrderedText();
+        this.nameText = TooltipHelper.getDisplayName(stack);
+        this.rarityName = TooltipHelper.getRarityName(stack);
         this.config = EnhancedTooltipsConfig.load();
-
-        for (ModContainer modContainer : FabricLoader.getInstance().getAllMods()) {
-            if (modContainer.getMetadata().getId().equals("minecraft")) continue;
-            this.mods.put(modContainer.getMetadata().getId(), modContainer.getMetadata().getName());
-        }
     }
 
     @Override
     public int getHeight(/*? if >1.21.1 {*/TextRenderer textRenderer/*?}*/) {
-        return TEXTURE_SIZE + 2;
+        return getTitleOffset();
     }
 
     @Override
@@ -54,23 +39,8 @@ public class HeaderTooltipComponent implements TooltipComponent {
         if (config.general.rarityTooltip) rarityWidth = textRenderer.getWidth(this.rarityName);
 
         int badgeWidth = 0;
-        if (config.general.itemBadges) {
-            String badgeText = "gamerule.category.misc";
-
-            for (Map.Entry<List<Item>, Pair<String, Integer>> entry : ItemGroupsUtils.getItemGroups().entrySet()) {
-                if (entry.getKey().contains(stack.getItem())) {
-                    badgeText = entry.getValue().getLeft();
-                    badgeWidth = textRenderer.getWidth(Text.translatable(badgeText)) + SPACING * 2;
-                    break;
-                }
-            }
-
-            if (badgeText.equals("gamerule.category.misc")) {
-                String namespace = Registries.ITEM.getId(stack.getItem()).getNamespace();
-                badgeText = this.mods.getOrDefault(namespace, "gamerule.category.misc");
-                badgeWidth = textRenderer.getWidth(Text.translatable(badgeText)) + SPACING * 2;
-            }
-        }
+        String badgeText = BadgesUtils.getBadgeText(stack).getLeft();
+        if (config.general.itemBadges && !badgeText.isEmpty()) badgeWidth = textRenderer.getWidth(Text.translatable(badgeText)) + SPACING * 2;
 
         int titleWidth;
         if (config.general.rarityTooltip) {
@@ -79,18 +49,19 @@ public class HeaderTooltipComponent implements TooltipComponent {
             titleWidth = Math.max(textRenderer.getWidth(this.nameText), badgeWidth);
         }
 
-        return Math.max(titleWidth, rarityWidth) + SPACING + TEXTURE_SIZE;
+        return Math.max(titleWidth, rarityWidth) + getTitleOffset() + (getTitleOffset() - TEXTURE_SIZE) / 2 + 2;
     }
 
     public int getTitleOffset() {
-        return SPACING + TEXTURE_SIZE;
+        return 26;
     }
 
     @Override
     public void drawText(TextRenderer textRenderer, int x, int y, Matrix4f matrix, VertexConsumerProvider.Immediate vertexConsumers) {
         float startDrawX = (float) x + getTitleOffset();
-        float startDrawY = y + 1;
-        if (!config.general.rarityTooltip && !config.general.itemBadges) startDrawY += (float) (textRenderer.fontHeight + SPACING) / 2;
+        float startDrawY = y;
+        if (config.general.rarityTooltip) startDrawY += 2;
+        if (!config.general.rarityTooltip && !config.general.itemBadges) startDrawY += (getTitleOffset() - textRenderer.fontHeight) / 2f;
         textRenderer.draw(this.nameText, startDrawX, startDrawY, -1, true, matrix, vertexConsumers, TextRenderer.TextLayerType.NORMAL, 0, 0xF000F0);
 
         if (config.general.rarityTooltip) {
@@ -105,8 +76,8 @@ public class HeaderTooltipComponent implements TooltipComponent {
     //?} else {
     /*public void drawItems(TextRenderer textRenderer, int x, int y, DrawContext context) {
     *///?}
-        int startDrawX = x + (TEXTURE_SIZE - ITEM_MODEL_SIZE) / 2;
-        int startDrawY = y + (TEXTURE_SIZE - ITEM_MODEL_SIZE) / 2;
+        int startDrawX = x + (getTitleOffset() - TEXTURE_SIZE) / 2 - 1;
+        int startDrawY = y + (getTitleOffset() - TEXTURE_SIZE) / 2 - 1;
 
         if (config.itemPreviewAnimation.enabled) {
             int sec = (int) (config.itemPreviewAnimation.time * 1000);
@@ -126,27 +97,10 @@ public class HeaderTooltipComponent implements TooltipComponent {
         if (config.itemPreviewAnimation.enabled) context.getMatrices().pop();
 
         if (!config.general.itemBadges) return;
-        if (!config.general.rarityTooltip) y += 1 + textRenderer.fontHeight + SPACING;
+        if (!config.general.rarityTooltip) y += textRenderer.fontHeight + SPACING;
 
-        String translation = "gamerule.category.misc";
-        int fillColor = -6250336;
-
-        for (Map.Entry<List<Item>, Pair<String, Integer>> entry : ItemGroupsUtils.getItemGroups().entrySet()) {
-            if (entry.getKey().contains(stack.getItem())) {
-                translation = entry.getValue().getLeft();
-                fillColor = entry.getValue().getRight();
-                break;
-            }
-        }
-
-        if (translation.equals("gamerule.category.misc")) {
-            String namespace = Registries.ITEM.getId(stack.getItem()).getNamespace();
-            translation = this.mods.getOrDefault(namespace, "gamerule.category.misc");
-
-            if (!translation.equals("gamerule.category.misc")) fillColor = BadgesUtils.getColorFromModName(namespace);
-        }
-
-        drawBadge(textRenderer, Text.translatable(translation), x, y, context, fillColor);
+        Pair<String, Integer> badgeText = BadgesUtils.getBadgeText(stack);
+        if (!badgeText.getLeft().isEmpty()) drawBadge(textRenderer, Text.translatable(badgeText.getLeft()), x, y, context, badgeText.getRight());
     }
 
     private void drawBadge(TextRenderer textRenderer, Text text, int x, int y, DrawContext context, int fillColor) {
@@ -154,7 +108,7 @@ public class HeaderTooltipComponent implements TooltipComponent {
         int textHeight = textRenderer.fontHeight;
 
         int textX = x + getTitleOffset() + (!config.general.rarityTooltip ? 4 : textRenderer.getWidth(this.nameText) + SPACING + 2);
-        int textY = y - textRenderer.fontHeight + SPACING * 2 + 2;
+        int textY = y - textRenderer.fontHeight + SPACING * 2 + 2 + 1;
 
         context.fill(
                 textX - SPACING,

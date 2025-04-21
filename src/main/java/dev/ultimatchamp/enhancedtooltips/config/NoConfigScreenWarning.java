@@ -4,6 +4,7 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.text.Text;
+import net.minecraft.util.Util;
 
 public class NoConfigScreenWarning extends Screen {
     private final Screen parent;
@@ -17,8 +18,11 @@ public class NoConfigScreenWarning extends Screen {
     protected void init() {
         super.init();
 
-        var btn = ButtonWidget.builder(Text.translatable("dataPack.validation.back"), button -> this.client.setScreen(parent)).dimensions(this.width / 2 - 100, this.height / 2 + 50, 200, 20).build();
-        this.addDrawableChild(btn);
+        var fileBtn = ButtonWidget.builder(Text.translatable("enhancedtooltips.config.screen.open"), button -> Util.getOperatingSystem().open(EnhancedTooltipsConfig.CONFIG_PATH)).dimensions(this.width / 2 - 100, this.height / 2 + 50, 200, 20).build();
+        this.addDrawableChild(fileBtn);
+
+        var backBtn = ButtonWidget.builder(Text.translatable("dataPack.validation.back"), button -> this.client.setScreen(parent)).dimensions(this.width / 2 - 100, this.height / 2 + 75, 200, 20).build();
+        this.addDrawableChild(backBtn);
     }
 
     @Override

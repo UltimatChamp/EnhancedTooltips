@@ -1,8 +1,66 @@
 package dev.ultimatchamp.enhancedtooltips.util;
 
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.registry.Registries;
+import net.minecraft.util.Pair;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+//? if fabric {
+import net.fabricmc.loader.api.FabricLoader;
+import net.fabricmc.loader.api.ModContainer;
+//?} else if neoforge {
+/*import net.neoforged.fml.ModList;
+import net.neoforged.fml.ModContainer;
+*///?}
 
 public class BadgesUtils {
+    private static Map<String, String> mods = new HashMap<>();
+
+    public static @NotNull Pair<String, Integer> getBadgeText(ItemStack stack) {
+        String text = "";
+        int fillColor = 0;
+
+        for (Map.Entry<List<Item>, Pair<String, Integer>> entry : ItemGroupsUtils.getItemGroups().entrySet()) {
+            if (entry.getKey().contains(stack.getItem())) {
+                text = entry.getValue().getLeft();
+                fillColor = entry.getValue().getRight();
+                break;
+            }
+        }
+
+        if (text.isEmpty()) {
+            String namespace = Registries.ITEM.getId(stack.getItem()).getNamespace();
+            text = getMods().getOrDefault(namespace, "");
+            fillColor = getColorFromModName(namespace);
+        }
+
+        return new Pair<>(text, fillColor);
+    }
+
+    public static Map<String, String> getMods() {
+        if (!mods.isEmpty()) return mods;
+
+        //? if fabric {
+        for (ModContainer modContainer : FabricLoader.getInstance().getAllMods()) {
+            if (modContainer.getMetadata().getId().equals("minecraft")) continue;
+            mods.put(modContainer.getMetadata().getId(), modContainer.getMetadata().getName());
+        }
+        //?} else {
+        /*for (ModContainer modContainer : ModList.get().getSortedMods()) {
+            if (modContainer.getModId().equals("minecraft")) continue;
+            mods.put(modContainer.getNamespace(), modContainer.getModInfo().getDisplayName());
+        }
+        *///?}
+
+        return mods;
+    }
+
     public static int darkenColor(int color, float factor) {
         int alpha = (color >> 24) & 0xFF;
         int red = (color >> 16) & 0xFF;

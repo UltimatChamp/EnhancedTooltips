@@ -1,3 +1,4 @@
+//? if fabric {
 package dev.ultimatchamp.enhancedtooltips.config;
 
 import com.terraformersmc.modmenu.api.ConfigScreenFactory;
@@ -9,3 +10,4 @@ public class ModMenuAPIImpl implements ModMenuApi {
         return EnhancedTooltipsConfig::createConfigScreen;
     }
 }
+//?}

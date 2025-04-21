@@ -2,18 +2,14 @@ package dev.ultimatchamp.enhancedtooltips;
 
 import dev.ultimatchamp.enhancedtooltips.component.*;
 import dev.ultimatchamp.enhancedtooltips.config.EnhancedTooltipsConfig;
-import dev.ultimatchamp.enhancedtooltips.api.TooltipComponentAPI;
-import dev.ultimatchamp.enhancedtooltips.api.TooltipDrawerProvider;
-import dev.ultimatchamp.enhancedtooltips.tooltip.EnhancedTooltipsDrawer;
-import dev.ultimatchamp.enhancedtooltips.tooltip.TooltipModule;
+import dev.ultimatchamp.enhancedtooltips.mixin.accessors.DecorationItemEntityTypeAccessor;
+import dev.ultimatchamp.enhancedtooltips.mixin.accessors.OrderedTextTooltipComponentAccessor;
+import dev.ultimatchamp.enhancedtooltips.tooltip.TooltipComponentManager;
 import dev.ultimatchamp.enhancedtooltips.util.EnhancedTooltipsTextVisitor;
-import net.fabricmc.api.ClientModInitializer;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.tooltip.OrderedTextTooltipComponent;
 import net.minecraft.entity.EntityType;
 import net.minecraft.item.*;
 import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,17 +17,20 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
-public class EnhancedTooltips implements ClientModInitializer {
+public class EnhancedTooltips {
     public static final String MOD_ID = "enhancedtooltips";
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
-    @Override
-    public void onInitializeClient() {
-        new TooltipModule().load();
+    public static void init() {
         EnhancedTooltipsConfig.load();
 
-        TooltipComponentAPI.EVENT.register((list, stack) -> {
+        TooltipComponentManager.register((list, stack) -> {
             if (list.isEmpty()) return;
+
+            if (stack.isEmpty()) {
+                list.add(new TooltipBackgroundComponent());
+                return;
+            }
 
             list.removeFirst();
             list.add(0, new HeaderTooltipComponent(stack));
@@ -54,10 +53,10 @@ public class EnhancedTooltips implements ClientModInitializer {
                 );
 
                 list.removeIf(component -> {
-                    if (component instanceof OrderedTextTooltipComponent textComponent) {
-                        Text text = EnhancedTooltipsTextVisitor.get(textComponent.text);
+                    if (component instanceof OrderedTextTooltipComponentAccessor textComponent) {
+                        Text text = EnhancedTooltipsTextVisitor.get(textComponent.getText());
                         for (String group : itemGroups) {
-                            if (text.contains(Text.translatable(group))) {
+                            if (text.getString().equals(Text.translatable(group).getString())) {
                                 return true;
                             }
                         }
@@ -84,21 +83,17 @@ public class EnhancedTooltips implements ClientModInitializer {
 
             if (stack.getItem() instanceof FilledMapItem) list.add(new MapTooltipComponent(stack));
 
-            if (stack.getItem() instanceof DecorationItem decorationItem && decorationItem.entityType == EntityType.PAINTING) list.add(new PaintingTooltipComponent(stack));
+            if (stack.getItem() instanceof DecorationItemEntityTypeAccessor decorationItem &&
+                decorationItem.get() == EntityType.PAINTING
+            ) list.add(new PaintingTooltipComponent(stack));
 
             if (MinecraftClient.getInstance().options.advancedItemTooltips) {
                 list.removeIf(component ->
-                        component instanceof OrderedTextTooltipComponent orderedTextTooltipComponent &&
+                        component instanceof OrderedTextTooltipComponentAccessor orderedTextTooltipComponent &&
                         (!EnhancedTooltipsConfig.load().durability.durabilityTooltip.equals(EnhancedTooltipsConfig.DurabilityTooltipMode.OFF) || EnhancedTooltipsConfig.load().durability.durabilityBar) &&
-                        EnhancedTooltipsTextVisitor.get(orderedTextTooltipComponent.text).getString().contains((stack.getMaxDamage() - stack.getDamage()) + " / " + stack.getMaxDamage()));
+                        EnhancedTooltipsTextVisitor.get(orderedTextTooltipComponent.getText()).getString().contains((stack.getMaxDamage() - stack.getDamage()) + " / " + stack.getMaxDamage()));
             }
             list.add(new DurabilityTooltipComponent(stack));
         });
-
-        TooltipDrawerProvider.setTooltipDrawerProvider(new EnhancedTooltipsDrawer());
-    }
-
-    public static Identifier identifier(String path) {
-        return Identifier.of(MOD_ID, path);
     }
 }
