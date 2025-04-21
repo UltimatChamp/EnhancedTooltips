@@ -33,6 +33,7 @@ repositories {
     }
     maven("https://maven.neoforged.net/releases")
     maven("https://maven.isxander.dev/releases")
+    maven("https://thedarkcolour.github.io/KotlinForForge/")
     mavenCentral()
 }
 
