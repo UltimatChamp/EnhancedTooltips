@@ -221,7 +221,7 @@ public class FoodTooltipComponent implements TooltipComponent {
         }
 
         if (config.foodAndDrinks.saturationTooltip) {
-            textRenderer.draw(saturationText, (float) (x + 0.75), lineY, 0xff00ffff, true, context.getMatrices().peek().getPositionMatrix(), ((DrawContextAccessor) context).getVertexConsumers(), TextRenderer.TextLayerType.NORMAL, 0, 15728880);
+            textRenderer.draw(saturationText, x + 1.75f, lineY, 0xff00ffff, true, context.getMatrices().peek().getPositionMatrix(), ((DrawContextAccessor) context).getVertexConsumers(), TextRenderer.TextLayerType.NORMAL, 0, 15728880);
             lineY += textRenderer.fontHeight + 1;
         }
 
@@ -262,11 +262,11 @@ public class FoodTooltipComponent implements TooltipComponent {
 
                 if (config.foodAndDrinks.effectsTooltip == EnhancedTooltipsConfig.EffectsTooltipMode.WITH_ICONS) {
                     //? if >1.21.1 {
-                    context.drawSpriteStretched(RenderLayer::getGuiTextured, effectTexture, x - 1, lineY - 1, textRenderer.fontHeight, textRenderer.fontHeight);
+                    context.drawSpriteStretched(RenderLayer::getGuiTextured, effectTexture, x, lineY - 1, textRenderer.fontHeight, textRenderer.fontHeight);
                     //?} else {
                     /*context.drawSprite(x - 2, lineY, 0, textRenderer.fontHeight, textRenderer.fontHeight, effectTexture);
                     *///?}
-                    context.drawText(textRenderer, effectText, x + textRenderer.fontHeight + 2, lineY, c, true);
+                    context.drawText(textRenderer, effectText, x + textRenderer.fontHeight + 3, lineY, c, true);
                 } else {
                     context.drawText(textRenderer, effectText, x, lineY, c, true);
                 }
