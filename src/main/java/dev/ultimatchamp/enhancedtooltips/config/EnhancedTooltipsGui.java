@@ -10,6 +10,8 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.text.Text;
 
 import java.awt.*;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 public class EnhancedTooltipsGui {
     public static Screen createConfigScreen(Screen parent) {
@@ -79,7 +81,13 @@ public class EnhancedTooltipsGui {
                                                 () -> config.popUpAnimation.time,
                                                 (value) -> config.popUpAnimation.time = value
                                         )
-                                        .customController(opt -> new FloatSliderController(opt, 1f, 5f, 0.05f, value -> Text.literal(String.format("%." + 2 /* decimal places */ + "f seconds", value))))
+                                        .customController(opt -> new FloatSliderController(opt, 1f, 5f, 0.05f,
+                                                value -> Text.literal(value == 1 ? "1 second" :
+                                                        BigDecimal.valueOf(value)
+                                                                .setScale(2, RoundingMode.HALF_UP)
+                                                                .stripTrailingZeros()
+                                                                .toPlainString() + " seconds")
+                                        ))
                                         .build())
                                 .option(Option.<Float>createBuilder()
                                         .name(Text.translatable("enhancedtooltips.config.popUpAnimation.magnitude"))
@@ -112,7 +120,13 @@ public class EnhancedTooltipsGui {
                                                 () -> config.itemPreviewAnimation.time,
                                                 (value) -> config.itemPreviewAnimation.time = value
                                         )
-                                        .customController(opt -> new FloatSliderController(opt, 0.25f, 2f, 0.05f, value -> Text.literal(String.format("%." + 2 /* decimal places */ + "f seconds", value))))
+                                        .customController(opt -> new FloatSliderController(opt, 0.25f, 2f, 0.05f,
+                                                value -> Text.literal(value == 1 ? "1 second" :
+                                                        BigDecimal.valueOf(value)
+                                                                .setScale(2, RoundingMode.HALF_UP)
+                                                                .stripTrailingZeros()
+                                                                .toPlainString() + " seconds")
+                                        ))
                                         .build())
                                 .option(Option.<Float>createBuilder()
                                         .name(Text.translatable("enhancedtooltips.config.popUpAnimation.magnitude"))
@@ -398,6 +412,18 @@ public class EnhancedTooltipsGui {
                                         )
                                         .controller(TickBoxControllerBuilder::create)
                                         .build())
+                                .option(Option.<Integer>createBuilder()
+                                        .name(Text.translatable("enhancedtooltips.config.heldItemTooltipMaxLines"))
+                                        .description(OptionDescription.createBuilder()
+                                                .text(Text.translatable("enhancedtooltips.config.heldItemTooltipMaxLines.desc"))
+                                                .build())
+                                        .binding(
+                                                10,
+                                                () -> config.heldItemTooltip.maxLines,
+                                                (value) -> config.heldItemTooltip.maxLines = value
+                                        )
+                                        .customController(opt -> new IntegerSliderController(opt, 5, 25, 1))
+                                        .build())
                                 .option(Option.<Boolean>createBuilder()
                                         .name(Text.translatable("enhancedtooltips.config.heldItemTooltipTiltAnimation"))
                                         .description(OptionDescription.createBuilder()
@@ -411,16 +437,36 @@ public class EnhancedTooltipsGui {
                                         .controller(TickBoxControllerBuilder::create)
                                         .build())
                                 .option(Option.<Integer>createBuilder()
-                                        .name(Text.translatable("enhancedtooltips.config.heldItemTooltipMaxLines"))
-                                        .description(OptionDescription.createBuilder()
-                                                .text(Text.translatable("enhancedtooltips.config.heldItemTooltipMaxLines.desc"))
-                                                .build())
+                                        .name(Text.translatable("stat.minecraft.play_time"))
                                         .binding(
-                                                10,
-                                                () -> config.heldItemTooltip.maxLines,
-                                                (value) -> config.heldItemTooltip.maxLines = value
+                                                300,
+                                                () -> config.heldItemTooltip.tiltDuration,
+                                                (value) -> config.heldItemTooltip.tiltDuration = value
                                         )
-                                        .customController(opt -> new IntegerSliderController(opt, 5, 25, 1))
+                                        .customController(opt -> new IntegerSliderController(opt, 50, 1000, 50, value -> Text.literal(value == 1000 ? "1 second" : value + " ms")))
+                                        .build())
+                                .option(Option.<Float>createBuilder()
+                                        .name(Text.translatable("enhancedtooltips.config.popUpAnimation.magnitude"))
+                                        .binding(
+                                                10f,
+                                                () -> config.heldItemTooltip.tiltMagnitude,
+                                                (value) -> config.heldItemTooltip.tiltMagnitude = value
+                                        )
+                                        .customController(opt -> new FloatSliderController(opt, 5f, 15f, 0.5f, value -> Text.literal(String.format("%." + 0 /* decimal places */ + "f%%", value * 10.0F))))
+                                        .build())
+                                .option(Option.<Float>createBuilder()
+                                        .name(Text.translatable("enhancedtooltips.config.heldItemTooltip.easing"))
+                                        .binding(
+                                                2f,
+                                                () -> config.heldItemTooltip.tiltEasing,
+                                                (value) -> config.heldItemTooltip.tiltEasing = value
+                                        )
+                                        .customController(opt -> new FloatSliderController(opt, 1f, 3f, 0.05f,
+                                                value -> Text.literal(BigDecimal.valueOf(value)
+                                                        .setScale(2, RoundingMode.HALF_UP)
+                                                        .stripTrailingZeros()
+                                                        .toPlainString() + "x")
+                                        ))
                                         .build())
                                 .build())
                         .build())

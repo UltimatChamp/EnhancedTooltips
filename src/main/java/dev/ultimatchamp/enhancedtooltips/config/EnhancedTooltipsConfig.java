@@ -235,11 +235,20 @@ public class EnhancedTooltipsConfig {
         @Comment("Shows a neat background behind the held item tooltip text.\n(default: true)")
         public boolean showBackground = true;
 
+        @Comment("Defines the line limit for the held item tooltip.\n(default: 10)")
+        public int maxLines = 10;
+
         @Comment("Shows a dynamic tilt animation for the held item tooltip when scrolling the hotbar.\n(default: true)")
         public boolean tiltAnimation = true;
 
-        @Comment("Defines the line limit for the held item tooltip.\n(default: 10)")
-        public int maxLines = 10;
+        @Comment("Duration of the tilt animation in ms.\n(default: 300)")
+        public int tiltDuration = 300;
+
+        @Comment("Magnitude of the tilt animation.\n(default: 10.0)")
+        public float tiltMagnitude = 10f;
+
+        @Comment("Smoothness of the tilt animation.\n(default: 2.0)")
+        public float tiltEasing = 2f;
     }
 
     private static final Jankson JANKSON = Jankson.builder()

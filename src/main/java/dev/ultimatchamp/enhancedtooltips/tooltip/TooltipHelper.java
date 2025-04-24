@@ -16,8 +16,12 @@ public class TooltipHelper {
     }
 
     public static Text getDisplayName(ItemStack stack) {
-        return Text.empty().append(stack.getName())
+        //? if >1.21.3 {
+        return stack.getFormattedName();
+        //?} else {
+        /*return Text.empty().append(stack.getName())
                 .formatted(stack.getRarity().getFormatting());
+        *///?}
     }
 
     public static int getItemBorderColor(ItemStack stack) {

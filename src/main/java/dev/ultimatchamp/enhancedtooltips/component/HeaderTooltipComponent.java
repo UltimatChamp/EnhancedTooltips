@@ -60,8 +60,12 @@ public class HeaderTooltipComponent implements TooltipComponent {
     public void drawText(TextRenderer textRenderer, int x, int y, Matrix4f matrix, VertexConsumerProvider.Immediate vertexConsumers) {
         float startDrawX = (float) x + getTitleOffset();
         float startDrawY = y;
-        if (config.general.rarityTooltip) startDrawY += 2;
-        if (!config.general.rarityTooltip && !config.general.itemBadges) startDrawY += (getTitleOffset() - textRenderer.fontHeight) / 2f;
+
+        if (config.general.rarityTooltip)
+            startDrawY += 2;
+        else if (!config.general.itemBadges || BadgesUtils.getBadgeText(stack).getLeft().isEmpty())
+            startDrawY += (getTitleOffset() - textRenderer.fontHeight) / 2f;
+
         textRenderer.draw(this.nameText, startDrawX, startDrawY, -1, true, matrix, vertexConsumers, TextRenderer.TextLayerType.NORMAL, 0, 0xF000F0);
 
         if (config.general.rarityTooltip) {

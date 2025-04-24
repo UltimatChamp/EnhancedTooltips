@@ -326,10 +326,10 @@ public abstract class InGameHudMixin {
         if (!EnhancedTooltipsConfig.load().heldItemTooltip.tiltAnimation || enhancedTooltips$tiltDirection == 0f) return 0f;
 
         long elapsed = System.currentTimeMillis() - enhancedTooltips$tiltStartTime;
-        float duration = 300f;
+        float duration = EnhancedTooltipsConfig.load().heldItemTooltip.tiltDuration;
         if (elapsed > duration) return 0f;
 
-        float eased = (float) Math.pow(1f - (elapsed / duration), 2);
-        return enhancedTooltips$tiltDirection * 10f * eased;
+        float eased = (float) Math.pow(1f - (elapsed / duration), EnhancedTooltipsConfig.load().heldItemTooltip.tiltEasing);
+        return enhancedTooltips$tiltDirection * EnhancedTooltipsConfig.load().heldItemTooltip.tiltMagnitude * eased;
     }
 }
