@@ -1,5 +1,6 @@
 package dev.ultimatchamp.enhancedtooltips.mixin;
 
+import com.google.common.collect.Lists;
 import dev.ultimatchamp.enhancedtooltips.config.EnhancedTooltipsConfig;
 import dev.ultimatchamp.enhancedtooltips.mixin.accessors.PlayerInventoryAccessor;
 import dev.ultimatchamp.enhancedtooltips.tooltip.TooltipHelper;
@@ -68,12 +69,17 @@ public abstract class InGameHudMixin {
     )
     private void enhancedTooltips$renderHeldItemTooltipBackground(DrawContext context,/*? if neoforge {*/ /*int YShift,*//*?}*/ CallbackInfo ci) {
         EnhancedTooltipsConfig config = EnhancedTooltipsConfig.load();
-        if (!config.heldItemTooltip.enabled) return;
+        if (config.heldItemTooltip.mode == EnhancedTooltipsConfig.HeldItemTooltipMode.OFF) return;
 
-        List<Text> tooltip = Screen.getTooltipFromItem(client, currentStack);
-        TooltipItemStackCache.saveItemStack(ItemStack.EMPTY);
+        List<Text> tooltip;
+        if (config.heldItemTooltip.mode == EnhancedTooltipsConfig.HeldItemTooltipMode.ON) {
+            tooltip = Screen.getTooltipFromItem(client, currentStack);
+            TooltipItemStackCache.saveItemStack(ItemStack.EMPTY);
 
-        if (tooltip.isEmpty()) return;
+            if (tooltip.isEmpty()) return;
+        } else {
+            tooltip = Lists.newArrayList(TooltipHelper.getDisplayName(currentStack));
+        }
 
         TextRenderer textRenderer = this.getTextRenderer();
 
@@ -103,9 +109,10 @@ public abstract class InGameHudMixin {
         if (config.general.rarityTooltip)
             tooltip.add(1, TooltipHelper.getRarityName(currentStack));
 
-        enhancedTooltips$addFoodTooltip(tooltip::add);
+        if (config.heldItemTooltip.mode == EnhancedTooltipsConfig.HeldItemTooltipMode.ON)
+            enhancedTooltips$addFoodTooltip(tooltip::add);
 
-        if (client.options.advancedItemTooltips) {
+        if (config.heldItemTooltip.mode == EnhancedTooltipsConfig.HeldItemTooltipMode.ON && client.options.advancedItemTooltips) {
             tooltip.remove(Text.translatable("item.durability", currentStack.getMaxDamage() - currentStack.getDamage(), currentStack.getMaxDamage()));
             tooltip.remove(Text.literal(Registries.ITEM.getId(currentStack.getItem()).toString()).formatted(Formatting.DARK_GRAY));
             tooltip.remove(Text.translatable("item.components", currentStack.getComponents().size()).formatted(Formatting.DARK_GRAY));

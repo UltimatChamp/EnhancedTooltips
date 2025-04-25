@@ -142,14 +142,14 @@ public class EnhancedTooltipsConfig {
         @Comment("Shows the maximum saturation which can be gained from an item in its tooltip.\n(default: true)")
         public boolean saturationTooltip = true;
 
-        @Comment("Shows a list of effects applied on consuming an item in its tooltip.\nOFF/WITHOUT_ICONS/WITH_ICONS (default: WITH_ICONS)")
+        @Comment("Shows a list of effects applied on consuming an item in its tooltip.\nWITH_ICONS/WITHOUT_ICONS/OFF (default: WITH_ICONS)")
         public EffectsTooltipMode effectsTooltip = EffectsTooltipMode.WITH_ICONS;
     }
 
     public enum EffectsTooltipMode implements TranslatableOption {
-        OFF(0, "options.off"),
+        WITH_ICONS(0, "enhancedtooltips.config.effectsTooltip.withIcons"),
         WITHOUT_ICONS(1, "enhancedtooltips.config.effectsTooltip.withoutIcons"),
-        WITH_ICONS(2, "enhancedtooltips.config.effectsTooltip.withIcons");
+        OFF(2, "options.off");
 
         private final int id;
         private final String translationKey;
@@ -199,7 +199,7 @@ public class EnhancedTooltipsConfig {
     }
 
     public static class DurabilityConfig {
-        @Comment("Shows the durability of an item in its tooltip.\nOFF/VALUE/PERCENTAGE (default: VALUE)")
+        @Comment("Shows the durability of an item in its tooltip.\nVALUE/PERCENTAGE/OFF (default: VALUE)")
         public DurabilityTooltipMode durabilityTooltip = DurabilityTooltipMode.VALUE;
 
         @Comment("Shows the durability of an item, represented by a bar, in its tooltip.\n(default: false)")
@@ -207,9 +207,9 @@ public class EnhancedTooltipsConfig {
     }
 
     public enum DurabilityTooltipMode implements TranslatableOption {
-        OFF(0, "options.off"),
-        VALUE(1, "enhancedtooltips.config.durabilityTooltip.value"),
-        PERCENTAGE(2, "enhancedtooltips.config.durabilityTooltip.percentage");
+        VALUE(0, "enhancedtooltips.config.durabilityTooltip.value"),
+        PERCENTAGE(1, "enhancedtooltips.config.durabilityTooltip.percentage"),
+        OFF(2, "options.off");
 
         private final int id;
         private final String translationKey;
@@ -229,8 +229,8 @@ public class EnhancedTooltipsConfig {
     }
 
     public static class HeldItemTooltipConfig {
-        @Comment("Toggles the improved held items tooltips feature.\n(default: true)")
-        public boolean enabled = true;
+        @Comment("Toggles the improved held items tooltips feature.\nON/MINIMAL/OFF (default: ON)")
+        public HeldItemTooltipMode mode = HeldItemTooltipMode.ON;
 
         @Comment("Shows a neat background behind the held item tooltip text.\n(default: true)")
         public boolean showBackground = true;
@@ -249,6 +249,28 @@ public class EnhancedTooltipsConfig {
 
         @Comment("Smoothness of the tilt animation.\n(default: 2.0)")
         public float tiltEasing = 2f;
+    }
+
+    public enum HeldItemTooltipMode implements TranslatableOption {
+        ON(0, "options.on"),
+        MINIMAL(1, "options.particles.minimal"),
+        OFF(2, "options.off");
+
+        private final int id;
+        private final String translationKey;
+
+        HeldItemTooltipMode(final int id, final String translationKey) {
+            this.id = id;
+            this.translationKey = translationKey;
+        }
+
+        public int getId() {
+            return this.id;
+        }
+
+        public String getTranslationKey() {
+            return this.translationKey;
+        }
     }
 
     private static final Jankson JANKSON = Jankson.builder()

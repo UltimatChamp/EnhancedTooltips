@@ -388,17 +388,17 @@ public class EnhancedTooltipsGui {
                                 .build())
                         .group(OptionGroup.createBuilder()
                                 .name(Text.translatable("enhancedtooltips.config.group.heldItemTooltip"))
-                                .option(Option.<Boolean>createBuilder()
-                                        .name(Text.translatable("addServer.resourcePack.enabled"))
+                                .option(Option.<EnhancedTooltipsConfig.HeldItemTooltipMode>createBuilder()
+                                        .name(Text.translatable("advMode.mode"))
                                         .description(OptionDescription.createBuilder()
                                                 .text(Text.translatable("enhancedtooltips.config.heldItemTooltip.desc"))
                                                 .build())
                                         .binding(
-                                                true,
-                                                () -> config.heldItemTooltip.enabled,
-                                                (value) -> config.heldItemTooltip.enabled = value
+                                                EnhancedTooltipsConfig.HeldItemTooltipMode.ON,
+                                                () -> config.heldItemTooltip.mode,
+                                                (value) -> config.heldItemTooltip.mode = value
                                         )
-                                        .controller(TickBoxControllerBuilder::create)
+                                        .customController(opt -> new EnumController<>(opt, EnhancedTooltipsConfig.HeldItemTooltipMode.class))
                                         .build())
                                 .option(Option.<Boolean>createBuilder()
                                         .name(Text.translatable("enhancedtooltips.config.showHeldItemTooltipBackground"))
