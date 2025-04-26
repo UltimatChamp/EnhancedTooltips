@@ -1285,7 +1285,28 @@ public class ItemGroupsUtils {
             Items.HOPPER_MINECART,
             Items.CHEST_MINECART,
             Items.FURNACE_MINECART,
-            Items.TNT_MINECART
+            Items.TNT_MINECART,
+            Items.FIREWORK_ROCKET,
+            Items.MUSIC_DISC_13,
+            Items.MUSIC_DISC_CAT,
+            Items.MUSIC_DISC_BLOCKS,
+            Items.MUSIC_DISC_CHIRP,
+            Items.MUSIC_DISC_FAR,
+            Items.MUSIC_DISC_MALL,
+            Items.MUSIC_DISC_MELLOHI,
+            Items.MUSIC_DISC_STAL,
+            Items.MUSIC_DISC_STRAD,
+            Items.MUSIC_DISC_WARD,
+            Items.MUSIC_DISC_11,
+            Items.MUSIC_DISC_CREATOR_MUSIC_BOX,
+            Items.MUSIC_DISC_WAIT,
+            Items.MUSIC_DISC_CREATOR,
+            Items.MUSIC_DISC_PRECIPICE,
+            Items.MUSIC_DISC_OTHERSIDE,
+            Items.MUSIC_DISC_RELIC,
+            Items.MUSIC_DISC_5,
+            Items.MUSIC_DISC_PIGSTEP,
+            Items.GOAT_HORN
     );
 
     public static List<Item> COMBAT = List.of(
@@ -1342,7 +1363,8 @@ public class ItemGroupsUtils {
             Items.BOW,
             Items.CROSSBOW,
             Items.ARROW,
-            Items.SPECTRAL_ARROW
+            Items.SPECTRAL_ARROW,
+            Items.TIPPED_ARROW
     );
 
     public static List<Item> FOOD_AND_DRINK = List.of(
@@ -1386,7 +1408,11 @@ public class ItemGroupsUtils {
             Items.BEETROOT_SOUP,
             Items.RABBIT_STEW,
             Items.MILK_BUCKET,
-            Items.HONEY_BOTTLE
+            Items.HONEY_BOTTLE,
+            Items.POTION,
+            Items.SPLASH_POTION,
+            Items.LINGERING_POTION,
+            Items.SUSPICIOUS_STEW
     );
 
     public static List<Item> INGREDIENTS = List.of(
@@ -1493,7 +1519,43 @@ public class ItemGroupsUtils {
             Items.PHANTOM_MEMBRANE,
             Items.EXPERIENCE_BOTTLE,
             Items.TRIAL_KEY,
-            Items.OMINOUS_TRIAL_KEY
+            Items.OMINOUS_TRIAL_KEY,
+            Items.ENCHANTED_BOOK,
+            //? if >1.21.1 {
+            Items.FIELD_MASONED_BANNER_PATTERN,
+            Items.BORDURE_INDENTED_BANNER_PATTERN,
+            //?}
+            Items.FLOWER_BANNER_PATTERN,
+            Items.CREEPER_BANNER_PATTERN,
+            Items.SKULL_BANNER_PATTERN,
+            Items.MOJANG_BANNER_PATTERN,
+            Items.GLOBE_BANNER_PATTERN,
+            Items.PIGLIN_BANNER_PATTERN,
+            Items.FLOW_BANNER_PATTERN,
+            Items.GUSTER_BANNER_PATTERN,
+            Items.ANGLER_POTTERY_SHERD,
+            Items.ARCHER_POTTERY_SHERD,
+            Items.ARMS_UP_POTTERY_SHERD,
+            Items.BLADE_POTTERY_SHERD,
+            Items.BREWER_POTTERY_SHERD,
+            Items.BURN_POTTERY_SHERD,
+            Items.DANGER_POTTERY_SHERD,
+            Items.EXPLORER_POTTERY_SHERD,
+            Items.FLOW_POTTERY_SHERD,
+            Items.FRIEND_POTTERY_SHERD,
+            Items.GUSTER_POTTERY_SHERD,
+            Items.HEART_POTTERY_SHERD,
+            Items.HEARTBREAK_POTTERY_SHERD,
+            Items.HOWL_POTTERY_SHERD,
+            Items.MINER_POTTERY_SHERD,
+            Items.MOURNER_POTTERY_SHERD,
+            Items.PLENTY_POTTERY_SHERD,
+            Items.PRIZE_POTTERY_SHERD,
+            Items.SCRAPE_POTTERY_SHERD,
+            Items.SHEAF_POTTERY_SHERD,
+            Items.SHELTER_POTTERY_SHERD,
+            Items.SKULL_POTTERY_SHERD,
+            Items.SNORT_POTTERY_SHERD
     );
 
     public static List<Item> SPAWN_EGGS = List.of(
