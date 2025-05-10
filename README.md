@@ -20,10 +20,6 @@ discord_url: "https://discord.gg/kfKjjhv3pn"
 
 ---
 
-[<img alt="RocketNode Server Hosting: Use code `CHAMP`" width="750px" src="https://cdn.modrinth.com/data/m5T5xmUy/images/ccc929118d7f2420e2ca6edd973233031ddfd692.png" />](http://www.rocketnode.com/champ)
-
----
-
 _A mod that overhauls tooltips, and adds some extra information._
 
 </center>
