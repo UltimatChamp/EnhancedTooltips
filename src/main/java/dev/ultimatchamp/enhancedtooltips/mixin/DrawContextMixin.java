@@ -12,6 +12,7 @@ import net.minecraft.client.gui.tooltip.HoveredTooltipPositioner;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
 import net.minecraft.client.gui.tooltip.TooltipPositioner;
 import net.minecraft.item.ItemStack;
+import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -45,9 +46,9 @@ public class DrawContextMixin {
 
         if (!isEmpty && components.getFirst() instanceof OrderedTextTooltipComponentAccessor ordered) {
             Text name = EnhancedTooltipsTextVisitor.get(ordered.getText());
-            Text cachedName = TooltipHelper.getDisplayName(cacheItemStack);
+            Text cachedName = EnhancedTooltipsTextVisitor.get(TooltipHelper.getDisplayName(cacheItemStack).asOrderedText());
 
-            if (!name.getString().equals(cachedName.getString())) {
+            if (!name.equals(cachedName)) {
                 cacheItemStack = ItemStack.EMPTY;
             }
         }

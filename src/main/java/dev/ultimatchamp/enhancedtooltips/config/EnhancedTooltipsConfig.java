@@ -238,6 +238,9 @@ public class EnhancedTooltipsConfig {
         @Comment("Defines the line limit for the held item tooltip.\n(default: 10)")
         public int maxLines = 10;
 
+        @Comment("Adjusts the size of the held item tooltips.\nA scale of 100% displays the tooltip at its default size.\n(default: 1.0)")
+        public float scaleFactor = 1f;
+
         @Comment("Shows a dynamic tilt animation for the held item tooltip when scrolling the hotbar.\n(default: true)")
         public boolean tiltAnimation = true;
 

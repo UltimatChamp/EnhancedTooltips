@@ -121,11 +121,12 @@ public abstract class InGameHudMixin {
         if ((!config.durability.durabilityTooltip.equals(EnhancedTooltipsConfig.DurabilityTooltipMode.OFF) || config.durability.durabilityBar) && currentStack.isDamageable())
             tooltip.add(Text.translatable("enhancedtooltips.tooltip.durability").append(enhancedTooltips$getDurabilityText()));
 
-        int maxWidth = context.getScaledWindowWidth() / 2;
+        float scale = config.heldItemTooltip.scaleFactor;
+        float maxWidth = context.getScaledWindowWidth() / (2 * scale);
         for (Text component : new ArrayList<>(tooltip)) {
             if (textRenderer.getWidth(component) > maxWidth) {
                 List<Text> wrapped = new ArrayList<>();
-                textRenderer.wrapLines(component, maxWidth).forEach(line -> wrapped.add(EnhancedTooltipsTextVisitor.get(line)));
+                textRenderer.wrapLines(component, (int) maxWidth).forEach(line -> wrapped.add(EnhancedTooltipsTextVisitor.get(line)));
                 tooltip.addAll(tooltip.indexOf(component), wrapped);
                 tooltip.remove(component);
             }
@@ -145,19 +146,21 @@ public abstract class InGameHudMixin {
             tooltip.add(Text.literal("(+" + cutOff.get() + " more...)").withColor(-4539718).styled(s -> s.withItalic(true)));
 
         int width = tooltip.stream().mapToInt(textRenderer::getWidth).max().orElse(0);
-        int x = (context.getScaledWindowWidth() - width) / 2;
+        float x = (context.getScaledWindowWidth() - width * scale) / 2;
+        float y = context.getScaledWindowHeight() - 59;
+        y -= (textRenderer.fontHeight + enhancedTooltips$SPACING / 2f) * tooltip.size() * scale - enhancedTooltips$SPACING * 3 + enhancedTooltips$SPACING / 2f;
+        if (client.player.getArmor() > 0 &&
+            client.interactionManager != null &&
+            client.interactionManager.hasStatusBars()
+        ) y -= enhancedTooltips$SPACING * 2;
 
-        int y = context.getScaledWindowHeight() - 59;
-        y -= (textRenderer.fontHeight + enhancedTooltips$SPACING / 2) * tooltip.size() - enhancedTooltips$SPACING * 3 + enhancedTooltips$SPACING / 2;
-        if (client.player.getArmor() > 0 && client.interactionManager.hasStatusBars()) y -= enhancedTooltips$SPACING * 2;
-
-        int alpha = (int) ((float) this.heldItemTooltipFade * 256.0F / 10.0F);
+        float alpha = this.heldItemTooltipFade * 256 / 10f;
         if (alpha > 255) {
             alpha = 255;
         }
 
         context.getMatrices().push();
-        enhancedTooltips$drawTextWithBackground(textRenderer, tooltip, x, y, width, context, alpha);
+        enhancedTooltips$drawTextWithBackground(textRenderer, tooltip, (int) x, (int) y, width, context, (int) alpha, scale);
         context.getMatrices().pop();
 
         ci.cancel();
@@ -300,32 +303,42 @@ public abstract class InGameHudMixin {
     }
 
     @Unique
-    private void enhancedTooltips$drawTextWithBackground(TextRenderer textRenderer, List<Text> lines, int x, int y, int width, DrawContext context, int alpha) {
+    private void enhancedTooltips$drawTextWithBackground(TextRenderer textRenderer, List<Text> lines, int x, int y, int width, DrawContext context, int alpha, float scale) {
         int bgAlpha = (0x80 * alpha) / 255 << 24;
         float tilt = enhancedTooltips$getTilt();
 
-        context.getMatrices().translate(x + width / 2f, y + (textRenderer.fontHeight * lines.size()) / 2f, 0);
+        context.getMatrices().push();
+        context.getMatrices().translate(x + width * scale / 2f, y + (textRenderer.fontHeight * lines.size() * scale) / 2f, 0);
+        context.getMatrices().scale(scale, scale, 1);
         context.getMatrices().multiply(RotationAxis.POSITIVE_Z.rotationDegrees(tilt));
-        context.getMatrices().translate(-(x + width / 2f), -(y + (textRenderer.fontHeight * lines.size()) / 2f), 0);
+        context.getMatrices().translate(-(x / scale + width / 2f), -(y / scale + (textRenderer.fontHeight * lines.size()) / 2f), 0);
 
         if (EnhancedTooltipsConfig.load().heldItemTooltip.showBackground) context.fill(
-            x - enhancedTooltips$SPACING + 1,
-            y - enhancedTooltips$SPACING / 2,
-            x + width + enhancedTooltips$SPACING - 1,
-            y + (textRenderer.fontHeight + enhancedTooltips$SPACING / 2) * lines.size() - enhancedTooltips$SPACING / 2,
-            bgAlpha
+                (int) (x / scale - enhancedTooltips$SPACING + 1),
+                (int) (y / scale - enhancedTooltips$SPACING / 2f),
+                (int) (x / scale + width + enhancedTooltips$SPACING - 1),
+                (int) (y / scale + (textRenderer.fontHeight + enhancedTooltips$SPACING / 2f) * lines.size() - enhancedTooltips$SPACING / 2f),
+                bgAlpha
         );
 
-        int textY = y;
+        int textY = (int) (y / scale);
         for (Text line : lines) {
             int color = (line.getStyle().getColor() != null ? line.getStyle().getColor().getRgb() : 0xFFFFFF) | (alpha << 24);
-            context.drawText(textRenderer, line.copy().withColor(color), (context.getScaledWindowWidth() - textRenderer.getWidth(line)) / 2, textY, color, true);
+            context.drawText(textRenderer, line.copy().withColor(color),
+                    (int) ((context.getScaledWindowWidth() / scale - textRenderer.getWidth(line)) / 2), textY, color, true
+            );
             textY += textRenderer.fontHeight + enhancedTooltips$SPACING / 2;
         }
 
         int frameAlpha = (0x70 * alpha) / 255 << 24;
         if (EnhancedTooltipsConfig.load().heldItemTooltip.showBackground)
-            BadgesUtils.drawFrame(context, x - enhancedTooltips$SPACING, y - enhancedTooltips$SPACING / 2, width + enhancedTooltips$SPACING * 2, (textRenderer.fontHeight + enhancedTooltips$SPACING / 2) * lines.size() + enhancedTooltips$SPACING / 2, 400, frameAlpha);
+            BadgesUtils.drawFrame(context, (int) (x / scale - enhancedTooltips$SPACING),
+                    (int) (y / scale - enhancedTooltips$SPACING / 2f), width + enhancedTooltips$SPACING * 2,
+                    (textRenderer.fontHeight + enhancedTooltips$SPACING / 2) * lines.size() + enhancedTooltips$SPACING / 2,
+                    400, frameAlpha
+            );
+
+        context.getMatrices().pop();
     }
 
     @Unique

@@ -424,6 +424,18 @@ public class EnhancedTooltipsGui {
                                         )
                                         .customController(opt -> new IntegerSliderController(opt, 5, 25, 1))
                                         .build())
+                                .option(Option.<Float>createBuilder()
+                                        .name(Text.translatable("enhancedtooltips.config.scaleFactor"))
+                                        .description(OptionDescription.createBuilder()
+                                                .text(Text.translatable("enhancedtooltips.config.scaleFactor.desc"))
+                                                .build())
+                                        .binding(
+                                                1f,
+                                                () -> config.heldItemTooltip.scaleFactor,
+                                                (value) -> config.heldItemTooltip.scaleFactor = value
+                                        )
+                                        .customController(opt -> new FloatSliderController(opt, 0.25f, 2f, 0.05f, value -> Text.literal(String.format("%." + 0 /* decimal places */ + "f%%", value * 100.0F))))
+                                        .build())
                                 .option(Option.<Boolean>createBuilder()
                                         .name(Text.translatable("enhancedtooltips.config.heldItemTooltipTiltAnimation"))
                                         .description(OptionDescription.createBuilder()

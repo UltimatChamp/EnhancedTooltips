@@ -141,7 +141,7 @@ public class EnhancedTooltipsDrawer {
             matrices.translate(-x, -y, 0);
         }
 
-        matrices.scale(scale, scale, scale);
+        matrices.scale(scale, scale, 1);
 
         for (TooltipPage p : pageList) {
             if (pageList.getFirst() == p) p.x = (int) (p.x / scale);
@@ -149,7 +149,7 @@ public class EnhancedTooltipsDrawer {
 
             if (backgroundComponent == null) {
             //? if >1.21.1 {
-                context.draw(vertexConsumerProvider -> TooltipBackgroundRenderer.render(context, p.x, p.y, p.width, p.height, (int) (400 / scale), Identifier.ofVanilla("tooltip/background")));
+                context.draw(vertexConsumerProvider -> TooltipBackgroundRenderer.render(context, p.x, p.y, p.width, p.height, 400, Identifier.ofVanilla("tooltip/background")));
             } else {
                 context.draw(vertexConsumerProvider -> {
             //?} else {
@@ -158,7 +158,7 @@ public class EnhancedTooltipsDrawer {
                 context.draw(() -> {
             *///?}
                     try {
-                        backgroundComponent.render(context, p.x, p.y, p.width, p.height, (int) (400 / scale), pageList.indexOf(p));
+                        backgroundComponent.render(context, p.x, p.y, p.width, p.height, 400, pageList.indexOf(p));
                     } catch (Exception e) {
                         EnhancedTooltips.LOGGER.error("[EnhancedTooltips]", e);
                     }
@@ -166,7 +166,7 @@ public class EnhancedTooltipsDrawer {
             }
         }
 
-        matrices.translate(0.0f, 0.0f, 400.0f / scale);
+        matrices.translate(0.0f, 0.0f, 400.0f);
 
         for (TooltipPage p : pageList) {
             int cx = p.x;

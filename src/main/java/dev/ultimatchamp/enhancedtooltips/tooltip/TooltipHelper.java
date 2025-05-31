@@ -6,6 +6,7 @@ import dev.ultimatchamp.enhancedtooltips.util.TranslationStringColorParser;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
+import net.minecraft.text.TextColor;
 import net.minecraft.util.Colors;
 
 public class TooltipHelper {
@@ -28,12 +29,17 @@ public class TooltipHelper {
         Integer color = null;
 
         if (EnhancedTooltipsConfig.load().border.borderColor == EnhancedTooltipsConfig.BorderColorMode.ITEM_NAME) {
-            color = TranslationStringColorParser.getColorFromTranslation(getDisplayName(stack));
+            Text displayName = getDisplayName(stack);
+
+            color = TranslationStringColorParser.getColorFromTranslation(displayName);
+
+            TextColor textColor = displayName.getStyle().getColor();
+            if (color == -1 && textColor != null) color = displayName.getStyle().getColor().getRgb();
         }
 
-        if (color == null || color == -1) {
+        if (color == null || color == -1 || color == 0xFFFFFF) {
             color = stack.getRarity().getFormatting().getColorValue();
-            if (color == null || color == 0xFFFFFF) color = 0xFFFFFFFF;
+            if (color == null || color == 0xFFFFFF) color = -1;
         }
 
         return color;
