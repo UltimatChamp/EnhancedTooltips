@@ -40,15 +40,15 @@ public class TooltipBackgroundComponent implements TooltipComponent {
     }
 
     protected void renderVerticalLine(DrawContext context, int x, int y, int height, int z, int startColor, int endColor) {
-        context.fillGradient(x, y, x + 1, y + height, z, startColor, endColor);
+        context.fillGradient(x, y, x + 1, y + height/*? if <1.21.6 {*//*, z*//*?}*/, startColor, endColor);
     }
 
     protected void renderHorizontalLine(DrawContext context, int x, int y, int width, int z, int color) {
-        context.fill(x, y, x + width, y + 1, z, color);
+        context.fill(x, y, x + width, y + 1/*? if <1.21.6 {*//*, z*//*?}*/, color);
     }
 
     protected void renderRectangle(DrawContext context, int x, int y, int width, int height, int z, int bgColor) {
-        context.fill(x, y, x + width, y + height, z, bgColor);
+        context.fill(x, y, x + width, y + height/*? if <1.21.6 {*//*, z*//*?}*/, bgColor);
     }
 
     @Override

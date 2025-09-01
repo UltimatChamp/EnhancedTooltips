@@ -7,11 +7,13 @@
     "InGameHudMixin",
     "ItemStackMixin",
     "accessors.BucketItemEntityTypeAccessor",
+    "accessors.ClientWorldAccessor",
     "accessors.DecorationItemEntityTypeAccessor",
+    "accessors.DrawContextAccessor",
+    "accessors.ItemGroupAccessor",
     "accessors.OrderedTextTooltipComponentAccessor",
     "accessors.PlayerInventoryAccessor",
-    "accessors.SpawnEggItemEntityTypeAccessor",
-    "accessors.DrawContextAccessor"
+    "accessors.SpawnEggItemEntityTypeAccessor"
   ],
   "injectors": {
     "defaultRequire": 1

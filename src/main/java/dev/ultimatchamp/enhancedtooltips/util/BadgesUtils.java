@@ -4,11 +4,12 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
+import net.minecraft.text.Text;
 import net.minecraft.util.Pair;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 //? if fabric {
@@ -22,11 +23,11 @@ import net.neoforged.fml.ModContainer;
 public class BadgesUtils {
     private static Map<String, String> mods = new HashMap<>();
 
-    public static @NotNull Pair<String, Integer> getBadgeText(ItemStack stack) {
-        String text = "";
+    public static @NotNull Pair<Text, Integer> getBadgeText(ItemStack stack) {
+        Text text = Text.empty();
         int fillColor = 0;
 
-        for (Map.Entry<List<Item>, Pair<String, Integer>> entry : ItemGroupsUtils.getItemGroups().entrySet()) {
+        for (Map.Entry<Collection<Item>, Pair<Text, Integer>> entry : ItemGroupsUtils.getItemGroups().entrySet()) {
             if (entry.getKey().contains(stack.getItem())) {
                 text = entry.getValue().getLeft();
                 fillColor = entry.getValue().getRight();
@@ -34,9 +35,9 @@ public class BadgesUtils {
             }
         }
 
-        if (text.isEmpty()) {
+        if (text.withoutStyle().isEmpty()) {
             String namespace = Registries.ITEM.getId(stack.getItem()).getNamespace();
-            text = getMods().getOrDefault(namespace, "");
+            text = Text.literal(getMods().getOrDefault(namespace, ""));
             fillColor = getColorFromModName(namespace);
         }
 
@@ -93,10 +94,10 @@ public class BadgesUtils {
     }
 
     private static void renderVerticalLine(DrawContext context, int x, int y, int height, int z, int color) {
-        context.fill(x, y, x + 1, y + height, z, color);
+        context.fill(x, y, x + 1, y + height, color);
     }
 
     private static void renderHorizontalLine(DrawContext context, int x, int y, int width, int z, int color) {
-        context.fill(x, y, x + width, y + 1, z, color);
+        context.fill(x, y, x + width, y + 1, color);
     }
 }

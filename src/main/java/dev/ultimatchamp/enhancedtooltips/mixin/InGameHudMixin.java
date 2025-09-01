@@ -7,6 +7,7 @@ import dev.ultimatchamp.enhancedtooltips.tooltip.TooltipHelper;
 import dev.ultimatchamp.enhancedtooltips.tooltip.TooltipItemStackCache;
 import dev.ultimatchamp.enhancedtooltips.util.BadgesUtils;
 import dev.ultimatchamp.enhancedtooltips.util.EnhancedTooltipsTextVisitor;
+import dev.ultimatchamp.enhancedtooltips.util.MatricesUtil;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
@@ -20,7 +21,6 @@ import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Pair;
-import net.minecraft.util.math.RotationAxis;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -33,6 +33,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
+
+/*? if <1.21.6 {*//*import net.minecraft.util.math.RotationAxis;*//*?}*/
 
 //? if >1.21.1 {
 import net.minecraft.component.DataComponentTypes;
@@ -64,7 +66,7 @@ public abstract class InGameHudMixin {
             //?} else if neoforge {
             /*method = "renderSelectedItemName",
             *///?}
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/DrawContext;drawTextWithBackground(Lnet/minecraft/client/font/TextRenderer;Lnet/minecraft/text/Text;IIII)I"),
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/DrawContext;drawTextWithBackground(Lnet/minecraft/client/font/TextRenderer;Lnet/minecraft/text/Text;IIII)" + /*? if >1.21.5 {*/"V"/*?} else {*//*"I"*//*?}*/),
             cancellable = true
     )
     private void enhancedTooltips$renderHeldItemTooltipBackground(DrawContext context,/*? if neoforge {*/ /*int YShift,*//*?}*/ CallbackInfo ci) {
@@ -97,11 +99,11 @@ public abstract class InGameHudMixin {
             enhancedTooltips$lastTiltSlot = currentSlot;
         }
 
-        Pair<String, Integer> badgeText = BadgesUtils.getBadgeText(currentStack);
-        if (config.general.itemBadges && !badgeText.getLeft().isEmpty()) {
+        Pair<Text, Integer> badgeText = BadgesUtils.getBadgeText(currentStack);
+        if (config.general.itemBadges && !badgeText.getLeft().withoutStyle().isEmpty()) {
             Text name = tooltip.getFirst().copy()
                 .append(Text.literal(" (").withColor(-4539718))
-                .append(Text.translatable(badgeText.getLeft()).withColor(badgeText.getRight()))
+                .append(badgeText.getLeft().copy().withColor(badgeText.getRight()))
                 .append(Text.literal(")").withColor(-4539718));
             tooltip.set(0, name);
         }
@@ -112,7 +114,7 @@ public abstract class InGameHudMixin {
         if (config.heldItemTooltip.mode == EnhancedTooltipsConfig.HeldItemTooltipMode.ON)
             enhancedTooltips$addFoodTooltip(tooltip::add);
 
-        if (config.heldItemTooltip.mode == EnhancedTooltipsConfig.HeldItemTooltipMode.ON && client.options.advancedItemTooltips) {
+        if (client.options.advancedItemTooltips) {
             tooltip.remove(Text.translatable("item.durability", currentStack.getMaxDamage() - currentStack.getDamage(), currentStack.getMaxDamage()));
             tooltip.remove(Text.literal(Registries.ITEM.getId(currentStack.getItem()).toString()).formatted(Formatting.DARK_GRAY));
             tooltip.remove(Text.translatable("item.components", currentStack.getComponents().size()).formatted(Formatting.DARK_GRAY));
@@ -159,9 +161,11 @@ public abstract class InGameHudMixin {
             alpha = 255;
         }
 
-        context.getMatrices().push();
+        MatricesUtil matrices = new MatricesUtil(context.getMatrices());
+
+        matrices.pushMatrix();
         enhancedTooltips$drawTextWithBackground(textRenderer, tooltip, (int) x, (int) y, width, context, (int) alpha, scale);
-        context.getMatrices().pop();
+        matrices.popMatrix();
 
         ci.cancel();
     }
@@ -276,6 +280,7 @@ public abstract class InGameHudMixin {
     @Unique
     private Text enhancedTooltips$getDurabilityText() {
         int remaining = currentStack.getMaxDamage() - currentStack.getDamage();
+        if (remaining <= 0) return Text.empty();
         return switch (EnhancedTooltipsConfig.load().durability.durabilityTooltip) {
             case VALUE -> Text.literal(" ")
                 .append(Text.literal(String.valueOf(remaining)).setStyle(Style.EMPTY.withColor(currentStack.getItemBarColor())))
@@ -307,11 +312,19 @@ public abstract class InGameHudMixin {
         int bgAlpha = (0x80 * alpha) / 255 << 24;
         float tilt = enhancedTooltips$getTilt();
 
-        context.getMatrices().push();
-        context.getMatrices().translate(x + width * scale / 2f, y + (textRenderer.fontHeight * lines.size() * scale) / 2f, 0);
-        context.getMatrices().scale(scale, scale, 1);
-        context.getMatrices().multiply(RotationAxis.POSITIVE_Z.rotationDegrees(tilt));
-        context.getMatrices().translate(-(x / scale + width / 2f), -(y / scale + (textRenderer.fontHeight * lines.size()) / 2f), 0);
+        MatricesUtil matrices = new MatricesUtil(context.getMatrices());
+
+        matrices.pushMatrix();
+        matrices.trans(x + width * scale / 2f, y + (textRenderer.fontHeight * lines.size() * scale) / 2f, 0);
+        matrices.scal(scale, scale, 0);
+
+        //? if >1.21.5 {
+        context.getMatrices().rotate((float) Math.toRadians(tilt));
+        //?} else {
+        /*context.getMatrices().multiply(RotationAxis.POSITIVE_Z.rotationDegrees(tilt));
+        *///?}
+
+        matrices.trans(-(x / scale + width / 2f), -(y / scale + (textRenderer.fontHeight * lines.size()) / 2f), 0);
 
         if (EnhancedTooltipsConfig.load().heldItemTooltip.showBackground) context.fill(
                 (int) (x / scale - enhancedTooltips$SPACING + 1),
@@ -338,7 +351,7 @@ public abstract class InGameHudMixin {
                     400, frameAlpha
             );
 
-        context.getMatrices().pop();
+        matrices.popMatrix();
     }
 
     @Unique

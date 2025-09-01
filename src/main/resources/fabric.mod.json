@@ -25,9 +25,11 @@
   "mixins": [
     "enhancedtooltips.mixins.json"
   ],
+  "accessWidener": "enhancedtooltips.accesswidener",
   "depends": {
     "minecraft": "${minecraft_range}",
-    "fabricloader": "*"
+    "fabricloader": "*",
+    "fabric": "*"
   },
   "recommends": {
     "yet_another_config_lib_v3": "*"

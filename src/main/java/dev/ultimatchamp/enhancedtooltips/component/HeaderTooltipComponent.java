@@ -6,12 +6,14 @@ import dev.ultimatchamp.enhancedtooltips.util.*;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
-import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.*;
 import net.minecraft.text.Text;
 import net.minecraft.util.Pair;
+
+//? if <1.21.6 {
+/*import net.minecraft.client.render.VertexConsumerProvider;
 import org.joml.Matrix4f;
+*///?}
 
 public class HeaderTooltipComponent implements TooltipComponent {
     private static final int TEXTURE_SIZE = 16;
@@ -39,8 +41,8 @@ public class HeaderTooltipComponent implements TooltipComponent {
         if (config.general.rarityTooltip) rarityWidth = textRenderer.getWidth(this.rarityName);
 
         int badgeWidth = 0;
-        String badgeText = BadgesUtils.getBadgeText(stack).getLeft();
-        if (config.general.itemBadges && !badgeText.isEmpty()) badgeWidth = textRenderer.getWidth(Text.translatable(badgeText)) + SPACING * 2;
+        Text badgeText = BadgesUtils.getBadgeText(stack).getLeft();
+        if (config.general.itemBadges && !badgeText.withoutStyle().isEmpty()) badgeWidth = textRenderer.getWidth(badgeText) + SPACING * 2;
 
         int titleWidth;
         if (config.general.rarityTooltip) {
@@ -57,20 +59,32 @@ public class HeaderTooltipComponent implements TooltipComponent {
     }
 
     @Override
-    public void drawText(TextRenderer textRenderer, int x, int y, Matrix4f matrix, VertexConsumerProvider.Immediate vertexConsumers) {
-        float startDrawX = (float) x + getTitleOffset();
-        float startDrawY = y;
+    //? if >1.21.5 {
+    public void drawText(DrawContext context, TextRenderer textRenderer, int x, int y) {
+    //?} else {
+    /*public void drawText(TextRenderer textRenderer, int x, int y, Matrix4f matrix, VertexConsumerProvider.Immediate vertexConsumers) {
+    *///?}
+        int startDrawX = x + getTitleOffset();
+        int startDrawY = y;
 
         if (config.general.rarityTooltip)
             startDrawY += 2;
-        else if (!config.general.itemBadges || BadgesUtils.getBadgeText(stack).getLeft().isEmpty())
-            startDrawY += (getTitleOffset() - textRenderer.fontHeight) / 2f;
+        else if (!config.general.itemBadges || BadgesUtils.getBadgeText(stack).getLeft().withoutStyle().isEmpty())
+            startDrawY += (int) ((getTitleOffset() - textRenderer.fontHeight) / 2f);
 
-        textRenderer.draw(this.nameText, startDrawX, startDrawY, -1, true, matrix, vertexConsumers, TextRenderer.TextLayerType.NORMAL, 0, 0xF000F0);
+        //? if >1.21.5 {
+        context.drawText(textRenderer, this.nameText, startDrawX, startDrawY, -1, true);
+        //?} else {
+        /*textRenderer.draw(this.nameText, startDrawX, startDrawY, -1, true, matrix, vertexConsumers, TextRenderer.TextLayerType.NORMAL, 0, 0xF000F0);
+        *///?}
 
         if (config.general.rarityTooltip) {
             startDrawY += textRenderer.fontHeight + SPACING;
-            textRenderer.draw(this.rarityName, startDrawX, startDrawY, -1, true, matrix, vertexConsumers, TextRenderer.TextLayerType.NORMAL, 0, 0xF000F0);
+            //? if >1.21.5 {
+            context.drawText(textRenderer, this.rarityName, startDrawX, startDrawY, -1, true);
+            //?} else {
+            /*textRenderer.draw(this.rarityName, startDrawX, startDrawY, -1, true, matrix, vertexConsumers, TextRenderer.TextLayerType.NORMAL, 0, 0xF000F0);
+            *///?}
         }
     }
 
@@ -83,28 +97,21 @@ public class HeaderTooltipComponent implements TooltipComponent {
         int startDrawX = x + (getTitleOffset() - TEXTURE_SIZE) / 2 - 1;
         int startDrawY = y + (getTitleOffset() - TEXTURE_SIZE) / 2 - 1;
 
+        float bounce = 0f;
         if (config.itemPreviewAnimation.enabled) {
             int sec = (int) (config.itemPreviewAnimation.time * 1000);
             float time = (float) (System.currentTimeMillis() % sec) / sec;
 
-            float bounce = (float) Math.sin(time * Math.PI * 2) * (config.itemPreviewAnimation.magnitude * config.general.scaleFactor);
-
-            MatrixStack matrixStack = new MatrixStack();
-            matrixStack.translate(0, bounce, 0);
-
-            context.getMatrices().push();
-            context.getMatrices().multiplyPositionMatrix(matrixStack.peek().getPositionMatrix());
+            bounce = (float) Math.sin(time * Math.PI * 2) * (config.itemPreviewAnimation.magnitude * config.general.scaleFactor);
         }
 
-        context.drawItem(this.stack, startDrawX, startDrawY);
-
-        if (config.itemPreviewAnimation.enabled) context.getMatrices().pop();
+        context.drawItem(this.stack, startDrawX, (int) (startDrawY - bounce));
 
         if (!config.general.itemBadges) return;
         if (!config.general.rarityTooltip) y += textRenderer.fontHeight + SPACING;
 
-        Pair<String, Integer> badgeText = BadgesUtils.getBadgeText(stack);
-        if (!badgeText.getLeft().isEmpty()) drawBadge(textRenderer, Text.translatable(badgeText.getLeft()), x, y, context, badgeText.getRight());
+        Pair<Text, Integer> badgeText = BadgesUtils.getBadgeText(stack);
+        if (!badgeText.getLeft().withoutStyle().isEmpty()) drawBadge(textRenderer, badgeText.getLeft(), x, y, context, badgeText.getRight());
     }
 
     private void drawBadge(TextRenderer textRenderer, Text text, int x, int y, DrawContext context, int fillColor) {

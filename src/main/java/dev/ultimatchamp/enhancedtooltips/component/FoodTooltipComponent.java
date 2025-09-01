@@ -1,19 +1,24 @@
 package dev.ultimatchamp.enhancedtooltips.component;
 
 import dev.ultimatchamp.enhancedtooltips.config.EnhancedTooltipsConfig;
-import dev.ultimatchamp.enhancedtooltips.mixin.accessors.DrawContextAccessor;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
-import net.minecraft.client.texture.Sprite;
 import net.minecraft.entity.effect.StatusEffectUtil;
 import net.minecraft.item.*;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
-//? if >1.21.1 {
+//? if >1.21.5 {
+import net.minecraft.client.gl.RenderPipelines;
+import net.minecraft.client.gui.hud.InGameHud;
+//?} else {
+/*import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.render.RenderLayer;
+*///?}
+
+//? if >1.21.1 {
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.ConsumableComponent;
 import net.minecraft.component.type.FoodComponent;
@@ -201,18 +206,22 @@ public class FoodTooltipComponent implements TooltipComponent {
             var hungerWidth = textRenderer.getWidth(hungerText) + 1;
 
             for (int i = 0; i < (int) fullHungers; i++) {
-                //? if >1.21.1 {
-                context.drawGuiTexture(RenderLayer::getGuiTextured, fullHunger, textRenderer.fontHeight, textRenderer.fontHeight, 0, 0, x + hungerWidth, lineY, textRenderer.fontHeight, textRenderer.fontHeight);
-                //?} else {
+                //? if >1.21.5 {
+                context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, fullHunger, textRenderer.fontHeight, textRenderer.fontHeight, 0, 0, x + hungerWidth, lineY, textRenderer.fontHeight, textRenderer.fontHeight);
+                //?} else if >1.21.1 {
+                /*context.drawGuiTexture(RenderLayer::getGuiTextured, fullHunger, textRenderer.fontHeight, textRenderer.fontHeight, 0, 0, x + hungerWidth, lineY, textRenderer.fontHeight, textRenderer.fontHeight);
+                *///?} else {
                 /*context.drawGuiTexture(fullHunger, x + hungerWidth, lineY, textRenderer.fontHeight, textRenderer.fontHeight);
                 *///?}
                 hungerWidth += textRenderer.fontHeight - 2;
             }
 
             if (hasHalfHunger) {
-                //? if >1.21.1 {
-                context.drawGuiTexture(RenderLayer::getGuiTextured, halfHunger, textRenderer.fontHeight, textRenderer.fontHeight, 0, 0, x + hungerWidth, lineY, textRenderer.fontHeight, textRenderer.fontHeight);
-                //?} else {
+                //? if >1.21.5 {
+                context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, halfHunger, textRenderer.fontHeight, textRenderer.fontHeight, 0, 0, x + hungerWidth, lineY, textRenderer.fontHeight, textRenderer.fontHeight);
+                //?} else if >1.21.1 {
+                /*context.drawGuiTexture(RenderLayer::getGuiTextured, halfHunger, textRenderer.fontHeight, textRenderer.fontHeight, 0, 0, x + hungerWidth, lineY, textRenderer.fontHeight, textRenderer.fontHeight);
+                *///?} else {
                 /*context.drawGuiTexture(halfHunger, x + hungerWidth, lineY, textRenderer.fontHeight, textRenderer.fontHeight);
                 *///?}
             }
@@ -221,7 +230,7 @@ public class FoodTooltipComponent implements TooltipComponent {
         }
 
         if (config.foodAndDrinks.saturationTooltip) {
-            textRenderer.draw(saturationText, x + 1.75f, lineY, 0xff00ffff, true, context.getMatrices().peek().getPositionMatrix(), ((DrawContextAccessor) context).getVertexConsumers(), TextRenderer.TextLayerType.NORMAL, 0, 15728880);
+            context.drawText(textRenderer, saturationText, x + 2, lineY, 0xff00ffff, true);
             lineY += textRenderer.fontHeight + 1;
         }
 
@@ -234,13 +243,17 @@ public class FoodTooltipComponent implements TooltipComponent {
             }
 
             for (StatusEffectInstance statusEffect : applyEffectsConsumeEffect.effects()) {
-                int c = statusEffect.getEffectType().value().getColor();
+                int c = statusEffect.getEffectType().value().getColor() | 0xFF000000;
         //?} else {
         /*for (FoodComponent.StatusEffectEntry entry : foodComponent.effects()) {
             var statusEffect = entry.effect();
             int c = statusEffect.getEffectType().value().getColor();
         *///?}
-                Sprite effectTexture = MinecraftClient.getInstance().getStatusEffectSpriteManager().getSprite(statusEffect.getEffectType());
+                //? if >1.21.5 {
+                Identifier effectTexture = InGameHud.getEffectTexture(statusEffect.getEffectType());
+                //?} else {
+                /*Sprite effectTexture = MinecraftClient.getInstance().getStatusEffectSpriteManager().getSprite(statusEffect.getEffectType());
+                *///?}
 
                 Text effectText;
 
@@ -257,13 +270,14 @@ public class FoodTooltipComponent implements TooltipComponent {
                     effectText = Text.translatable(statusEffect.getTranslationKey())
                             .append(" (").append(StatusEffectUtil.getDurationText(statusEffect, 1.0f, 20)).append(")")
                             .append(" [").append(Math.round(probability * 100) + "%").append("]");
-
                 }
 
                 if (config.foodAndDrinks.effectsTooltip == EnhancedTooltipsConfig.EffectsTooltipMode.WITH_ICONS) {
-                    //? if >1.21.1 {
-                    context.drawSpriteStretched(RenderLayer::getGuiTextured, effectTexture, x, lineY - 1, textRenderer.fontHeight, textRenderer.fontHeight);
-                    //?} else {
+                    //? if >1.21.5 {
+                    context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, effectTexture, x, lineY - 1, textRenderer.fontHeight, textRenderer.fontHeight);
+                    //?} else if >1.21.1 {
+                    /*context.drawSpriteStretched(RenderLayer::getGuiTextured, effectTexture, x, lineY - 1, textRenderer.fontHeight, textRenderer.fontHeight);
+                    *///?} else {
                     /*context.drawSprite(x - 2, lineY, 0, textRenderer.fontHeight, textRenderer.fontHeight, effectTexture);
                     *///?}
                     context.drawText(textRenderer, effectText, x + textRenderer.fontHeight + 3, lineY, c, true);

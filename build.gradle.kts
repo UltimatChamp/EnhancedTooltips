@@ -1,5 +1,5 @@
 plugins {
-    id("dev.architectury.loom") version "1.10-SNAPSHOT"
+    id("dev.architectury.loom") version "1.11-SNAPSHOT"
     id("me.modmuss50.mod-publish-plugin") version "0.8.4"
 }
 
@@ -41,6 +41,7 @@ loom {
     runConfigs.all {
         ideConfigGenerated(true)
     }
+    accessWidenerPath.set(rootProject.file("src/main/resources/enhancedtooltips.accesswidener"))
 }
 
 dependencies {
@@ -54,6 +55,8 @@ dependencies {
 
     if (isFabric) {
         modImplementation("net.fabricmc:fabric-loader:${project.property("loader_version")}")
+
+        modImplementation("net.fabricmc.fabric-api:fabric-api:${project.property("deps.fapi_version")}")
         modImplementation("maven.modrinth:modmenu:${project.property("deps.modmenu_version")}")
     } else if (isNeo) {
         "neoForge"("net.neoforged:neoforge:${property("deps.neoforge")}")
@@ -132,6 +135,7 @@ publishMods {
         projectId.set(project.property("modrinthId") as String)
         accessToken.set(providers.environmentVariable("MODRINTH_TOKEN"))
 
+        if (isFabric) requires("fabric-api")
         optional("yacl")
 
         // Discord
@@ -142,6 +146,7 @@ publishMods {
         projectId.set(project.property("curseforgeId") as String)
         accessToken.set(providers.environmentVariable("CURSEFORGE_API_KEY"))
 
+        if (isFabric) requires("fabric-api")
         optional("yacl")
 
         // Discord
@@ -200,6 +205,16 @@ publishMods {
             curseforge("c1.21.5") {
                 from(cfOptions)
                 minecraftVersions.add("1.21.5")
+            }
+        }
+        "1.21.8" -> {
+            modrinth("m1.21.8") {
+                from(mrOptions)
+                minecraftVersions.addAll("1.21.8", "1.21.7", "1.21.6")
+            }
+            curseforge("c1.21.8") {
+                from(cfOptions)
+                minecraftVersions.addAll("1.21.8", "1.21.7", "1.21.6")
             }
         }
     }

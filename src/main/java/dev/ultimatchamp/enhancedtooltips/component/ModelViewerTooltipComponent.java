@@ -3,26 +3,40 @@ package dev.ultimatchamp.enhancedtooltips.component;
 import dev.ultimatchamp.enhancedtooltips.config.EnhancedTooltipsConfig;
 import dev.ultimatchamp.enhancedtooltips.mixin.accessors.BucketItemEntityTypeAccessor;
 import dev.ultimatchamp.enhancedtooltips.mixin.accessors.SpawnEggItemEntityTypeAccessor;
-import dev.ultimatchamp.enhancedtooltips.mixin.accessors.DrawContextAccessor;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.render.DiffuseLighting;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.NbtComponent;
 import net.minecraft.entity.*;
 import net.minecraft.entity.decoration.ArmorStandEntity;
 import net.minecraft.entity.passive.*;
-import net.minecraft.item.EntityBucketItem;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.SpawnEggItem;
-import net.minecraft.nbt.NbtCompound;
-import org.joml.Matrix4f;
-import org.joml.Quaternionf;
+import net.minecraft.item.*;
+import net.minecraft.registry.DynamicRegistryManager;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.util.Identifier;
+import org.apache.commons.lang3.StringUtils;
+import org.joml.*;
+
+import java.lang.Math;
+
+//? if >1.21.4 {
+import net.minecraft.village.VillagerDataContainer;
+import net.minecraft.village.VillagerProfession;
+import net.minecraft.village.VillagerType;
+//?} else {
+/*import net.minecraft.nbt.NbtCompound;
+*///?}
+//? if >1.21.1 {
+import net.minecraft.item.equipment.trim.ArmorTrim;
+//?} else {
+/*import net.minecraft.item.trim.ArmorTrim;
+ *///?}
+/*? if <1.21.6 {*//*import net.minecraft.client.render.DiffuseLighting;*//*?}*/
 
 public class ModelViewerTooltipComponent extends TooltipBorderColorComponent {
     private static float currentRotation = 0f;
     private static final int SPACING = 20;
-    private static final int SHADOW_LIGHT_COLOR = 15728880;
     private static final int MAX_TOOLTIP_SIZE = 80;
     private static final float REFERENCE_SIZE = 3.5f;
 
@@ -53,16 +67,20 @@ public class ModelViewerTooltipComponent extends TooltipBorderColorComponent {
         currentRotation = (currentRotation + ROTATION_INCREMENT) % 360;
 
         //? if >1.21.1 {
-        if (getEquipmentSlot(stack).getType() == EquipmentSlot.Type.HUMANOID_ARMOR) {
+        if (getEquipmentSlot(stack).getType() == EquipmentSlot.Type.HUMANOID_ARMOR ||
         //?} else {
-        /*if (EntityType.ARMOR_STAND.create(MinecraftClient.getInstance().world).getPreferredEquipmentSlot(stack).getType() == EquipmentSlot.Type.HUMANOID_ARMOR) {
+        /*if (EntityType.ARMOR_STAND.create(MinecraftClient.getInstance().world).getPreferredEquipmentSlot(stack).getType() == EquipmentSlot.Type.HUMANOID_ARMOR ||
         *///?}
+            stack.isOf(Items.ELYTRA)) {
             if (!config.mobs.armorTooltip) return;
             renderArmorStand(context, x, y, z);
+        } else if (stack.getItem() instanceof SmithingTemplateItem) {
+            if (!config.mobs.armorTooltip) return;
+            renderArmorTrim(context, x, y, z);
         } else if (stack.getItem().toString().contains("horse_armor")) {
             if (!config.mobs.horseArmorTooltip) return;
             renderHorseArmor(context, x, y, z);
-        } else if (stack.getItem().toString().contains("wolf_armor")) {
+        } else if (stack.isOf(Items.WOLF_ARMOR)) {
             if (!config.mobs.wolfArmorTooltip) return;
             renderWolfArmor(context, x, y, z);
         } else if (stack.getItem() instanceof EntityBucketItem bucketItem) {
@@ -81,6 +99,30 @@ public class ModelViewerTooltipComponent extends TooltipBorderColorComponent {
         //?} else {
         /*armorStand.equipStack(armorStand.getPreferredEquipmentSlot(stack), stack);
         *///?}
+
+        super.render(context, x - 65, y, 40, 70, z, -1);
+        drawEntity(context, x - 30 / 2 - SPACING - 10, y + 65, 30, currentRotation, armorStand);
+    }
+
+    private void renderArmorTrim(DrawContext context, int x, int y, int z) throws Exception {
+        var armorStand = new ArmorStandEntity(EntityType.ARMOR_STAND, MinecraftClient.getInstance().world);
+
+        ItemStack armor = Items.NETHERITE_CHESTPLATE.getDefaultStack();
+        Identifier id = Identifier.of(StringUtils.substringBefore(stack.getItem().toString(), "_"));
+
+        ClientWorld world = MinecraftClient.getInstance().world;
+        if (world == null) return;
+
+        DynamicRegistryManager registryManager = world.getRegistryManager();
+        var mat = registryManager.getOptional(RegistryKeys.TRIM_MATERIAL);
+        var pat = registryManager.getOptional(RegistryKeys.TRIM_PATTERN);
+        if (mat.isEmpty() || pat.isEmpty()) return;
+
+        var material = mat.get().getEntry(Identifier.ofVanilla("diamond")).orElseThrow();
+        var pattern = pat.get().getEntry(id).orElseThrow();
+
+        armor.set(DataComponentTypes.TRIM, new ArmorTrim(material, pattern));
+        armorStand.equipStack(EquipmentSlot.CHEST, armor);
 
         super.render(context, x - 65, y, 40, 70, z, -1);
         drawEntity(context, x - 30 / 2 - SPACING - 10, y + 65, 30, currentRotation, armorStand);
@@ -142,7 +184,7 @@ public class ModelViewerTooltipComponent extends TooltipBorderColorComponent {
             var nbtComponent = stack.getOrDefault(DataComponentTypes.BUCKET_ENTITY_DATA, NbtComponent.DEFAULT);
             bucketable.copyDataFromNbt(nbtComponent.copyNbt());
 
-            if (entityType == EntityType.TROPICAL_FISH) return;
+            if (entity instanceof SchoolingFishEntity) return;
             if (bucketable instanceof PufferfishEntity pufferfishEntity) pufferfishEntity.setPuffState(2);
 
             float entityWidth = entity.getWidth();
@@ -152,8 +194,8 @@ public class ModelViewerTooltipComponent extends TooltipBorderColorComponent {
             int scaledHeight = (int) (entityHeight * entityScale);
             int entityOffset = scaledWidth + SPACING - 10;
 
-            super.render(context, x - entityOffset - 70, y, scaledWidth + 50, scaledHeight + 10, z, -1);
-            drawEntity(context, x - scaledWidth / 2 - SPACING - 35, y + scaledHeight, entityScale, currentRotation, (LivingEntity) bucketable);
+            super.render(context, x - entityOffset - 70, y, scaledWidth + 50, scaledHeight + 20, z, -1);
+            drawEntity(context, x - scaledWidth / 2 - SPACING - 35, y + scaledHeight + SPACING, entityScale, currentRotation, (LivingEntity) bucketable);
         }
     }
 
@@ -166,18 +208,28 @@ public class ModelViewerTooltipComponent extends TooltipBorderColorComponent {
         *///?}
 
         if (entityType == EntityType.VILLAGER || entityType == EntityType.ZOMBIE_VILLAGER) {
-            var villagerData = new NbtCompound();
-            villagerData.putString("profession", "minecraft:none");
-            villagerData.putString("type", "minecraft:plains");
+            var world = MinecraftClient.getInstance().world;
+            if (entity != null && world != null) {
+                //? if >1.21.4 {
+                ((VillagerDataContainer) entity).setVillagerData(VillagerEntity.createVillagerData()
+                        .withLevel(1)
+                        .withProfession(world.getRegistryManager(), VillagerProfession.FARMER)
+                        .withType(world.getRegistryManager(), VillagerType.PLAINS));
+                //?} else {
+                /*var villagerData = new NbtCompound();
+                villagerData.putString("profession", "minecraft:none");
+                villagerData.putString("type", "minecraft:plains");
 
-            var nbtComponent = stack.getOrDefault(DataComponentTypes.ENTITY_DATA, NbtComponent.DEFAULT);
-            var nbt = nbtComponent.copyNbt();
+                var nbtComponent = stack.getOrDefault(DataComponentTypes.ENTITY_DATA, NbtComponent.DEFAULT);
+                var nbt = nbtComponent.copyNbt();
 
-            nbt.put("VillagerData", villagerData);
-            if (entity != null) entity.readNbt(nbt);
+                nbt.put("VillagerData", villagerData);
+                entity.readNbt(nbt);
+                *///?}
+            }
         }
 
-        if (entityType == EntityType.TROPICAL_FISH) return;
+        if (entity instanceof SchoolingFishEntity) return;
         if (entity instanceof PufferfishEntity pufferfishEntity) pufferfishEntity.setPuffState(2);
         if (entity instanceof SnowGolemEntity snowGolemEntity) snowGolemEntity.setHasPumpkin(false);
 
@@ -212,21 +264,31 @@ public class ModelViewerTooltipComponent extends TooltipBorderColorComponent {
         entity.setYaw(rotationYaw);
         entity.headYaw = rotationYaw;
 
-        var yawRotation = new Quaternionf().rotateY((float) Math.toRadians(rotationYaw));
+        var modelRotation = new Quaternionf()
+                .rotateY((float) Math.toRadians(rotationYaw))
+                .rotateX((float) Math.toRadians(180));
 
-        Quaternionf correctionRotation;
-        if (entity instanceof CodEntity || entity instanceof SalmonEntity) {
-            correctionRotation = new Quaternionf().rotateZ((float) Math.toRadians(-90));
-        } else {
-            correctionRotation = new Quaternionf().rotateX((float) Math.toRadians(180));
-        }
+        //? if >1.21.5 {
+        float entityWidth = entity.getWidth();
+        float entityHeight = entity.getHeight();
 
-        var combinedRotation = yawRotation.mul(correctionRotation);
+        int x1 = (int) (x - entityWidth * scale - SPACING + 5);
+        int y1 = (int) (y - entityHeight * scale - SPACING);
+        int x2 = (int) (x + entityWidth * scale + SPACING - 5);
+        int y2 = (int) (y + entityHeight * scale + SPACING);
 
-        drawEntity(context, x, y, scale, combinedRotation, entity);
+        context.addEntity(
+                MinecraftClient.getInstance().getEntityRenderDispatcher().getRenderer(entity)
+                        .getAndUpdateRenderState(entity, 1),
+                scale, new Vector3f(), modelRotation, null,
+                x1, y1, x2, y2);
+        //?} else {
+        /*drawEntity(context, x, y, scale, modelRotation, entity);
+        *///?}
     }
 
-    public static void drawEntity(DrawContext context, int x, int y, float scale, Quaternionf rotation, Entity entity) {
+    //? if <1.21.6 {
+    /*public static void drawEntity(DrawContext context, int x, int y, float scale, Quaternionf rotation, Entity entity) {
         DiffuseLighting.disableGuiDepthLighting();
         context.getMatrices().push();
 
@@ -236,10 +298,11 @@ public class ModelViewerTooltipComponent extends TooltipBorderColorComponent {
 
         var dispatcher = MinecraftClient.getInstance().getEntityRenderDispatcher();
         dispatcher.setRenderShadows(false);
-        dispatcher.render(entity, 0.0, 0.0, 0.0,/*? if 1.21.1 {*/ /*0.0F,*//*?}*/ 0.0F, context.getMatrices(), ((DrawContextAccessor) context).getVertexConsumers(), SHADOW_LIGHT_COLOR);
+        dispatcher.render(entity, 0.0, 0.0, 0.0,/^? if 1.21.1 {^/ /^0.0F,^//^?}^/ 0, context.getMatrices(), MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers(), 15728880);
         dispatcher.setRenderShadows(true);
 
         context.getMatrices().pop();
         DiffuseLighting.enableGuiDepthLighting();
     }
+    *///?}
 }

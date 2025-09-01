@@ -25,16 +25,17 @@ public class DurabilityTooltipComponent implements TooltipComponent {
     }
 
     private Text getDurabilityText() {
-        int damaged = stack.getMaxDamage() - stack.getDamage();
+        int remaining = stack.getMaxDamage() - stack.getDamage();
+        if (remaining <= 0) return Text.empty();
         return switch (config.durability.durabilityTooltip) {
             case VALUE -> config.durability.durabilityBar
-                    ? Text.literal(" " + damaged + " / " + stack.getMaxDamage())
+                    ? Text.literal(" " + remaining + " / " + stack.getMaxDamage())
                     : Text.literal(" ")
-                    .append(Text.literal(String.valueOf(damaged)).setStyle(Style.EMPTY.withColor(stack.getItemBarColor())))
+                    .append(Text.literal(String.valueOf(remaining)).setStyle(Style.EMPTY.withColor(stack.getItemBarColor())))
                     .append(Text.literal(" / ").setStyle(Style.EMPTY.withColor(-4539718)))
                     .append(Text.literal(String.valueOf(stack.getMaxDamage())).setStyle(Style.EMPTY.withColor(0xFF00FF00)));
             case PERCENTAGE -> {
-                Text percentageText = Text.literal(" " + (damaged * 100 / stack.getMaxDamage()) + "%");
+                Text percentageText = Text.literal(" " + (remaining * 100 / stack.getMaxDamage()) + "%");
                 yield config.durability.durabilityBar ? percentageText : percentageText.getWithStyle(Style.EMPTY.withColor(stack.getItemBarColor())).getFirst();
             }
             default -> Text.empty();
@@ -75,13 +76,13 @@ public class DurabilityTooltipComponent implements TooltipComponent {
         context.drawText(textRenderer, Text.translatable("enhancedtooltips.tooltip.durability"), x, textY, -4539718, true);
 
         x += textRenderer.getWidth(Text.translatable("enhancedtooltips.tooltip.durability")) + SPACING;
-        int damaged = stack.getMaxDamage() - stack.getDamage();
+        int remaining = stack.getMaxDamage() - stack.getDamage();
 
-        if  (config.durability.durabilityBar)
+        if  (config.durability.durabilityBar && remaining > 0)
             context.fill(
                     x,
                     textY - SPACING / 2,
-                    x + (damaged * WIDTH) / stack.getMaxDamage(),
+                    x + (remaining * WIDTH) / stack.getMaxDamage(),
                     textY + textHeight,
                     BadgesUtils.darkenColor(0xff000000 | stack.getItemBarColor(), 0.9f)
             );

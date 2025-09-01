@@ -3,16 +3,16 @@ package dev.ultimatchamp.enhancedtooltips.tooltip;
 import dev.ultimatchamp.enhancedtooltips.EnhancedTooltips;
 import dev.ultimatchamp.enhancedtooltips.component.TooltipBackgroundComponent;
 import dev.ultimatchamp.enhancedtooltips.config.EnhancedTooltipsConfig;
-import dev.ultimatchamp.enhancedtooltips.mixin.accessors.OrderedTextTooltipComponentAccessor;
 import dev.ultimatchamp.enhancedtooltips.mixin.accessors.DrawContextAccessor;
+import dev.ultimatchamp.enhancedtooltips.mixin.accessors.OrderedTextTooltipComponentAccessor;
 import dev.ultimatchamp.enhancedtooltips.util.EnhancedTooltipsTextVisitor;
+import dev.ultimatchamp.enhancedtooltips.util.MatricesUtil;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.tooltip.TooltipBackgroundRenderer;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
 import net.minecraft.client.gui.tooltip.TooltipPositioner;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
@@ -57,7 +57,7 @@ public class EnhancedTooltipsDrawer {
 
         components.removeIf(component -> component.getHeight(/*? if >1.21.1 {*/textRenderer/*?}*/) == 0 || component.getWidth(textRenderer) == 0);
 
-        MatrixStack matrices = context.getMatrices();
+        MatricesUtil matrices = new MatricesUtil(context.getMatrices());
         List<TooltipPage> pageList = new ArrayList<>();
 
         float scale = EnhancedTooltipsConfig.load().general.scaleFactor;
@@ -124,10 +124,10 @@ public class EnhancedTooltipsDrawer {
             n += tooltipPage.width + PAGE_SPACING;
         }
 
-        matrices.push();
+        matrices.pushMatrix();
 
         if (!currentStack.isEmpty() && EnhancedTooltipsConfig.load().popUpAnimation.enabled) {
-            matrices.translate(x, y, 0);
+            matrices.trans(x, y, 0);
 
             float sec = EnhancedTooltipsConfig.load().popUpAnimation.time * 1000;
             float elapsedTime = ((float) (System.nanoTime() - startTime) / 1_000_000) / sec;
@@ -137,36 +137,34 @@ public class EnhancedTooltipsDrawer {
                 pop = 1.0f + Math.abs((float) Math.sin(elapsedTime * Math.PI * 2)) * ((EnhancedTooltipsConfig.load().popUpAnimation.magnitude / 10) * scale);
             }
 
-            matrices.scale(pop, pop, 1);
-            matrices.translate(-x, -y, 0);
+            matrices.scal(pop, pop, 1);
+            matrices.trans(-x, -y, 0);
         }
 
-        matrices.scale(scale, scale, 1);
+        matrices.scal(scale, scale, 1);
 
         for (TooltipPage p : pageList) {
             if (pageList.getFirst() == p) p.x = (int) (p.x / scale);
             p.y = (int) (p.y / scale);
 
             if (backgroundComponent == null) {
-            //? if >1.21.1 {
-                context.draw(vertexConsumerProvider -> TooltipBackgroundRenderer.render(context, p.x, p.y, p.width, p.height, 400, Identifier.ofVanilla("tooltip/background")));
-            } else {
-                context.draw(vertexConsumerProvider -> {
-            //?} else {
-            /*  context.draw(() -> TooltipBackgroundRenderer.render(context, p.x, p.y, p.width, p.height, 400));
-            } else {
-                context.draw(() -> {
+            //? if >1.21.5 {
+              TooltipBackgroundRenderer.render(context, p.x, p.y, p.width, p.height, Identifier.ofVanilla("tooltip/background"));
+            //?} else if >1.21.1 {
+              /*TooltipBackgroundRenderer.render(context, p.x, p.y, p.width, p.height, 400, Identifier.ofVanilla("tooltip/background"));
+            *///?} else {
+              /*TooltipBackgroundRenderer.render(context, p.x, p.y, p.width, p.height, 400);
             *///?}
-                    try {
-                        backgroundComponent.render(context, p.x, p.y, p.width, p.height, 400, pageList.indexOf(p));
-                    } catch (Exception e) {
-                        EnhancedTooltips.LOGGER.error("[EnhancedTooltips]", e);
-                    }
-                });
+            } else {
+                try {
+                    backgroundComponent.render(context, p.x, p.y, p.width, p.height, 400, pageList.indexOf(p));
+                } catch (Exception e) {
+                    EnhancedTooltips.LOGGER.error("[EnhancedTooltips]", e);
+                }
             }
         }
 
-        matrices.translate(0.0f, 0.0f, 400.0f);
+        matrices.trans(0.0f, 0.0f, 400.0f);
 
         for (TooltipPage p : pageList) {
             int cx = p.x;
@@ -174,7 +172,11 @@ public class EnhancedTooltipsDrawer {
 
             for (TooltipComponent component : p.components) {
                 try {
-                    component.drawText(textRenderer, cx, cy, matrices.peek().getPositionMatrix(), ((DrawContextAccessor) context).getVertexConsumers());
+                    //? if >1.21.5 {
+                    component.drawText(context, textRenderer, cx, cy);
+                    //?} else {
+                    /*component.drawText(textRenderer, cx, cy, context.getMatrices().peek().getPositionMatrix(), ((DrawContextAccessor) context).getVertexConsumers());
+                    *///?}
                     component.drawItems(textRenderer, cx, cy, /*? if >1.21.1 {*/p.width, p.height,/*?}*/ context);
                     cy += component.getHeight(/*? if >1.21.1 {*/textRenderer/*?}*/);
 
@@ -187,7 +189,7 @@ public class EnhancedTooltipsDrawer {
             }
         }
 
-        matrices.pop();
+        matrices.popMatrix();
     }
 
     private static TooltipBackgroundComponent getBackgroundComponent(List<TooltipComponent> components) {

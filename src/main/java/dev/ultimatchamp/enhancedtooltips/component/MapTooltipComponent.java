@@ -1,21 +1,19 @@
 package dev.ultimatchamp.enhancedtooltips.component;
 
 import dev.ultimatchamp.enhancedtooltips.config.EnhancedTooltipsConfig;
+import dev.ultimatchamp.enhancedtooltips.util.MatricesUtil;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
-import net.minecraft.client.render.LightmapTextureManager;
-import net.minecraft.client.render.MapRenderer;
-import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.render.*;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.MapIdComponent;
 import net.minecraft.item.FilledMapItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.map.MapState;
 
-/*? if >1.21.1 {*/import net.minecraft.client.render.MapRenderState;/*?}*/
+/*? if <1.21.6 {*//*import net.minecraft.client.util.math.MatrixStack;*//*?}*/
 
 public class MapTooltipComponent implements TooltipComponent {
     private final ItemStack stack;
@@ -45,7 +43,8 @@ public class MapTooltipComponent implements TooltipComponent {
     /*public void drawItems(TextRenderer textRenderer, int x, int y, DrawContext context) {
     *///?}
         if (!config.mapTooltip.enabled) return;
-        VertexConsumerProvider vertexConsumers = MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers();
+        /*? if <1.21.6 {*//*VertexConsumerProvider vertexConsumers = MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers();*//*?}*/
+
         //? if >1.21.1 {
         MapRenderer mapRenderer = MinecraftClient.getInstance().getMapRenderer();
         //?} else {
@@ -58,17 +57,21 @@ public class MapTooltipComponent implements TooltipComponent {
         MapState mapState = FilledMapItem.getMapState(this.stack, MinecraftClient.getInstance().world);
         if (mapState == null) return;
 
-        MatrixStack matrices = context.getMatrices();
+        MatricesUtil matrices = new MatricesUtil(context.getMatrices());
 
-        matrices.push();
-        matrices.translate(x, y, 0);
-        matrices.scale(1, 1, 0);
+        matrices.pushMatrix();
+        matrices.trans(x, y, 0);
+        matrices.scal(1, 1, 0);
         //? if >1.21.1 {
         mapRenderer.update(mapId, mapState, renderState);
         //?} else {
         /*mapRenderer.updateTexture(mapId, mapState);
         *///?}
-        mapRenderer.draw(/*? if >1.21.1 {*/renderState, /*?}*/matrices, vertexConsumers, /*? if 1.21.1 {*//*mapId, mapState, *//*?}*/false, LightmapTextureManager.MAX_LIGHT_COORDINATE);
-        matrices.pop();
+        //? if >1.21.5 {
+        context.drawMap(renderState);
+        //?} else {
+        /*mapRenderer.draw(/^? if >1.21.1 {^/renderState, /^?}^/context.getMatrices(), vertexConsumers, /^? if 1.21.1 {^//^mapId, mapState, ^//^?}^/false, LightmapTextureManager.MAX_LIGHT_COORDINATE);
+        *///?}
+        matrices.popMatrix();
     }
 }

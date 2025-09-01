@@ -9,7 +9,9 @@ import dev.ultimatchamp.enhancedtooltips.util.EnhancedTooltipsTextVisitor;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.EntityType;
 import net.minecraft.item.*;
+import net.minecraft.registry.Registries;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -74,7 +76,8 @@ public class EnhancedTooltips {
                   stack.getItem() instanceof AnimalArmorItem ||
             *///?}
                 stack.getItem() instanceof EntityBucketItem ||
-                stack.getItem() instanceof SpawnEggItem
+                stack.getItem() instanceof SpawnEggItem ||
+                (stack.getItem() instanceof SmithingTemplateItem && Registries.ITEM.getId(stack.getItem()).toString().contains("armor_trim"))
             ) {
                 list.add(new ModelViewerTooltipComponent(stack));
             } else {
@@ -87,13 +90,21 @@ public class EnhancedTooltips {
                 decorationItem.get() == EntityType.PAINTING
             ) list.add(new PaintingTooltipComponent(stack));
 
+            list.add(new DurabilityTooltipComponent(stack));
+
             if (MinecraftClient.getInstance().options.advancedItemTooltips) {
                 list.removeIf(component ->
-                        component instanceof OrderedTextTooltipComponentAccessor orderedTextTooltipComponent &&
+                        component instanceof OrderedTextTooltipComponentAccessor c &&
                         (!EnhancedTooltipsConfig.load().durability.durabilityTooltip.equals(EnhancedTooltipsConfig.DurabilityTooltipMode.OFF) || EnhancedTooltipsConfig.load().durability.durabilityBar) &&
-                        EnhancedTooltipsTextVisitor.get(orderedTextTooltipComponent.getText()).getString().contains((stack.getMaxDamage() - stack.getDamage()) + " / " + stack.getMaxDamage()));
+                        EnhancedTooltipsTextVisitor.get(c.getText()).getString().contains((stack.getMaxDamage() - stack.getDamage()) + " / " + stack.getMaxDamage()));
+                list.forEach(component -> {
+                    if (!(component instanceof OrderedTextTooltipComponentAccessor c)) return;
+                    if (EnhancedTooltipsTextVisitor.get(c.getText()).getString().contains((stack.getMaxDamage() - stack.getDamage()) + " / " + stack.getMaxDamage()) ||
+                        EnhancedTooltipsTextVisitor.get(c.getText()).getString().contains(Text.literal(Registries.ITEM.getId(stack.getItem()).toString()).formatted(Formatting.DARK_GRAY).getString()) ||
+                        EnhancedTooltipsTextVisitor.get(c.getText()).getString().contains(Text.translatable("item.components", stack.getComponents().size()).formatted(Formatting.DARK_GRAY).getString()))
+                        list.set(list.size() - 1, component);
+                });
             }
-            list.add(new DurabilityTooltipComponent(stack));
         });
     }
 }
