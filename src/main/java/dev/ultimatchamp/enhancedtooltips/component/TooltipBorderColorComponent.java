@@ -6,6 +6,8 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Rarity;
 
+import java.util.List;
+
 public class TooltipBorderColorComponent extends TooltipBackgroundComponent {
     private final ItemStack stack;
     private final EnhancedTooltipsConfig config;
@@ -17,10 +19,15 @@ public class TooltipBorderColorComponent extends TooltipBackgroundComponent {
 
     @Override
     protected void renderBorder(DrawContext context, int x, int y, int width, int height, int z, int page) {
-        int startColor = 0xff000000 | TooltipHelper.getItemBorderColor(stack);
-        if (TooltipHelper.getItemBorderColor(stack) == -1) startColor = EnhancedTooltipsConfig.BorderColor.COMMON.getColor().getRGB();
-
+        List<Integer> color = TooltipHelper.getItemBorderColor(stack);
+        int startColor = 0xff000000 | color.get(0);
         int endColor = EnhancedTooltipsConfig.BorderColor.END_COLOR.getColor().getRGB();
+        if (color.get(0) == -1) startColor = EnhancedTooltipsConfig.BorderColor.COMMON.getColor().getRGB();
+
+        if(EnhancedTooltipsConfig.load().border.borderColor == EnhancedTooltipsConfig.BorderColorMode.ITEM_NAME)
+        {
+            endColor = 0xff000000 | color.get(1);
+        }
 
         if (config.border.borderColor == EnhancedTooltipsConfig.BorderColorMode.CUSTOM) {
             if (stack.getRarity() == Rarity.UNCOMMON) {
