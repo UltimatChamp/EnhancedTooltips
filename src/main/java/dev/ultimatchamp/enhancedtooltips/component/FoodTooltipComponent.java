@@ -45,20 +45,20 @@ public class FoodTooltipComponent implements TooltipComponent {
     }
     //?}
 
-    public FoodComponent getFoodComponent() {
+    public static FoodComponent getFoodComponent(ItemStack stack) {
         FoodComponent foodComponent;
 
         //? if >1.21.1 {
-        foodComponent = this.stack.getItem().getComponents().get(DataComponentTypes.FOOD);
+        foodComponent = stack.getItem().getComponents().get(DataComponentTypes.FOOD);
         //?} else {
-        /*foodComponent = this.stack.getItem().getComponents().get(DataComponentTypes.FOOD);
+        /*foodComponent = stack.getItem().getComponents().get(DataComponentTypes.FOOD);
         *///?}
 
         return foodComponent;
     }
 
     public int getHunger() {
-        FoodComponent foodComponent = getFoodComponent();
+        FoodComponent foodComponent = getFoodComponent(this.stack);
         int hunger = 0;
 
         //? if >1.21.1 {
@@ -75,7 +75,7 @@ public class FoodTooltipComponent implements TooltipComponent {
     }
 
     public int getSaturation() {
-        FoodComponent foodComponent = getFoodComponent();
+        FoodComponent foodComponent = getFoodComponent(this.stack);
         int saturation = 0;
         int hunger = getHunger();
 
@@ -90,7 +90,7 @@ public class FoodTooltipComponent implements TooltipComponent {
     public int getHeight(/*? if >1.21.1 {*/TextRenderer textRenderer/*?}*/) {
         int height = 0;
 
-        FoodComponent foodComponent = getFoodComponent();
+        FoodComponent foodComponent = getFoodComponent(this.stack);
         //? if >1.21.1 {
         ConsumableComponent consumableComponent = getConsumableComponent();
         if (foodComponent != null && consumableComponent != null) {
@@ -126,7 +126,7 @@ public class FoodTooltipComponent implements TooltipComponent {
         var foodWidth = 0;
         var effectsWidth = 0;
 
-        FoodComponent foodComponent = getFoodComponent();
+        FoodComponent foodComponent = getFoodComponent(this.stack);
 
         int hunger = getHunger();
 
@@ -178,7 +178,7 @@ public class FoodTooltipComponent implements TooltipComponent {
     //?} else {
     /*public void drawItems(TextRenderer textRenderer, int x, int y, DrawContext context) {
     *///?}
-        FoodComponent foodComponent = getFoodComponent();
+        FoodComponent foodComponent = getFoodComponent(this.stack);
         int hunger = getHunger();
         int saturation = getSaturation();
 

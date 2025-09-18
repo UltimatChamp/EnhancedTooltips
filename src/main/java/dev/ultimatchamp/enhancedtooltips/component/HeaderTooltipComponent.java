@@ -102,7 +102,7 @@ public class HeaderTooltipComponent implements TooltipComponent {
             int sec = (int) (config.itemPreviewAnimation.time * 1000);
             float time = (float) (System.currentTimeMillis() % sec) / sec;
 
-            bounce = (float) Math.sin(time * Math.PI * 2) * (config.itemPreviewAnimation.magnitude * config.general.scaleFactor);
+            bounce = (float) Math.sin(time * Math.PI * 2) * (config.itemPreviewAnimation.magnitude * /*? if >1.21.5 {*/1/*?} else {*//*config.general.scaleFactor*//*?}*/);
         }
 
         context.drawItem(this.stack, startDrawX, (int) (startDrawY - bounce));

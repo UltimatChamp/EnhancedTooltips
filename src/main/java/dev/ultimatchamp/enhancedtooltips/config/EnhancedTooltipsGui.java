@@ -47,7 +47,8 @@ public class EnhancedTooltipsGui {
                                         )
                                         .controller(TickBoxControllerBuilder::create)
                                         .build())
-                                .option(Option.<Float>createBuilder()
+                                //? if <1.21.6 {
+                                /*.option(Option.<Float>createBuilder()
                                         .name(Text.translatable("enhancedtooltips.config.scaleFactor"))
                                         .description(OptionDescription.createBuilder()
                                                 .text(Text.translatable("enhancedtooltips.config.scaleFactor.desc"))
@@ -57,8 +58,9 @@ public class EnhancedTooltipsGui {
                                                 () -> config.general.scaleFactor,
                                                 (value) -> config.general.scaleFactor = value
                                         )
-                                        .customController(opt -> new FloatSliderController(opt, 0.25f, 2f, 0.05f, value -> Text.literal(String.format("%." + 0 /* decimal places */ + "f%%", value * 100.0F))))
+                                        .customController(opt -> new FloatSliderController(opt, 0.25f, 2f, 0.05f, value -> Text.literal(String.format("%." + 0 /^ decimal places ^/ + "f%%", value * 100.0F))))
                                         .build())
+                                *///?}
                                 .build())
                         .group(OptionGroup.createBuilder()
                                 .name(Text.translatable("enhancedtooltips.config.popUpAnimation"))
@@ -81,7 +83,7 @@ public class EnhancedTooltipsGui {
                                                 () -> config.popUpAnimation.time,
                                                 (value) -> config.popUpAnimation.time = value
                                         )
-                                        .customController(opt -> new FloatSliderController(opt, 1f, 5f, 0.05f,
+                                        .customController(opt -> new FloatSliderController(opt, 0.25f, 5f, 0.05f,
                                                 value -> Text.literal(value == 1 ? "1 second" :
                                                         BigDecimal.valueOf(value)
                                                                 .setScale(2, RoundingMode.HALF_UP)
@@ -355,6 +357,36 @@ public class EnhancedTooltipsGui {
                                                 true,
                                                 () -> config.paintingTooltip.enabled,
                                                 (value) -> config.paintingTooltip.enabled = value
+                                        )
+                                        .controller(TickBoxControllerBuilder::create)
+                                        .build())
+                                .build())
+                        .group(OptionGroup.createBuilder()
+                                .name(Text.translatable("item.minecraft.mojang_banner_pattern"))
+                                .option(Option.<Boolean>createBuilder()
+                                        .name(Text.translatable("enhancedtooltips.config.bannerPatternTooltip"))
+                                        .description(OptionDescription.createBuilder()
+                                                .text(Text.translatable("enhancedtooltips.config.bannerPatternTooltip.desc"))
+                                                .build())
+                                        .binding(
+                                                true,
+                                                () -> config.bannerPatternTooltip.enabled,
+                                                (value) -> config.bannerPatternTooltip.enabled = value
+                                        )
+                                        .controller(TickBoxControllerBuilder::create)
+                                        .build())
+                                .build())
+                        .group(OptionGroup.createBuilder()
+                                .name(Text.translatable("attribute.name.armor"))
+                                .option(Option.<Boolean>createBuilder()
+                                        .name(Text.translatable("enhancedtooltips.config.armorIconTooltip"))
+                                        .description(OptionDescription.createBuilder()
+                                                .text(Text.translatable("enhancedtooltips.config.armorIconTooltip.desc"))
+                                                .build())
+                                        .binding(
+                                                true,
+                                                () -> config.armorIconTooltip.enabled,
+                                                (value) -> config.armorIconTooltip.enabled = value
                                         )
                                         .controller(TickBoxControllerBuilder::create)
                                         .build())

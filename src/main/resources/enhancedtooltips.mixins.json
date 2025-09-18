@@ -6,6 +6,7 @@
     "DrawContextMixin",
     "InGameHudMixin",
     "ItemStackMixin",
+    "PotionContentsComponentMixin",
     "accessors.BucketItemEntityTypeAccessor",
     "accessors.ClientWorldAccessor",
     "accessors.DecorationItemEntityTypeAccessor",

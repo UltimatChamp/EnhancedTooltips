@@ -1,17 +1,17 @@
 package dev.ultimatchamp.enhancedtooltips.component;
 
-import dev.ultimatchamp.enhancedtooltips.config.EnhancedTooltipsConfig;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
 import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.texture.PaintingManager;
 import net.minecraft.client.texture.Sprite;
+import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.decoration.painting.PaintingVariant;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.util.Identifier;
 
 //? if >1.21.5 {
 import net.minecraft.client.gl.RenderPipelines;
@@ -26,11 +26,8 @@ public class PaintingTooltipComponent implements TooltipComponent {
     private final PaintingVariant variant;
     private final int width;
     private final int height;
-    private final EnhancedTooltipsConfig config;
 
     public PaintingTooltipComponent(ItemStack stack) {
-        this.config = EnhancedTooltipsConfig.load();
-
         //? if >1.21.4 {
         RegistryEntry<PaintingVariant> variant = stack.getOrDefault(DataComponentTypes.PAINTING_VARIANT, null);
         if (variant != null) {
@@ -56,13 +53,11 @@ public class PaintingTooltipComponent implements TooltipComponent {
 
     @Override
     public int getHeight(/*? if >1.21.1 {*/TextRenderer textRenderer/*?}*/) {
-        if (!config.paintingTooltip.enabled) return 0;
         return this.height;
     }
 
     @Override
     public int getWidth(TextRenderer textRenderer) {
-        if (!config.paintingTooltip.enabled) return 0;
         return this.width;
     }
 
@@ -72,9 +67,16 @@ public class PaintingTooltipComponent implements TooltipComponent {
     //?} else {
     /*public void drawItems(TextRenderer textRenderer, int x, int y, DrawContext context) {
     *///?}
-        if (this.variant == null || !config.paintingTooltip.enabled) return;
-        PaintingManager paintingManager = MinecraftClient.getInstance().getPaintingManager();
+        if (this.variant == null) return;
+        //? if >1.21.8 {
+        SpriteAtlasTexture paintingAtlas = (SpriteAtlasTexture) MinecraftClient.getInstance()
+                .getTextureManager()
+                .getTexture(Identifier.ofVanilla("textures/atlas/paintings.png"));
+        Sprite sprite = paintingAtlas.getSprite(variant.assetId());
+        //?} else {
+        /*var paintingManager = MinecraftClient.getInstance().getPaintingManager();
         Sprite sprite = paintingManager.getPaintingSprite(this.variant);
+        *///?}
         //? if >1.21.5 {
         context.drawSpriteStretched(RenderPipelines.GUI_TEXTURED, sprite, x, y, this.width, this.height);
         //?} else if >1.21.1 {

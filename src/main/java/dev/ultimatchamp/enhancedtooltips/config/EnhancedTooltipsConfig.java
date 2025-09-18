@@ -29,6 +29,8 @@ public class EnhancedTooltipsConfig {
     public MobsConfig mobs = new MobsConfig();
     public MapConfig mapTooltip = new MapConfig();
     public PaintingConfig paintingTooltip = new PaintingConfig();
+    public BannerPatternConfig bannerPatternTooltip = new BannerPatternConfig();
+    public ArmorConfig armorIconTooltip = new ArmorConfig();
     public DurabilityConfig durability = new DurabilityConfig();
     public HeldItemTooltipConfig heldItemTooltip = new HeldItemTooltipConfig();
 
@@ -39,8 +41,10 @@ public class EnhancedTooltipsConfig {
         @Comment("Shows the category of an item in a badge on its tooltip.\n(default: true)")
         public boolean itemBadges = true;
 
-        @Comment("Adjusts the size of tooltips.\nA scale of 100% displays the tooltip at its default size.\n(default: 1.0)")
+        //? if <1.21.6 {
+        /*@Comment("Adjusts the size of tooltips.\nA scale of 100% displays the tooltip at its default size.\n(default: 1.0)")
         public float scaleFactor = 1f;
+        *///?}
     }
 
     public static class PopUpAnimationConfig {
@@ -195,6 +199,16 @@ public class EnhancedTooltipsConfig {
 
     public static class PaintingConfig {
         @Comment("Shows a preview of the painting in its tooltip.\n(default: true)")
+        public boolean enabled = true;
+    }
+
+    public static class BannerPatternConfig {
+        @Comment("Shows a preview of the banner pattern in its tooltip.\n(default: true)")
+        public boolean enabled = true;
+    }
+
+    public static class ArmorConfig {
+        @Comment("Shows the armor attribute in the form of icons.\n(default: true)")
         public boolean enabled = true;
     }
 

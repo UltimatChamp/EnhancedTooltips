@@ -93,7 +93,7 @@ public class DurabilityTooltipComponent implements TooltipComponent {
             context.drawText(textRenderer, durabilityText, textX, textY, 0xFFFFFFFF, true);
         }
 
-        if  (config.durability.durabilityBar)
+        if (config.durability.durabilityBar)
             BadgesUtils.drawFrame(
                     context,
                     x,

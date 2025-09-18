@@ -1,6 +1,5 @@
 package dev.ultimatchamp.enhancedtooltips.component;
 
-import dev.ultimatchamp.enhancedtooltips.config.EnhancedTooltipsConfig;
 import dev.ultimatchamp.enhancedtooltips.util.MatricesUtil;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
@@ -15,24 +14,15 @@ import net.minecraft.item.map.MapState;
 
 /*? if <1.21.6 {*//*import net.minecraft.client.util.math.MatrixStack;*//*?}*/
 
-public class MapTooltipComponent implements TooltipComponent {
-    private final ItemStack stack;
-    private final EnhancedTooltipsConfig config;
-
-    public MapTooltipComponent(ItemStack stack) {
-        this.stack = stack;
-        this.config = EnhancedTooltipsConfig.load();
-    }
+public record MapTooltipComponent(ItemStack stack) implements TooltipComponent {
 
     @Override
     public int getHeight(/*? if >1.21.1 {*/TextRenderer textRenderer/*?}*/) {
-        if (!config.mapTooltip.enabled) return 0;
         return 128 + 2;
     }
 
     @Override
     public int getWidth(TextRenderer textRenderer) {
-        if (!config.mapTooltip.enabled) return 0;
         return 128;
     }
 
@@ -42,7 +32,6 @@ public class MapTooltipComponent implements TooltipComponent {
     //?} else {
     /*public void drawItems(TextRenderer textRenderer, int x, int y, DrawContext context) {
     *///?}
-        if (!config.mapTooltip.enabled) return;
         /*? if <1.21.6 {*//*VertexConsumerProvider vertexConsumers = MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers();*//*?}*/
 
         //? if >1.21.1 {

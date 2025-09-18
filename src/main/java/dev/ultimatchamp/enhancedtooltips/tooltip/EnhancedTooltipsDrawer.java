@@ -60,7 +60,8 @@ public class EnhancedTooltipsDrawer {
         MatricesUtil matrices = new MatricesUtil(context.getMatrices());
         List<TooltipPage> pageList = new ArrayList<>();
 
-        float scale = EnhancedTooltipsConfig.load().general.scaleFactor;
+        float scale = 1;
+        /*? if <1.21.6 {*//*scale = EnhancedTooltipsConfig.load().general.scaleFactor;*//*?}*/
 
         int maxWidth = (int) (getMaxWidth() / scale);
         int totalWidth = 0;
@@ -113,7 +114,7 @@ public class EnhancedTooltipsDrawer {
             totalWidth += page.width;
         }
 
-        int scaledOffset = ((int) (12 * EnhancedTooltipsConfig.load().general.scaleFactor)) - 12;
+        int scaledOffset = ((int) (12 * scale)) - 12;
         Vector2ic vector2ic = positioner.getPosition(context.getScaledWindowWidth(), context.getScaledWindowHeight(), x + scaledOffset, y - scaledOffset, (int) (totalWidth * scale), (int) (pageList.getFirst().height * scale));
         int n = vector2ic.x();
         int o = vector2ic.y();

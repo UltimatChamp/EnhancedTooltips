@@ -19,6 +19,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.joml.*;
 
 import java.lang.Math;
+import java.util.List;
 
 //? if >1.21.4 {
 import net.minecraft.village.VillagerDataContainer;
@@ -31,8 +32,13 @@ import net.minecraft.village.VillagerType;
 import net.minecraft.item.equipment.trim.ArmorTrim;
 //?} else {
 /*import net.minecraft.item.trim.ArmorTrim;
- *///?}
-/*? if <1.21.6 {*//*import net.minecraft.client.render.DiffuseLighting;*//*?}*/
+*///?}
+//? if >1.21.5 {
+import net.minecraft.client.render.entity.EntityRenderer;
+import net.minecraft.client.render.entity.state.EntityRenderState;
+//?} else {
+/*import net.minecraft.client.render.DiffuseLighting;
+*///?}
 
 public class ModelViewerTooltipComponent extends TooltipBorderColorComponent {
     private static float currentRotation = 0f;
@@ -106,23 +112,34 @@ public class ModelViewerTooltipComponent extends TooltipBorderColorComponent {
 
     private void renderArmorTrim(DrawContext context, int x, int y, int z) throws Exception {
         var armorStand = new ArmorStandEntity(EntityType.ARMOR_STAND, MinecraftClient.getInstance().world);
+        List<ItemStack> armorPieces = List.of(
+                Items.NETHERITE_HELMET.getDefaultStack(),
+                Items.NETHERITE_CHESTPLATE.getDefaultStack(),
+                Items.NETHERITE_LEGGINGS.getDefaultStack(),
+                Items.NETHERITE_BOOTS.getDefaultStack()
+        );
 
-        ItemStack armor = Items.NETHERITE_CHESTPLATE.getDefaultStack();
-        Identifier id = Identifier.of(StringUtils.substringBefore(stack.getItem().toString(), "_"));
+        for (ItemStack armor : armorPieces) {
+            Identifier id = Identifier.of(StringUtils.substringBefore(stack.getItem().toString(), "_"));
 
-        ClientWorld world = MinecraftClient.getInstance().world;
-        if (world == null) return;
+            ClientWorld world = MinecraftClient.getInstance().world;
+            if (world == null) return;
 
-        DynamicRegistryManager registryManager = world.getRegistryManager();
-        var mat = registryManager.getOptional(RegistryKeys.TRIM_MATERIAL);
-        var pat = registryManager.getOptional(RegistryKeys.TRIM_PATTERN);
-        if (mat.isEmpty() || pat.isEmpty()) return;
+            DynamicRegistryManager registryManager = world.getRegistryManager();
+            var mat = registryManager.getOptional(RegistryKeys.TRIM_MATERIAL);
+            var pat = registryManager.getOptional(RegistryKeys.TRIM_PATTERN);
+            if (mat.isEmpty() || pat.isEmpty()) return;
 
-        var material = mat.get().getEntry(Identifier.ofVanilla("diamond")).orElseThrow();
-        var pattern = pat.get().getEntry(id).orElseThrow();
+            var material = mat.get().getEntry(Identifier.ofVanilla("diamond")).orElseThrow();
+            var pattern = pat.get().getEntry(id).orElseThrow();
 
-        armor.set(DataComponentTypes.TRIM, new ArmorTrim(material, pattern));
-        armorStand.equipStack(EquipmentSlot.CHEST, armor);
+            armor.set(DataComponentTypes.TRIM, new ArmorTrim(material, pattern));
+            //? if >1.21.1 {
+            armorStand.equipStack(getEquipmentSlot(armor), armor);
+            //?} else {
+            /*armorStand.equipStack(armorStand.getPreferredEquipmentSlot(armor), armor);
+            *///?}
+        }
 
         super.render(context, x - 65, y, 40, 70, z, -1);
         drawEntity(context, x - 30 / 2 - SPACING - 10, y + 65, 30, currentRotation, armorStand);
@@ -200,7 +217,12 @@ public class ModelViewerTooltipComponent extends TooltipBorderColorComponent {
     }
 
     private void renderSpawnEggEntity(DrawContext context, int x, int y, int z, SpawnEggItem spawnEggItem) throws Exception {
-        var entityType = ((SpawnEggItemEntityTypeAccessor) spawnEggItem).get();
+        //? if >1.21.8 {
+        var entityType = spawnEggItem.getEntityType(stack);
+        if (entityType == null) return;
+        //?} else {
+        /*var entityType = ((SpawnEggItemEntityTypeAccessor) spawnEggItem).get();
+        *///?}
         //? if >1.21.1 {
         var entity = entityType.create(MinecraftClient.getInstance().world, SpawnReason.BUCKET);
         //?} else {
@@ -298,7 +320,7 @@ public class ModelViewerTooltipComponent extends TooltipBorderColorComponent {
 
         var dispatcher = MinecraftClient.getInstance().getEntityRenderDispatcher();
         dispatcher.setRenderShadows(false);
-        dispatcher.render(entity, 0.0, 0.0, 0.0,/^? if 1.21.1 {^/ /^0.0F,^//^?}^/ 0, context.getMatrices(), MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers(), 15728880);
+        dispatcher.render(entity, 0.0, 0.0, 0.0,/^? if 1.21.1 {^/ /^0,^//^?}^/ 0, context.getMatrices(), MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers(), 15728880);
         dispatcher.setRenderShadows(true);
 
         context.getMatrices().pop();
