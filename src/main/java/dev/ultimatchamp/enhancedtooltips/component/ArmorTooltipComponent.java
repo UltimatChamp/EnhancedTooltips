@@ -1,12 +1,9 @@
 package dev.ultimatchamp.enhancedtooltips.component;
 
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
 import net.minecraft.component.DataComponentTypes;
-import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.item.ItemStack;
@@ -17,10 +14,15 @@ import net.minecraft.client.gl.RenderPipelines;
 //?} else {
 /*import net.minecraft.client.render.RenderLayer;
 *///?}
+//? if 1.21.1 {
+/*import net.minecraft.client.MinecraftClient;
+import net.minecraft.entity.EntityType;
+*///?}
 
 public record ArmorTooltipComponent(ItemStack stack) implements TooltipComponent {
 
     @Override
+    @SuppressWarnings("deprecation")
     public int getHeight(/*? if >1.21.1 {*/TextRenderer textRenderer/*?}*/) {
         int height = 0;
 
@@ -44,14 +46,15 @@ public record ArmorTooltipComponent(ItemStack stack) implements TooltipComponent
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public int getWidth(TextRenderer textRenderer) {
         int width = 0;
 
         //? if >1.21.1 {
         if (ModelViewerTooltipComponent.getEquipmentSlot(stack).getType() == EquipmentSlot.Type.HUMANOID_ARMOR) {
-            //?} else {
-            /*if (EntityType.ARMOR_STAND.create(MinecraftClient.getInstance().world).getPreferredEquipmentSlot(stack).getType() == EquipmentSlot.Type.HUMANOID_ARMOR) {
-            *///?}
+        //?} else {
+        /*if (EntityType.ARMOR_STAND.create(MinecraftClient.getInstance().world).getPreferredEquipmentSlot(stack).getType() == EquipmentSlot.Type.HUMANOID_ARMOR) {
+        *///?}
             var c = stack.get(DataComponentTypes.ATTRIBUTE_MODIFIERS);
             if (c != null) {
                 for (var i : c.modifiers()) {
@@ -67,6 +70,7 @@ public record ArmorTooltipComponent(ItemStack stack) implements TooltipComponent
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     //? if >1.21.1 {
     public void drawItems(TextRenderer textRenderer, int x, int y, int width, int height, DrawContext context) {
     //?} else {

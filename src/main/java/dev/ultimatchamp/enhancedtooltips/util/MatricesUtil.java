@@ -3,12 +3,7 @@ package dev.ultimatchamp.enhancedtooltips.util;
 import net.minecraft.client.util.math.MatrixStack;
 import org.joml.Matrix3x2fStack;
 
-public class MatricesUtil {
-    private final Object matrixStack;
-
-    public MatricesUtil(Object matrixStack) {
-        this.matrixStack = matrixStack;
-    }
+public record MatricesUtil(Object matrixStack) {
     public void pushMatrix() {
         if (this.matrixStack instanceof Matrix3x2fStack m) {
             m.pushMatrix();

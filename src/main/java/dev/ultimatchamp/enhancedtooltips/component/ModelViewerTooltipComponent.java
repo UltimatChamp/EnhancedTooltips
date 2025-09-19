@@ -2,7 +2,6 @@ package dev.ultimatchamp.enhancedtooltips.component;
 
 import dev.ultimatchamp.enhancedtooltips.config.EnhancedTooltipsConfig;
 import dev.ultimatchamp.enhancedtooltips.mixin.accessors.BucketItemEntityTypeAccessor;
-import dev.ultimatchamp.enhancedtooltips.mixin.accessors.SpawnEggItemEntityTypeAccessor;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.world.ClientWorld;
@@ -21,6 +20,7 @@ import org.joml.*;
 import java.lang.Math;
 import java.util.List;
 
+/*? if <1.21.9 {*//*import dev.ultimatchamp.enhancedtooltips.mixin.accessors.SpawnEggItemEntityTypeAccessor;*//*?}*/
 //? if >1.21.4 {
 import net.minecraft.village.VillagerDataContainer;
 import net.minecraft.village.VillagerProfession;
@@ -33,10 +33,7 @@ import net.minecraft.item.equipment.trim.ArmorTrim;
 //?} else {
 /*import net.minecraft.item.trim.ArmorTrim;
 *///?}
-//? if >1.21.5 {
-import net.minecraft.client.render.entity.EntityRenderer;
-import net.minecraft.client.render.entity.state.EntityRenderState;
-//?} else {
+//? if <1.21.6 {
 /*import net.minecraft.client.render.DiffuseLighting;
 *///?}
 

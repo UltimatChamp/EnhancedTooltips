@@ -4,7 +4,6 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
-import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.component.DataComponentTypes;
@@ -20,6 +19,9 @@ import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.decoration.painting.PaintingEntity;
+*///?}
+//? if <1.21.6 {
+/*import net.minecraft.client.render.RenderLayer;
 *///?}
 
 public class PaintingTooltipComponent implements TooltipComponent {

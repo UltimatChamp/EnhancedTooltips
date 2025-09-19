@@ -23,9 +23,9 @@ import net.minecraft.client.render.block.entity.BannerBlockEntityRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 *///?}
 /*? if <1.21.5 {*//*import net.minecraft.item.BannerPatternItem;*//*?}*/
-//? if >1.21.1 {
-import net.minecraft.client.render.model.ModelBaker;
-//?} else {
+//? if <1.21.6 && >1.21.1 {
+/*import net.minecraft.client.render.model.ModelBaker;
+*///?} else if 1.21.1 {
 /*import net.minecraft.client.render.model.ModelLoader;
 *///?}
 

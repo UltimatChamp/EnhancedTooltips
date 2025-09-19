@@ -3,7 +3,6 @@ package dev.ultimatchamp.enhancedtooltips.tooltip;
 import dev.ultimatchamp.enhancedtooltips.EnhancedTooltips;
 import dev.ultimatchamp.enhancedtooltips.component.TooltipBackgroundComponent;
 import dev.ultimatchamp.enhancedtooltips.config.EnhancedTooltipsConfig;
-import dev.ultimatchamp.enhancedtooltips.mixin.accessors.DrawContextAccessor;
 import dev.ultimatchamp.enhancedtooltips.mixin.accessors.OrderedTextTooltipComponentAccessor;
 import dev.ultimatchamp.enhancedtooltips.util.EnhancedTooltipsTextVisitor;
 import dev.ultimatchamp.enhancedtooltips.util.MatricesUtil;
@@ -21,6 +20,8 @@ import org.joml.Vector2ic;
 
 import java.util.ArrayList;
 import java.util.List;
+
+/*? if <1.21.6 {*//*import dev.ultimatchamp.enhancedtooltips.mixin.accessors.DrawContextAccessor;*//*?}*/
 
 public class EnhancedTooltipsDrawer {
     private static final int EDGE_SPACING = 32;
