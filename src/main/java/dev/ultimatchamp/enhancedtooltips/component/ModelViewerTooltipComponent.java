@@ -296,11 +296,13 @@ public class ModelViewerTooltipComponent extends TooltipBorderColorComponent {
         int x2 = (int) (x + entityWidth * scale + SPACING - 5);
         int y2 = (int) (y + entityHeight * scale + SPACING);
 
-        context.addEntity(
-                MinecraftClient.getInstance().getEntityRenderDispatcher().getRenderer(entity)
-                        .getAndUpdateRenderState(entity, 1),
-                scale, new Vector3f(), modelRotation, null,
-                x1, y1, x2, y2);
+        var renderState = MinecraftClient.getInstance().getEntityRenderDispatcher().getRenderer(entity)
+                .getAndUpdateRenderState(entity, 1);
+
+        renderState.light = 15728880;
+        renderState.shadowPieces.clear();
+
+        context.addEntity(renderState, scale, new Vector3f(), modelRotation, null, x1, y1, x2, y2);
         //?} else {
         /*drawEntity(context, x, y, scale, modelRotation, entity);
         *///?}

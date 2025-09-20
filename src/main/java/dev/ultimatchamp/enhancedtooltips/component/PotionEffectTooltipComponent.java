@@ -10,6 +10,7 @@ import net.minecraft.component.type.AttributeModifiersComponent;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.effect.StatusEffect;
+import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffectUtil;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.entry.RegistryEntry;
@@ -19,6 +20,7 @@ import net.minecraft.util.Formatting;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 //? if >1.21.5 {
 import net.minecraft.client.gl.RenderPipelines;
@@ -37,9 +39,18 @@ public record PotionEffectTooltipComponent(ItemStack stack) implements TooltipCo
 
         var c = stack.get(DataComponentTypes.POTION_CONTENTS);
         if (c != null) {
-            List<Text> list = new ArrayList<>();
-            c.getEffects().forEach(i -> list.add(i.getEffectType().value().getName()));
-            height = list.size() * (9 + 1);
+            List<Text> effects = new ArrayList<>();
+            List<Pair<RegistryEntry<EntityAttribute>, EntityAttributeModifier>> list = Lists.newArrayList();
+
+            c.getEffects().forEach(i -> {
+                effects.add(i.getEffectType().value().getName());
+                i.getEffectType().value().forEachAttributeModifier(i.getAmplifier(), (attribute, modifier) -> list.add(new Pair<>(attribute, modifier)));
+            });
+            height += effects.size() * (9 + 1);
+            if (effects.isEmpty()) height += 9 + 1;
+
+            if (!list.isEmpty()) height += 9 + 1;
+            height += list.size() * (9 + 1);
         }
 
         return height;
@@ -51,10 +62,25 @@ public record PotionEffectTooltipComponent(ItemStack stack) implements TooltipCo
 
         var c = stack.get(DataComponentTypes.POTION_CONTENTS);
         if (c != null) {
-            List<Text> list = new ArrayList<>();
-            c.getEffects().forEach(i -> list.add(i.getEffectType().value().getName()));
-            for (Text effect : list) {
-                width += 9 + 3 + textRenderer.getWidth(effect);
+            List<Pair<RegistryEntry<EntityAttribute>, EntityAttributeModifier>> list = Lists.newArrayList();
+            boolean isEmpty = true;
+
+            for (var effect : c.getEffects()) {
+                isEmpty = false;
+
+                width = Math.max(9 + 3 + textRenderer.getWidth(getEffectText(effect, list::add)), width);
+            }
+
+            if (isEmpty)
+                width = Math.max(textRenderer.getWidth(Text.translatable("effect.none").formatted(Formatting.GRAY)), width);
+
+            if (!list.isEmpty())
+                width = Math.max(textRenderer.getWidth(Text.translatable("potion.whenDrank").formatted(Formatting.DARK_PURPLE)), width);
+
+            for (Pair<RegistryEntry<EntityAttribute>, EntityAttributeModifier> pair : list) {
+                Text modifierText = getModifierText(pair);
+                if (modifierText != null)
+                    width = Math.max(3 + textRenderer.getWidth(modifierText), width);
             }
         }
 
@@ -72,8 +98,10 @@ public record PotionEffectTooltipComponent(ItemStack stack) implements TooltipCo
 
         int lineY = y - (textRenderer.fontHeight + 1);
         List<Pair<RegistryEntry<EntityAttribute>, EntityAttributeModifier>> list = Lists.newArrayList();
+        boolean isEmpty = true;
 
         for (var effect : c.getEffects()) {
+            isEmpty = false;
             lineY += textRenderer.fontHeight + 1;
 
             //? if >1.21.5 {
@@ -92,17 +120,9 @@ public record PotionEffectTooltipComponent(ItemStack stack) implements TooltipCo
             /*context.drawSprite(x, lineY - 1, 0, textRenderer.fontHeight, textRenderer.fontHeight, effectTexture);
             *///?}
 
-            RegistryEntry<StatusEffect> registryEntry = effect.getEffectType();
-            int amplifier = effect.getAmplifier();
-            registryEntry.value().forEachAttributeModifier(amplifier, (attribute, modifier) -> list.add(new Pair<>(attribute, modifier)));
-            MutableText name = Text.translatable(effect.getEffectType().value().getTranslationKey());
-            MutableText effectText = amplifier > 0 ? Text.translatable("potion.withAmplifier", name, Text.translatable("potion.potency." + amplifier)) : name;
-            if (!effect.isDurationBelow(20))
-                effectText = Text.translatable("potion.withDuration", effectText, StatusEffectUtil.getDurationText(effect, 1, 20));
-
             context.drawText(
                     textRenderer,
-                    effectText,
+                    getEffectText(effect, list::add),
                     x + textRenderer.fontHeight + 3,
                     lineY,
                     0xffffffff,
@@ -110,12 +130,12 @@ public record PotionEffectTooltipComponent(ItemStack stack) implements TooltipCo
             );
         }
 
-        if (c.getEffects() != null) {
+        if (isEmpty) {
             lineY += textRenderer.fontHeight + 1;
             context.drawText(
                     textRenderer,
                     Text.translatable("effect.none").formatted(Formatting.GRAY),
-                    x + textRenderer.fontHeight + 3,
+                    x,
                     lineY,
                     0xffffffff,
                     true
@@ -127,38 +147,57 @@ public record PotionEffectTooltipComponent(ItemStack stack) implements TooltipCo
             context.drawText(
                     textRenderer,
                     Text.translatable("potion.whenDrank").formatted(Formatting.DARK_PURPLE),
-                    x + textRenderer.fontHeight + 3,
+                    x,
                     lineY,
                     0xffffffff,
                     true
             );
         }
 
-        for(Pair<RegistryEntry<EntityAttribute>, EntityAttributeModifier> pair : list) {
+        for (Pair<RegistryEntry<EntityAttribute>, EntityAttributeModifier> pair : list) {
             lineY += textRenderer.fontHeight + 1;
 
-            EntityAttributeModifier modifier = pair.getSecond();
-            double value;
-            if (modifier.operation() != EntityAttributeModifier.Operation.ADD_MULTIPLIED_BASE && modifier.operation() != EntityAttributeModifier.Operation.ADD_MULTIPLIED_TOTAL)
-                value = modifier.value();
-            else value = modifier.value() * 100;
-
-            Text modifierText;
-            if (modifier.value() > 0) {
-                modifierText = Text.translatable("attribute.modifier.plus." + modifier.operation().getId(), AttributeModifiersComponent.DECIMAL_FORMAT.format(value), Text.translatable(pair.getFirst().value().getTranslationKey())).formatted(Formatting.BLUE);
-            } else if (modifier.value() < 0) {
-                value *= -1;
-                modifierText = Text.translatable("attribute.modifier.take." + modifier.operation().getId(), AttributeModifiersComponent.DECIMAL_FORMAT.format(value), Text.translatable(pair.getFirst().value().getTranslationKey())).formatted(Formatting.RED);
-            } else continue;
+            Text modifierText = getModifierText(pair);
+            if (modifierText == null) continue;
 
             context.drawText(
                     textRenderer,
                     modifierText,
-                    x + textRenderer.fontHeight + 3,
+                    x + 3,
                     lineY,
                     0xffffffff,
                     true
             );
         }
+    }
+
+    private static Text getEffectText(StatusEffectInstance effect, Consumer<Pair<RegistryEntry<EntityAttribute>, EntityAttributeModifier>> list) {
+        RegistryEntry<StatusEffect> registryEntry = effect.getEffectType();
+        int amplifier = effect.getAmplifier();
+        registryEntry.value().forEachAttributeModifier(amplifier, (attribute, modifier) -> list.accept(new Pair<>(attribute, modifier)));
+        MutableText name = Text.translatable(effect.getEffectType().value().getTranslationKey());
+        MutableText effectText = amplifier > 0 ? Text.translatable("potion.withAmplifier", name, Text.translatable("potion.potency." + amplifier)) : name;
+        if (!effect.isDurationBelow(20))
+            effectText = Text.translatable("potion.withDuration", effectText, StatusEffectUtil.getDurationText(effect, 1, 20));
+
+        return effectText;
+    }
+
+    private static Text getModifierText(Pair<RegistryEntry<EntityAttribute>, EntityAttributeModifier> pair) {
+        EntityAttributeModifier modifier = pair.getSecond();
+        double value;
+        if (modifier.operation() != EntityAttributeModifier.Operation.ADD_MULTIPLIED_BASE && modifier.operation() != EntityAttributeModifier.Operation.ADD_MULTIPLIED_TOTAL)
+            value = modifier.value();
+        else value = modifier.value() * 100;
+
+        Text modifierText;
+        if (modifier.value() > 0) {
+            modifierText = Text.translatable("attribute.modifier.plus." + modifier.operation().getId(), AttributeModifiersComponent.DECIMAL_FORMAT.format(value), Text.translatable(pair.getFirst().value().getTranslationKey())).formatted(Formatting.BLUE);
+        } else if (modifier.value() < 0) {
+            value *= -1;
+            modifierText = Text.translatable("attribute.modifier.take." + modifier.operation().getId(), AttributeModifiersComponent.DECIMAL_FORMAT.format(value), Text.translatable(pair.getFirst().value().getTranslationKey())).formatted(Formatting.RED);
+        } else modifierText = null;
+
+        return modifierText;
     }
 }

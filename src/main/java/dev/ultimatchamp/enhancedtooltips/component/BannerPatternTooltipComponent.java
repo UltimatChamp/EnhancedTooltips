@@ -63,7 +63,7 @@ public record BannerPatternTooltipComponent(ItemStack stack) implements TooltipC
             var patterns = new BannerPatternsComponent(List.of(new BannerPatternsComponent.Layer(entry, DyeColor.WHITE)));
 
             //? if >1.21.8 {
-            var modelPart = new BannerFlagBlockModel(MinecraftClient.getInstance().getLoadedEntityModels().getModelPart(EntityModelLayers.STANDING_BANNER));
+            var modelPart = new BannerFlagBlockModel(MinecraftClient.getInstance().getLoadedEntityModels().getModelPart(EntityModelLayers.STANDING_BANNER_FLAG));
             //?} else if >1.21.3 {
             /*var modelPart = MinecraftClient.getInstance().getLoadedEntityModels().getModelPart(EntityModelLayers.STANDING_BANNER_FLAG);
             if (modelPart == null) return;
