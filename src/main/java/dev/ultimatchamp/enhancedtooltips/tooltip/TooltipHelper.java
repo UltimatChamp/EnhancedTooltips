@@ -6,8 +6,9 @@ import dev.ultimatchamp.enhancedtooltips.util.TranslationStringColorParser;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
-import net.minecraft.text.TextColor;
 import net.minecraft.util.Colors;
+
+import java.util.Optional;
 
 public class TooltipHelper {
     public static Text getRarityName(ItemStack stack) {
@@ -25,23 +26,44 @@ public class TooltipHelper {
         *///?}
     }
 
-    public static int getItemBorderColor(ItemStack stack) {
-        Integer color = null;
+    public static Integer[] getItemBorderColor(ItemStack stack) {
+        Text displayName = getDisplayName(stack);
+        Integer[] colors = {null, null};
 
         if (EnhancedTooltipsConfig.load().border.borderColor == EnhancedTooltipsConfig.BorderColorMode.ITEM_NAME) {
-            Text displayName = getDisplayName(stack);
+            displayName.visit((style, text) -> {
+                var color = style.getColor();
+                if (color != null) {
+                    if (colors[0] == null)
+                        colors[0] = color.getRgb();
+                    else if (color.getRgb() != colors[0]) {
+                        colors[1] = color.getRgb();
+                    }
+                }
+                return Optional.empty();
+            }, displayName.getStyle());
 
-            color = TranslationStringColorParser.getColorFromTranslation(displayName);
+            if (colors[0] == null || colors[0] == -1 || colors[0] == 0xffffff) {
+                Integer[] trans = TranslationStringColorParser.getColorsFromTranslation(displayName);
+                colors[0] = trans[0];
+                colors[1] = trans[1];
+            }
 
-            TextColor textColor = displayName.getStyle().getColor();
-            if (color == -1 && textColor != null) color = displayName.getStyle().getColor().getRgb();
+            if (colors[0] == null || colors[0] == -1 || colors[0] == 0xffffff) {
+                var clr = displayName.getStyle().getColor();
+                if (clr != null) {
+                    colors[0] = clr.getRgb();
+                    if (colors[0] == 0xffffff) colors[0] = -1;
+                }
+            }
+        } else {
+            var clr = displayName.getStyle().getColor();
+            if (clr != null) {
+                colors[0] = clr.getRgb();
+                if (colors[0] == 0xffffff) colors[0] = -1;
+            }
         }
 
-        if (color == null || color == -1 || color == 0xFFFFFF) {
-            color = stack.getRarity().getFormatting().getColorValue();
-            if (color == null || color == 0xFFFFFF) color = -1;
-        }
-
-        return color;
+        return colors;
     }
 }

@@ -17,21 +17,25 @@ public class TooltipBorderColorComponent extends TooltipBackgroundComponent {
 
     @Override
     protected void renderBorder(DrawContext context, int x, int y, int width, int height, int z, int page) {
-        int startColor = 0xff000000 | TooltipHelper.getItemBorderColor(stack);
-        if (TooltipHelper.getItemBorderColor(stack) == -1) startColor = EnhancedTooltipsConfig.BorderColor.COMMON.getColor().getRGB();
+        Integer[] color = TooltipHelper.getItemBorderColor(stack);
+
+        int startColor;
+        if (color[0] == null || color[0] == -1)
+            startColor = EnhancedTooltipsConfig.BorderColor.COMMON.getColor().getRGB();
+        else startColor = 0xff000000 | color[0];
 
         int endColor = EnhancedTooltipsConfig.BorderColor.END_COLOR.getColor().getRGB();
+        if (this.config.border.borderColor == EnhancedTooltipsConfig.BorderColorMode.ITEM_NAME && color[1] != null)
+            endColor = 0xff000000 | color[1];
 
         if (config.border.borderColor == EnhancedTooltipsConfig.BorderColorMode.CUSTOM) {
-            if (stack.getRarity() == Rarity.UNCOMMON) {
+            if (stack.getRarity() == Rarity.UNCOMMON)
                 startColor = config.border.customBorderColors.uncommon.getRGB();
-            } else if (stack.getRarity() == Rarity.RARE) {
+            else if (stack.getRarity() == Rarity.RARE)
                 startColor = config.border.customBorderColors.rare.getRGB();
-            } else if (stack.getRarity() == Rarity.EPIC) {
+            else if (stack.getRarity() == Rarity.EPIC)
                 startColor = config.border.customBorderColors.epic.getRGB();
-            } else {
-                startColor = config.border.customBorderColors.common.getRGB();
-            }
+            else startColor = config.border.customBorderColors.common.getRGB();
 
             endColor = config.border.customBorderColors.endColor.getRGB();
         }

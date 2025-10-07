@@ -27,22 +27,27 @@ public class TranslationStringColorParser {
         COLOR_MAP.put('f', 0xFFFFFF); // White
     }
 
-    public static int getColorFromTranslation(Text text) {
-        return getColorFromTranslation(text.getString());
+    public static Integer[] getColorsFromTranslation(Text text) {
+        return getColorsFromTranslation(text.getString());
     }
 
-    public static int getColorFromTranslation(String text) {
+    public static Integer[] getColorsFromTranslation(String text) {
         char[] charArray = text.toCharArray();
+        Integer[] colors = {null, null};
 
-        if (charArray.length < 2) return 0xFFFFFFFF;
+        if (charArray.length < 2) return colors;
 
         for (int i = 0; i < charArray.length - 1; i++) {
             if (charArray[i] == '§') {
                 int color = COLOR_MAP.getOrDefault(charArray[i + 1], 0xFFFFFFFF);
-                if (color != 0xFFFFFFFF) return color;
+                if (color == 0xFFFFFFFF) continue;
+                if (colors[0] == null)
+                    colors[0] = color;
+                else if (color != colors[0])
+                    colors[1] = color;
             }
         }
 
-        return 0xFFFFFFFF;
+        return colors;
     }
 }
