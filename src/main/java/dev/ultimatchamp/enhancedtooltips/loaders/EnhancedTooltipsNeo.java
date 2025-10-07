@@ -3,6 +3,7 @@
 
 import dev.ultimatchamp.enhancedtooltips.EnhancedTooltips;
 import dev.ultimatchamp.enhancedtooltips.config.EnhancedTooltipsConfig;
+import dev.ultimatchamp.enhancedtooltips.util.BadgesUtils;
 import dev.ultimatchamp.enhancedtooltips.util.CreativeModeTabCollector;
 import dev.ultimatchamp.enhancedtooltips.util.ItemGroupsUtils;
 import net.minecraft.client.MinecraftClient;
@@ -18,9 +19,10 @@ import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 public final class EnhancedTooltipsNeo {
     public EnhancedTooltipsNeo(ModContainer modContainer, IEventBus modBus) {
         modBus.addListener(this::onClientSetup);
-        modContainer.registerExtensionPoint(IConfigScreenFactory.class, (client, parent) ->
-            EnhancedTooltipsConfig.createConfigScreen(parent)
-        );
+        modContainer.registerExtensionPoint(IConfigScreenFactory.class, (client, parent) -> {
+            if (BadgesUtils.getMods().containsKey("yet_another_config_lib_v3"))
+                return EnhancedTooltipsConfig.createConfigScreen(parent);
+        });
 
         modBus.addListener((ClientPlayerNetworkEvent.LoggingIn event) -> {
         ClientWorld world = MinecraftClient.getInstance().world;
