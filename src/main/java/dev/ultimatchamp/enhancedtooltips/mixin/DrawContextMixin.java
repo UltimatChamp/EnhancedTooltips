@@ -29,8 +29,13 @@ import org.jetbrains.annotations.Nullable;
 @Mixin(DrawContext.class)
 public class DrawContextMixin {
     //? if >1.21.5 {
+    //? if fabric {
     @Inject(method = "drawTooltipImmediately", at = @At("HEAD"), cancellable = true)
     private void enhancedTooltips$drawTooltip(TextRenderer textRenderer, List<TooltipComponent> components, int x, int y, TooltipPositioner positioner, @Nullable Identifier texture, CallbackInfo ci) {
+    //?} else {
+    /*@Inject(method = "renderTooltip", at = @At("HEAD"), cancellable = true)
+    private void enhancedTooltips$drawTooltip(TextRenderer textRenderer, List<TooltipComponent> components, int x, int y, TooltipPositioner positioner, @Nullable Identifier texture, ItemStack stack, CallbackInfo ci) {
+    *///?}
     //?} else if >1.21.1 {
     /*@Inject(method = "drawTooltip(Lnet/minecraft/client/font/TextRenderer;Ljava/util/List;IILnet/minecraft/client/gui/tooltip/TooltipPositioner;Lnet/minecraft/util/Identifier;)V", at = @At("HEAD"), cancellable = true)
     private void enhancedTooltips$drawTooltip(TextRenderer textRenderer, List<TooltipComponent> components, int x, int y, TooltipPositioner positioner, @Nullable Identifier texture, CallbackInfo ci) {
@@ -38,10 +43,15 @@ public class DrawContextMixin {
     /*@Inject(method = "drawTooltip(Lnet/minecraft/client/font/TextRenderer;Ljava/util/List;IILnet/minecraft/client/gui/tooltip/TooltipPositioner;)V", at = @At("HEAD"), cancellable = true)
     private void enhancedTooltips$drawTooltip(TextRenderer textRenderer, List<TooltipComponent> components, int x, int y, TooltipPositioner positioner, CallbackInfo ci) {
     *///?}
-        if (components.isEmpty()) return;
+        if (components == null || components.isEmpty()) return;
 
         List<TooltipComponent> tooltipComponents = new ArrayList<>(components);
-        ItemStack cacheItemStack = TooltipItemStackCache.getItemStack();
+        ItemStack cacheItemStack =
+                //? if <=1.21.5 || !neoforge {
+                TooltipItemStackCache.getItemStack();
+                //?} else {
+                /*stack;
+                *///?}
 
         boolean isEmpty = cacheItemStack == null || cacheItemStack.isEmpty();
         if (isEmpty) cacheItemStack = ItemStack.EMPTY;
@@ -55,7 +65,9 @@ public class DrawContextMixin {
             }
         }
 
+        //? if <=1.21.5 || !neoforge {
         TooltipItemStackCache.saveItemStack(ItemStack.EMPTY);
+        //?}
         TooltipComponentManager.invoke(tooltipComponents, cacheItemStack);
 
         EnhancedTooltipsDrawer.drawTooltip((DrawContext) (Object) this, textRenderer, tooltipComponents, x, y, HoveredTooltipPositioner.INSTANCE, cacheItemStack);

@@ -217,14 +217,14 @@ publishMods {
                 minecraftVersions.addAll("1.21.8", "1.21.7", "1.21.6")
             }
         }
-        "1.21.9" -> {
-            modrinth("m1.21.9") {
+        "1.21.10" -> {
+            modrinth("m1.21.10") {
                 from(mrOptions)
-                minecraftVersions.addAll("1.21.9", "1.21.10-rc1")
+                minecraftVersions.addAll("1.21.9", "1.21.10")
             }
-            curseforge("c1.21.9") {
+            curseforge("c1.21.10") {
                 from(cfOptions)
-                minecraftVersions.addAll("1.21.9", "1.21.10-snapshot")
+                minecraftVersions.addAll("1.21.9", "1.21.10")
             }
         }
     }

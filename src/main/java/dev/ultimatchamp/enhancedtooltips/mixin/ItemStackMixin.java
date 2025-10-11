@@ -15,9 +15,11 @@ import java.util.List;
 
 @Mixin(ItemStack.class)
 public abstract class ItemStackMixin {
+    //? if <=1.21.5 || !neoforge {
     @Inject(method = "getTooltip", at = @At(value = "RETURN", ordinal = 1))
     private void enhancedTooltips$getTooltip(Item.TooltipContext context, PlayerEntity player, TooltipType type, CallbackInfoReturnable<List<Text>> cir) {
-        if (cir.getReturnValue().isEmpty()) return;
+        if (cir.getReturnValue() == null || cir.getReturnValue().isEmpty()) return;
         TooltipItemStackCache.saveItemStack((ItemStack) (Object) this);
     }
+    //?}
 }

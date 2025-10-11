@@ -158,8 +158,9 @@ public class FoodTooltipComponent implements TooltipComponent {
                 //?} else {
                 /*float probability = entry.probability();
                 *///?}
-
-                effectsWidth = Math.max(effectsWidth, textRenderer.getWidth(Text.translatable(statusEffect.getTranslationKey()).append(" (99:99)")) + (probability >= 1f ? 0 : textRenderer.getWidth(" [100%]")));
+                var text = Text.translatable(statusEffect.getTranslationKey()).append(" (99:99)");
+                if (probability < 1f) text.append(" [100%]");
+                effectsWidth = Math.max(effectsWidth, textRenderer.getWidth(text));
             }
         //?} else {
         /*for (FoodComponent.StatusEffectEntry entry : foodComponent.effects()) {
@@ -167,7 +168,7 @@ public class FoodTooltipComponent implements TooltipComponent {
         *///?}
         }
 
-        if (effectsWidth != 0 && config.foodAndDrinks.effectsTooltip == EnhancedTooltipsConfig.EffectsTooltipMode.WITH_ICONS) effectsWidth += textRenderer.fontHeight + 2;
+        if (effectsWidth != 0 && config.foodAndDrinks.effectsTooltip == EnhancedTooltipsConfig.EffectsTooltipMode.WITH_ICONS) effectsWidth += textRenderer.fontHeight + 3;
 
         return Math.max(foodWidth, effectsWidth);
     }
@@ -278,7 +279,7 @@ public class FoodTooltipComponent implements TooltipComponent {
                     //?} else if >1.21.1 {
                     /*context.drawSpriteStretched(RenderLayer::getGuiTextured, effectTexture, x, lineY - 1, textRenderer.fontHeight, textRenderer.fontHeight);
                     *///?} else {
-                    /*context.drawSprite(x - 2, lineY, 0, textRenderer.fontHeight, textRenderer.fontHeight, effectTexture);
+                    /*context.drawSprite(x, lineY - 1, 0, textRenderer.fontHeight, textRenderer.fontHeight, effectTexture);
                     *///?}
                     context.drawText(textRenderer, effectText, x + textRenderer.fontHeight + 3, lineY, c, true);
                 } else {
