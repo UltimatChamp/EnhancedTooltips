@@ -28,7 +28,7 @@ public final class EnhancedTooltipsNeo {
     }
 
     private void collectTabsOnJoin(PlayerEvent.PlayerLoggedInEvent event) {
-        if (event.getEntity().getEntityWorld() != null && MinecraftClient.getInstance().world != null)
+        if (MinecraftClient.getInstance().world != null)
             ItemGroupsUtils.tabs.putAll(CreativeModeTabCollector.collectTabs(MinecraftClient.getInstance().world));
     }
 }
