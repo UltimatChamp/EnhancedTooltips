@@ -65,7 +65,13 @@ public class EnhancedTooltipsGui {
                         .group(OptionGroup.createBuilder()
                                 .name(Text.translatable("enhancedtooltips.config.popUpAnimation"))
                                 .option(Option.<Boolean>createBuilder()
-                                        .name(Text.translatable("manageServer.resourcePack.enabled"))
+                                        .name(Text.translatable(
+                                                //? if >1.21.8 {
+                                                "manageServer.resourcePack.enabled"
+                                                //?} else {
+                                                /*"addServer.resourcePack.enabled"
+                                                *///?}
+                                        ))
                                         .description(OptionDescription.createBuilder()
                                                 .text(Text.translatable("enhancedtooltips.config.popUpAnimation.desc"))
                                                 .build())
@@ -104,7 +110,13 @@ public class EnhancedTooltipsGui {
                         .group(OptionGroup.createBuilder()
                                 .name(Text.translatable("enhancedtooltips.config.itemPreviewAnimation"))
                                 .option(Option.<Boolean>createBuilder()
-                                        .name(Text.translatable("manageServer.resourcePack.enabled"))
+                                        .name(Text.translatable(
+                                                //? if >1.21.8 {
+                                                "manageServer.resourcePack.enabled"
+                                                //?} else {
+                                                /*"addServer.resourcePack.enabled"
+                                                *///?}
+                                        ))
                                         .description(OptionDescription.createBuilder()
                                                 .text(Text.translatable("enhancedtooltips.config.itemPreviewAnimation.desc"))
                                                 .build())

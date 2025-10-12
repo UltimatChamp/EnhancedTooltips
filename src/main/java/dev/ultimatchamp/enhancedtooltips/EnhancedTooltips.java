@@ -24,7 +24,8 @@ import java.util.List;
 
 public class EnhancedTooltips {
     public static final String MOD_ID = "enhancedtooltips";
-    public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
+    public static final String MOD_NAME = "EnhancedTooltips";
+    public static final Logger LOGGER = LoggerFactory.getLogger(MOD_NAME);
 
     public static void init() {
         EnhancedTooltipsConfig.load();

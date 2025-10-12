@@ -38,12 +38,12 @@ public class EnhancedTooltipsDrawer {
     }
 
     public static void drawTooltip(DrawContext context, TextRenderer textRenderer, List<TooltipComponent> components, int x, int y, TooltipPositioner positioner, ItemStack currentStack) {
-        if (components.isEmpty() || currentStack.isEmpty()) {
+        if (components == null || components.isEmpty() || currentStack.isEmpty()) {
             startTime = -1;
             lastStack = ItemStack.EMPTY;
         }
 
-        if (components.isEmpty()) return;
+        if (components == null || components.isEmpty()) return;
 
         if (!currentStack.isEmpty()) {
             if (lastStack.isEmpty() || !ItemStack.areEqual(lastStack, currentStack)) {
@@ -56,7 +56,8 @@ public class EnhancedTooltipsDrawer {
 
         TooltipBackgroundComponent backgroundComponent = getBackgroundComponent(components);
 
-        components.removeIf(component -> component.getHeight(/*? if >1.21.1 {*/textRenderer/*?}*/) == 0 || component.getWidth(textRenderer) == 0);
+        if (components.size() > 1 && components.get(1).getWidth(textRenderer) == 0)
+            components.remove(1);
 
         MatricesUtil matrices = new MatricesUtil(context.getMatrices());
         List<TooltipPage> pageList = new ArrayList<>();
@@ -161,7 +162,7 @@ public class EnhancedTooltipsDrawer {
                 try {
                     backgroundComponent.render(context, p.x, p.y, p.width, p.height, 400, pageList.indexOf(p));
                 } catch (Exception e) {
-                    EnhancedTooltips.LOGGER.error("[EnhancedTooltips]", e);
+                    EnhancedTooltips.LOGGER.error("[{}]", EnhancedTooltips.MOD_NAME, e);
                 }
             }
         }
@@ -186,7 +187,7 @@ public class EnhancedTooltipsDrawer {
                         cy += spacing;
                     }
                 } catch (Exception e) {
-                    EnhancedTooltips.LOGGER.error("[EnhancedTooltips]", e);
+                    EnhancedTooltips.LOGGER.error("[{}]", EnhancedTooltips.MOD_NAME, e);
                 }
             }
         }

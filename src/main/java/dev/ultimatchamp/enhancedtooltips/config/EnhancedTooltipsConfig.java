@@ -328,14 +328,14 @@ public class EnhancedTooltipsConfig {
 
         try {
             if (!Files.exists(CONFIG_PATH)) {
-                EnhancedTooltips.LOGGER.info("[EnhancedTooltips] Config file not found. Creating a new one...");
+                EnhancedTooltips.LOGGER.info("[{}] Config file not found. Creating a new one...", EnhancedTooltips.MOD_NAME);
                 config = new EnhancedTooltipsConfig();
                 save(config);
             } else {
                 var configContent = Files.readString(CONFIG_PATH).trim();
 
                 if (!configContent.startsWith("{") || !configContent.endsWith("}")) {
-                    EnhancedTooltips.LOGGER.error("[EnhancedTooltips] Config file is empty or invalid. Creating a new one...");
+                    EnhancedTooltips.LOGGER.error("[{}] Config file is empty or invalid. Creating a new one...", EnhancedTooltips.MOD_NAME);
                     config = new EnhancedTooltipsConfig();
                     save(config);
                 } else {
@@ -344,7 +344,7 @@ public class EnhancedTooltipsConfig {
                 }
             }
         } catch (IOException | SyntaxError e) {
-            EnhancedTooltips.LOGGER.error("[EnhancedTooltips]", e);
+            EnhancedTooltips.LOGGER.error("[{}]", EnhancedTooltips.MOD_NAME, e);
             config = new EnhancedTooltipsConfig();
             save(config);
         }
@@ -360,7 +360,7 @@ public class EnhancedTooltipsConfig {
             Files.writeString(CONFIG_PATH, jsonString);
             cachedConfig = config;
         } catch (IOException e) {
-            EnhancedTooltips.LOGGER.error("[EnhancedTooltips]", e);
+            EnhancedTooltips.LOGGER.error("[{}]", EnhancedTooltips.MOD_NAME, e);
         }
     }
 
@@ -376,12 +376,12 @@ public class EnhancedTooltipsConfig {
                 var defaultValue = field.get(defaultConfig);
 
                 if (!configJson.containsKey(fieldName)) {
-                    EnhancedTooltips.LOGGER.info("[EnhancedTooltips] Missing config field '{}'. Re-saving as default.", fieldName);
+                    EnhancedTooltips.LOGGER.info("[{}] Missing config field '{}'. Re-saving as default.", EnhancedTooltips.MOD_NAME, fieldName);
                     configJson.put(fieldName, JANKSON.toJson(defaultValue));
                     modified = true;
                 }
             } catch (IllegalAccessException e) {
-                EnhancedTooltips.LOGGER.error("[EnhancedTooltips] Failed to access field '{}'", field.getName(), e);
+                EnhancedTooltips.LOGGER.error("[{}] Failed to access field '{}'", EnhancedTooltips.MOD_NAME, field.getName(), e);
             }
         }
 
