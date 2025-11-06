@@ -249,8 +249,8 @@ public class EnhancedTooltipsConfig {
         @Comment("Shows a neat background behind the held item tooltip text.\n(default: true)")
         public boolean showBackground = true;
 
-        @Comment("Defines the line limit for the held item tooltip.\n(default: 10)")
-        public int maxLines = 10;
+        @Comment("Defines the line limit for the held item tooltip.\n(default: 5)")
+        public int maxLines = 5;
 
         @Comment("Adjusts the size of the held item tooltips.\nA scale of 100% displays the tooltip at its default size.\n(default: 1.0)")
         public float scaleFactor = 1f;

@@ -462,11 +462,11 @@ public class EnhancedTooltipsGui {
                                                 .text(Text.translatable("enhancedtooltips.config.heldItemTooltipMaxLines.desc"))
                                                 .build())
                                         .binding(
-                                                10,
+                                                5,
                                                 () -> config.heldItemTooltip.maxLines,
                                                 (value) -> config.heldItemTooltip.maxLines = value
                                         )
-                                        .customController(opt -> new IntegerSliderController(opt, 5, 25, 1))
+                                        .customController(opt -> new IntegerSliderController(opt, 3, 25, 1))
                                         .build())
                                 .option(Option.<Float>createBuilder()
                                         .name(Text.translatable("enhancedtooltips.config.scaleFactor"))

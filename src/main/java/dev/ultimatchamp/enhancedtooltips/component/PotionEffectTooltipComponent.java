@@ -171,14 +171,17 @@ public record PotionEffectTooltipComponent(ItemStack stack) implements TooltipCo
         }
     }
 
-    private static Text getEffectText(StatusEffectInstance effect, Consumer<Pair<RegistryEntry<EntityAttribute>, EntityAttributeModifier>> list) {
+    private Text getEffectText(StatusEffectInstance effect, Consumer<Pair<RegistryEntry<EntityAttribute>, EntityAttributeModifier>> list) {
         RegistryEntry<StatusEffect> registryEntry = effect.getEffectType();
         int amplifier = effect.getAmplifier();
         registryEntry.value().forEachAttributeModifier(amplifier, (attribute, modifier) -> list.accept(new Pair<>(attribute, modifier)));
         MutableText name = Text.translatable(effect.getEffectType().value().getTranslationKey());
         MutableText effectText = amplifier > 0 ? Text.translatable("potion.withAmplifier", name, Text.translatable("potion.potency." + amplifier)) : name;
-        if (!effect.isDurationBelow(20))
-            effectText = Text.translatable("potion.withDuration", effectText, StatusEffectUtil.getDurationText(effect, 1, 20));
+
+        if (!effect.isDurationBelow(20)) {
+            Float durationMultiplier = stack.get(DataComponentTypes.POTION_DURATION_SCALE);
+            effectText = Text.translatable("potion.withDuration", effectText, StatusEffectUtil.getDurationText(effect, (durationMultiplier != null) ? durationMultiplier : 1, 20));
+        }
 
         return effectText;
     }
