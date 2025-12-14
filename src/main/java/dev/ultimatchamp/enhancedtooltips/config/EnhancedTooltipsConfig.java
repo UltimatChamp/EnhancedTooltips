@@ -2,9 +2,10 @@ package dev.ultimatchamp.enhancedtooltips.config;
 
 import blue.endless.jankson.*;
 import blue.endless.jankson.api.SyntaxError;
+import dev.isxander.yacl3.api.NameableEnum;
 import dev.ultimatchamp.enhancedtooltips.EnhancedTooltips;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.util.TranslatableOption;
+import net.minecraft.text.Text;
 
 import java.awt.*;
 import java.io.IOException;
@@ -77,25 +78,19 @@ public class EnhancedTooltipsConfig {
         public CustomBorderColorsConfig customBorderColors = new CustomBorderColorsConfig();
     }
 
-    public enum BorderColorMode implements TranslatableOption {
-        RARITY(0, "enhancedtooltips.config.borderColor.rarity"),
-        ITEM_NAME(1, "enhancedtooltips.config.borderColor.itemName"),
-        CUSTOM(2, "generator.custom");
+    public enum BorderColorMode implements NameableEnum {
+        RARITY("enhancedtooltips.config.borderColor.rarity"),
+        ITEM_NAME("enhancedtooltips.config.borderColor.itemName"),
+        CUSTOM("generator.custom");
 
-        private final int id;
         private final String translationKey;
 
-        BorderColorMode(final int id, final String translationKey) {
-            this.id = id;
+        BorderColorMode(final String translationKey) {
             this.translationKey = translationKey;
         }
 
-        public int getId() {
-            return this.id;
-        }
-
-        public String getTranslationKey() {
-            return this.translationKey;
+        public Text getDisplayName() {
+            return Text.translatable(this.translationKey);
         }
     }
 
@@ -150,25 +145,19 @@ public class EnhancedTooltipsConfig {
         public EffectsTooltipMode effectsTooltip = EffectsTooltipMode.WITH_ICONS;
     }
 
-    public enum EffectsTooltipMode implements TranslatableOption {
-        WITH_ICONS(0, "enhancedtooltips.config.effectsTooltip.withIcons"),
-        WITHOUT_ICONS(1, "enhancedtooltips.config.effectsTooltip.withoutIcons"),
-        OFF(2, "options.off");
+    public enum EffectsTooltipMode implements NameableEnum {
+        WITH_ICONS("enhancedtooltips.config.effectsTooltip.withIcons"),
+        WITHOUT_ICONS("enhancedtooltips.config.effectsTooltip.withoutIcons"),
+        OFF("options.off");
 
-        private final int id;
         private final String translationKey;
 
-        EffectsTooltipMode(final int id, final String translationKey) {
-            this.id = id;
+        EffectsTooltipMode(final String translationKey) {
             this.translationKey = translationKey;
         }
 
-        public int getId() {
-            return this.id;
-        }
-
-        public String getTranslationKey() {
-            return this.translationKey;
+        public Text getDisplayName() {
+            return Text.translatable(this.translationKey);
         }
     }
 
@@ -220,25 +209,19 @@ public class EnhancedTooltipsConfig {
         public boolean durabilityBar = false;
     }
 
-    public enum DurabilityTooltipMode implements TranslatableOption {
-        VALUE(0, "enhancedtooltips.config.durabilityTooltip.value"),
-        PERCENTAGE(1, "enhancedtooltips.config.durabilityTooltip.percentage"),
-        OFF(2, "options.off");
+    public enum DurabilityTooltipMode implements NameableEnum {
+        VALUE("enhancedtooltips.config.durabilityTooltip.value"),
+        PERCENTAGE("enhancedtooltips.config.durabilityTooltip.percentage"),
+        OFF("options.off");
 
-        private final int id;
         private final String translationKey;
 
-        DurabilityTooltipMode(final int id, final String translationKey) {
-            this.id = id;
+        DurabilityTooltipMode(final String translationKey) {
             this.translationKey = translationKey;
         }
 
-        public int getId() {
-            return this.id;
-        }
-
-        public String getTranslationKey() {
-            return this.translationKey;
+        public Text getDisplayName() {
+            return Text.translatable(this.translationKey);
         }
     }
 
@@ -268,25 +251,19 @@ public class EnhancedTooltipsConfig {
         public float tiltEasing = 2f;
     }
 
-    public enum HeldItemTooltipMode implements TranslatableOption {
-        ON(0, "options.on"),
-        MINIMAL(1, "options.particles.minimal"),
-        OFF(2, "options.off");
+    public enum HeldItemTooltipMode implements NameableEnum {
+        ON("options.on"),
+        MINIMAL("options.particles.minimal"),
+        OFF("options.off");
 
-        private final int id;
         private final String translationKey;
 
-        HeldItemTooltipMode(final int id, final String translationKey) {
-            this.id = id;
+        HeldItemTooltipMode(final String translationKey) {
             this.translationKey = translationKey;
         }
 
-        public int getId() {
-            return this.id;
-        }
-
-        public String getTranslationKey() {
-            return this.translationKey;
+        public Text getDisplayName() {
+            return Text.translatable(this.translationKey);
         }
     }
 

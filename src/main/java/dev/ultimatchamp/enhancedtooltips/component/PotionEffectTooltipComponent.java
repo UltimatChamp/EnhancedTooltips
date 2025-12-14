@@ -12,7 +12,7 @@ import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffectUtil;
-import net.minecraft.item.ItemStack;
+import net.minecraft.item.*;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
@@ -179,8 +179,12 @@ public record PotionEffectTooltipComponent(ItemStack stack) implements TooltipCo
         MutableText effectText = amplifier > 0 ? Text.translatable("potion.withAmplifier", name, Text.translatable("potion.potency." + amplifier)) : name;
 
         if (!effect.isDurationBelow(20)) {
-            Float durationMultiplier = stack.get(DataComponentTypes.POTION_DURATION_SCALE);
-            effectText = Text.translatable("potion.withDuration", effectText, StatusEffectUtil.getDurationText(effect, (durationMultiplier != null) ? durationMultiplier : 1, 20));
+            //? if >1.21.4 {
+            float durationMultiplier = stack.getOrDefault(DataComponentTypes.POTION_DURATION_SCALE, 1f);
+            //?} else {
+            /*float durationMultiplier = stack.isOf(Items.LINGERING_POTION) ? 0.25f : 1;
+            *///?}
+            effectText = Text.translatable("potion.withDuration", effectText, StatusEffectUtil.getDurationText(effect, durationMultiplier, 20));
         }
 
         return effectText;

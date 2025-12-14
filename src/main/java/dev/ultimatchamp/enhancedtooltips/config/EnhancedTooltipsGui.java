@@ -269,7 +269,7 @@ public class EnhancedTooltipsGui {
                                         .build())
                                 .build())
                         .group(OptionGroup.createBuilder()
-                                .name(Text.translatable("gamerule.category.mobs"))
+                                .name(Text.translatable("stat.mobsButton"))
                                 .option(Option.<Float>createBuilder()
                                         .name(Text.translatable("enhancedtooltips.config.rotationSpeed"))
                                         .description(OptionDescription.createBuilder()

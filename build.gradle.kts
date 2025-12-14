@@ -1,15 +1,15 @@
 plugins {
-    id("dev.architectury.loom") version "1.11-SNAPSHOT"
-    id("me.modmuss50.mod-publish-plugin") version "0.8.4"
+    id("dev.architectury.loom") version "1.13-SNAPSHOT"
+    id("me.modmuss50.mod-publish-plugin") version "1.1.0"
 }
 
-var loader = project.property("loom.platform")
+var loader = project.property("loom.platform") as String
 
 var isFabric = loader == "fabric"
 var isNeo = loader == "neoforge"
 
 var isSnapshot = false
-var mcVer: String = project.property("deps.minecraft_version") as String
+var mcVer = project.property("deps.minecraft_version") as String
 if (mcVer.contains("-") || mcVer.contains("w")) {
     isSnapshot = true
     mcVer = mcVer.replace("-", "")
@@ -24,12 +24,8 @@ base {
 
 repositories {
     exclusiveContent {
-        forRepository {
-            maven("https://api.modrinth.com/maven")
-        }
-        filter {
-            includeGroup("maven.modrinth")
-        }
+        forRepository { maven("https://api.modrinth.com/maven") }
+        filter { includeGroup("maven.modrinth") }
     }
     maven("https://maven.neoforged.net/releases")
     maven("https://maven.isxander.dev/releases")
@@ -225,6 +221,16 @@ publishMods {
             curseforge("c1.21.10") {
                 from(cfOptions)
                 minecraftVersions.addAll("1.21.9", "1.21.10")
+            }
+        }
+        "1.21.11" -> {
+            modrinth("m1.21.11") {
+                from(mrOptions)
+                minecraftVersions.add("1.21.11")
+            }
+            curseforge("c1.21.11") {
+                from(cfOptions)
+                minecraftVersions.add("1.21.11")
             }
         }
     }
