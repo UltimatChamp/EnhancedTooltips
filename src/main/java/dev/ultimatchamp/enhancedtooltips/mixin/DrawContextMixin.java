@@ -70,7 +70,7 @@ public class DrawContextMixin {
         //?}
         TooltipComponentManager.invoke(tooltipComponents, cacheItemStack);
 
-        EnhancedTooltipsDrawer.drawTooltip((DrawContext) (Object) this, textRenderer, tooltipComponents, x, y, HoveredTooltipPositioner.INSTANCE, cacheItemStack);
+        EnhancedTooltipsDrawer.drawTooltip((DrawContext) (Object) this, textRenderer, tooltipComponents, x, y, positioner, cacheItemStack);
         ci.cancel();
     }
 }
