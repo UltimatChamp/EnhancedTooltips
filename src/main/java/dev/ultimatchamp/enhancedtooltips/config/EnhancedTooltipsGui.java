@@ -6,9 +6,8 @@ import dev.isxander.yacl3.api.controller.TickBoxControllerBuilder;
 import dev.isxander.yacl3.gui.controllers.cycling.EnumController;
 import dev.isxander.yacl3.gui.controllers.slider.FloatSliderController;
 import dev.isxander.yacl3.gui.controllers.slider.IntegerSliderController;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.text.Text;
-
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Component;
 import java.awt.*;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -18,15 +17,15 @@ public class EnhancedTooltipsGui {
         var config = EnhancedTooltipsConfig.load();
 
         return YetAnotherConfigLib.createBuilder()
-                .title(Text.translatable("enhancedtooltips.title"))
+                .title(Component.translatable("enhancedtooltips.title"))
                 .category(ConfigCategory.createBuilder()
-                        .name(Text.translatable("enhancedtooltips.title"))
+                        .name(Component.translatable("enhancedtooltips.title"))
                         .group(OptionGroup.createBuilder()
-                                .name(Text.translatable("stat.generalButton"))
+                                .name(Component.translatable("stat.generalButton"))
                                 .option(Option.<Boolean>createBuilder()
-                                        .name(Text.translatable("enhancedtooltips.config.rarityTooltip"))
+                                        .name(Component.translatable("enhancedtooltips.config.rarityTooltip"))
                                         .description(OptionDescription.createBuilder()
-                                                .text(Text.translatable("enhancedtooltips.config.rarityTooltip.desc"))
+                                                .text(Component.translatable("enhancedtooltips.config.rarityTooltip.desc"))
                                                 .build())
                                         .binding(
                                                 true,
@@ -36,9 +35,9 @@ public class EnhancedTooltipsGui {
                                         .controller(TickBoxControllerBuilder::create)
                                         .build())
                                 .option(Option.<Boolean>createBuilder()
-                                        .name(Text.translatable("enhancedtooltips.config.itemBadges"))
+                                        .name(Component.translatable("enhancedtooltips.config.itemBadges"))
                                         .description(OptionDescription.createBuilder()
-                                                .text(Text.translatable("enhancedtooltips.config.itemBadges.desc"))
+                                                .text(Component.translatable("enhancedtooltips.config.itemBadges.desc"))
                                                 .build())
                                         .binding(
                                                 true,
@@ -47,33 +46,45 @@ public class EnhancedTooltipsGui {
                                         )
                                         .controller(TickBoxControllerBuilder::create)
                                         .build())
-                                //? if <1.21.6 {
-                                /*.option(Option.<Float>createBuilder()
-                                        .name(Text.translatable("enhancedtooltips.config.scaleFactor"))
+                                .option(Option.<Boolean>createBuilder()
+                                        .name(Component.translatable("enhancedtooltips.config.removeAllSpacing"))
                                         .description(OptionDescription.createBuilder()
-                                                .text(Text.translatable("enhancedtooltips.config.scaleFactor.desc"))
+                                                .text(Component.translatable("enhancedtooltips.config.removeAllSpacing.desc"))
+                                                .build())
+                                        .binding(
+                                                false,
+                                                () -> config.general.removeAllSpacing,
+                                                (value) -> config.general.removeAllSpacing = value
+                                        )
+                                        .controller(TickBoxControllerBuilder::create)
+                                        .build())
+                                //? if <1.21.6 {
+                                .option(Option.<Float>createBuilder()
+                                        .name(Component.translatable("enhancedtooltips.config.scaleFactor"))
+                                        .description(OptionDescription.createBuilder()
+                                                .text(Component.translatable("enhancedtooltips.config.scaleFactor.desc"))
                                                 .build())
                                         .binding(
                                                 1f,
                                                 () -> config.general.scaleFactor,
                                                 (value) -> config.general.scaleFactor = value
                                         )
-                                        .customController(opt -> new FloatSliderController(opt, 0.25f, 2f, 0.05f, value -> Text.literal(String.format("%." + 0 /^ decimal places ^/ + "f%%", value * 100.0F))))
+                                        .customController(opt -> new FloatSliderController(opt, 0.25f, 2f, 0.05f, value -> Component.literal(String.format("%." + 0 /* decimal places */ + "f%%", value * 100.0F))))
                                         .build())
-                                *///?}
+                                //?}
                                 .build())
                         .group(OptionGroup.createBuilder()
-                                .name(Text.translatable("enhancedtooltips.config.popUpAnimation"))
+                                .name(Component.translatable("enhancedtooltips.config.popUpAnimation"))
                                 .option(Option.<Boolean>createBuilder()
-                                        .name(Text.translatable(
+                                        .name(Component.translatable(
                                                 //? if >1.21.8 {
-                                                "manageServer.resourcePack.enabled"
-                                                //?} else {
-                                                /*"addServer.resourcePack.enabled"
-                                                *///?}
+                                                /*"manageServer.resourcePack.enabled"
+                                                *///?} else {
+                                                "addServer.resourcePack.enabled"
+                                                //?}
                                         ))
                                         .description(OptionDescription.createBuilder()
-                                                .text(Text.translatable("enhancedtooltips.config.popUpAnimation.desc"))
+                                                .text(Component.translatable("enhancedtooltips.config.popUpAnimation.desc"))
                                                 .build())
                                         .binding(
                                                 true,
@@ -83,14 +94,14 @@ public class EnhancedTooltipsGui {
                                         .controller(TickBoxControllerBuilder::create)
                                         .build())
                                 .option(Option.<Float>createBuilder()
-                                        .name(Text.translatable("stat.minecraft.play_time"))
+                                        .name(Component.translatable("stat.minecraft.play_time"))
                                         .binding(
                                                 1.5f,
                                                 () -> config.popUpAnimation.time,
                                                 (value) -> config.popUpAnimation.time = value
                                         )
                                         .customController(opt -> new FloatSliderController(opt, 0.25f, 5f, 0.05f,
-                                                value -> Text.literal(value == 1 ? "1 second" :
+                                                value -> Component.literal(value == 1 ? "1 second" :
                                                         BigDecimal.valueOf(value)
                                                                 .setScale(2, RoundingMode.HALF_UP)
                                                                 .stripTrailingZeros()
@@ -98,27 +109,27 @@ public class EnhancedTooltipsGui {
                                         ))
                                         .build())
                                 .option(Option.<Float>createBuilder()
-                                        .name(Text.translatable("enhancedtooltips.config.popUpAnimation.magnitude"))
+                                        .name(Component.translatable("enhancedtooltips.config.popUpAnimation.magnitude"))
                                         .binding(
                                                 1.0f,
                                                 () -> config.popUpAnimation.magnitude,
                                                 (value) -> config.popUpAnimation.magnitude = value
                                         )
-                                        .customController(opt -> new FloatSliderController(opt, 0.25f, 2f, 0.05f, value -> Text.literal(String.format("%." + 0 /* decimal places */ + "f%%", value * 100.0F))))
+                                        .customController(opt -> new FloatSliderController(opt, 0.25f, 2f, 0.05f, value -> Component.literal(String.format("%." + 0 /* decimal places */ + "f%%", value * 100.0F))))
                                         .build())
                                 .build())
                         .group(OptionGroup.createBuilder()
-                                .name(Text.translatable("enhancedtooltips.config.itemPreviewAnimation"))
+                                .name(Component.translatable("enhancedtooltips.config.itemPreviewAnimation"))
                                 .option(Option.<Boolean>createBuilder()
-                                        .name(Text.translatable(
+                                        .name(Component.translatable(
                                                 //? if >1.21.8 {
-                                                "manageServer.resourcePack.enabled"
-                                                //?} else {
-                                                /*"addServer.resourcePack.enabled"
-                                                *///?}
+                                                /*"manageServer.resourcePack.enabled"
+                                                *///?} else {
+                                                "addServer.resourcePack.enabled"
+                                                //?}
                                         ))
                                         .description(OptionDescription.createBuilder()
-                                                .text(Text.translatable("enhancedtooltips.config.itemPreviewAnimation.desc"))
+                                                .text(Component.translatable("enhancedtooltips.config.itemPreviewAnimation.desc"))
                                                 .build())
                                         .binding(
                                                 true,
@@ -128,14 +139,14 @@ public class EnhancedTooltipsGui {
                                         .controller(TickBoxControllerBuilder::create)
                                         .build())
                                 .option(Option.<Float>createBuilder()
-                                        .name(Text.translatable("stat.minecraft.play_time"))
+                                        .name(Component.translatable("stat.minecraft.play_time"))
                                         .binding(
                                                 1f,
                                                 () -> config.itemPreviewAnimation.time,
                                                 (value) -> config.itemPreviewAnimation.time = value
                                         )
                                         .customController(opt -> new FloatSliderController(opt, 0.25f, 2f, 0.05f,
-                                                value -> Text.literal(value == 1 ? "1 second" :
+                                                value -> Component.literal(value == 1 ? "1 second" :
                                                         BigDecimal.valueOf(value)
                                                                 .setScale(2, RoundingMode.HALF_UP)
                                                                 .stripTrailingZeros()
@@ -143,21 +154,21 @@ public class EnhancedTooltipsGui {
                                         ))
                                         .build())
                                 .option(Option.<Float>createBuilder()
-                                        .name(Text.translatable("enhancedtooltips.config.popUpAnimation.magnitude"))
+                                        .name(Component.translatable("enhancedtooltips.config.popUpAnimation.magnitude"))
                                         .binding(
                                                 2f,
                                                 () -> config.itemPreviewAnimation.magnitude,
                                                 (value) -> config.itemPreviewAnimation.magnitude = value
                                         )
-                                        .customController(opt -> new FloatSliderController(opt, 0.5f, 4f, 0.05f, value -> Text.literal(String.format("%." + 0 /* decimal places */ + "f%%", value * 100.0F))))
+                                        .customController(opt -> new FloatSliderController(opt, 0.5f, 4f, 0.05f, value -> Component.literal(String.format("%." + 0 /* decimal places */ + "f%%", value * 100.0F))))
                                         .build())
                                 .build())
                         .group(OptionGroup.createBuilder()
-                                .name(Text.translatable("enhancedtooltips.config.group.border"))
+                                .name(Component.translatable("enhancedtooltips.config.group.border"))
                                 .option(Option.<EnhancedTooltipsConfig.BorderColorMode>createBuilder()
-                                        .name(Text.translatable("enhancedtooltips.config.borderColor"))
+                                        .name(Component.translatable("enhancedtooltips.config.borderColor"))
                                         .description(OptionDescription.createBuilder()
-                                                .text(Text.translatable("enhancedtooltips.config.borderColor.desc"))
+                                                .text(Component.translatable("enhancedtooltips.config.borderColor.desc"))
                                                 .build())
                                         .binding(
                                                 EnhancedTooltipsConfig.BorderColorMode.RARITY,
@@ -167,7 +178,7 @@ public class EnhancedTooltipsGui {
                                         .customController(opt -> new EnumController<>(opt, EnhancedTooltipsConfig.BorderColorMode.class))
                                         .build())
                                 .option(Option.<Color>createBuilder()
-                                        .name(Text.translatable("enhancedtooltips.rarity.common"))
+                                        .name(Component.translatable("enhancedtooltips.rarity.common"))
                                         .binding(
                                                 EnhancedTooltipsConfig.BorderColor.COMMON.getColor(),
                                                 () -> config.border.customBorderColors.common,
@@ -177,7 +188,7 @@ public class EnhancedTooltipsGui {
                                         .available(config.border.borderColor == EnhancedTooltipsConfig.BorderColorMode.CUSTOM)
                                         .build())
                                 .option(Option.<Color>createBuilder()
-                                        .name(Text.translatable("enhancedtooltips.rarity.uncommon"))
+                                        .name(Component.translatable("enhancedtooltips.rarity.uncommon"))
                                         .binding(
                                                 EnhancedTooltipsConfig.BorderColor.UNCOMMON.getColor(),
                                                 () -> config.border.customBorderColors.uncommon,
@@ -187,7 +198,7 @@ public class EnhancedTooltipsGui {
                                         .available(config.border.borderColor == EnhancedTooltipsConfig.BorderColorMode.CUSTOM)
                                         .build())
                                 .option(Option.<Color>createBuilder()
-                                        .name(Text.translatable("enhancedtooltips.rarity.rare"))
+                                        .name(Component.translatable("enhancedtooltips.rarity.rare"))
                                         .binding(
                                                 EnhancedTooltipsConfig.BorderColor.RARE.getColor(),
                                                 () -> config.border.customBorderColors.rare,
@@ -197,7 +208,7 @@ public class EnhancedTooltipsGui {
                                         .available(config.border.borderColor == EnhancedTooltipsConfig.BorderColorMode.CUSTOM)
                                         .build())
                                 .option(Option.<Color>createBuilder()
-                                        .name(Text.translatable("enhancedtooltips.rarity.epic"))
+                                        .name(Component.translatable("enhancedtooltips.rarity.epic"))
                                         .binding(
                                                 EnhancedTooltipsConfig.BorderColor.EPIC.getColor(),
                                                 () -> config.border.customBorderColors.epic,
@@ -207,7 +218,7 @@ public class EnhancedTooltipsGui {
                                         .available(config.border.borderColor == EnhancedTooltipsConfig.BorderColorMode.CUSTOM)
                                         .build())
                                 .option(Option.<Color>createBuilder()
-                                        .name(Text.translatable("enhancedtooltips.config.customBorderColors.endColor"))
+                                        .name(Component.translatable("enhancedtooltips.config.customBorderColors.endColor"))
                                         .binding(
                                                 EnhancedTooltipsConfig.BorderColor.END_COLOR.getColor(),
                                                 () -> config.border.customBorderColors.endColor,
@@ -218,23 +229,39 @@ public class EnhancedTooltipsGui {
                                         .build())
                                 .build())
                         .group(OptionGroup.createBuilder()
-                                .name(Text.translatable("enhancedtooltips.config.group.background"))
+                                .name(Component.translatable("enhancedtooltips.config.group.background"))
+                                .option(Option.<EnhancedTooltipsConfig.BackgroundMode>createBuilder()
+                                        .name(Component.translatable("enhancedtooltips.config.backgroundMode"))
+                                        .description(OptionDescription.createBuilder()
+                                                .text(Component.translatable("enhancedtooltips.config.backgroundMode.desc"))
+                                                .build())
+                                        .binding(
+                                                EnhancedTooltipsConfig.BackgroundMode.DEFAULT,
+                                                () -> config.background.backgroundMode,
+                                                (value) -> config.background.backgroundMode = value
+                                        )
+                                        .customController(opt -> new EnumController<>(opt, EnhancedTooltipsConfig.BackgroundMode.class))
+                                        .build())
                                 .option(Option.<Color>createBuilder()
-                                        .name(Text.translatable("enhancedtooltips.config.backgroundColor"))
+                                        .name(Component.translatable("enhancedtooltips.config.backgroundColor"))
+                                        .description(OptionDescription.createBuilder()
+                                                .text(Component.translatable("enhancedtooltips.config.backgroundColor.desc"))
+                                                .build())
                                         .binding(
                                                 new Color(0xF0100010, true),
                                                 () -> config.background.backgroundColor,
                                                 (value) -> config.background.backgroundColor = value
                                         )
                                         .controller(opt -> ColorControllerBuilder.create(opt).allowAlpha(true))
+                                        .available(config.background.backgroundMode == EnhancedTooltipsConfig.BackgroundMode.CUSTOM)
                                         .build())
                                 .build())
                         .group(OptionGroup.createBuilder()
-                                .name(Text.translatable("itemGroup.foodAndDrink"))
+                                .name(Component.translatable("itemGroup.foodAndDrink"))
                                 .option(Option.<Boolean>createBuilder()
-                                        .name(Text.translatable("enhancedtooltips.config.hungerTooltip"))
+                                        .name(Component.translatable("enhancedtooltips.config.hungerTooltip"))
                                         .description(OptionDescription.createBuilder()
-                                                .text(Text.translatable("enhancedtooltips.config.hungerTooltip.desc"))
+                                                .text(Component.translatable("enhancedtooltips.config.hungerTooltip.desc"))
                                                 .build())
                                         .binding(
                                                 true,
@@ -244,9 +271,9 @@ public class EnhancedTooltipsGui {
                                         .controller(TickBoxControllerBuilder::create)
                                         .build())
                                 .option(Option.<Boolean>createBuilder()
-                                        .name(Text.translatable("enhancedtooltips.config.saturationTooltip"))
+                                        .name(Component.translatable("enhancedtooltips.config.saturationTooltip"))
                                         .description(OptionDescription.createBuilder()
-                                                .text(Text.translatable("enhancedtooltips.config.saturationTooltip.desc"))
+                                                .text(Component.translatable("enhancedtooltips.config.saturationTooltip.desc"))
                                                 .build())
                                         .binding(
                                                 true,
@@ -256,9 +283,9 @@ public class EnhancedTooltipsGui {
                                         .controller(TickBoxControllerBuilder::create)
                                         .build())
                                 .option(Option.<EnhancedTooltipsConfig.EffectsTooltipMode>createBuilder()
-                                        .name(Text.translatable("enhancedtooltips.config.effectsTooltip"))
+                                        .name(Component.translatable("enhancedtooltips.config.effectsTooltip"))
                                         .description(OptionDescription.createBuilder()
-                                                .text(Text.translatable("enhancedtooltips.config.effectsTooltip.desc"))
+                                                .text(Component.translatable("enhancedtooltips.config.effectsTooltip.desc"))
                                                 .build())
                                         .binding(
                                                 EnhancedTooltipsConfig.EffectsTooltipMode.WITH_ICONS,
@@ -269,35 +296,35 @@ public class EnhancedTooltipsGui {
                                         .build())
                                 .build())
                         .group(OptionGroup.createBuilder()
-                                .name(Text.translatable("stat.mobsButton"))
+                                .name(Component.translatable("stat.mobsButton"))
                                 .option(Option.<Float>createBuilder()
-                                        .name(Text.translatable("enhancedtooltips.config.rotationSpeed"))
+                                        .name(Component.translatable("enhancedtooltips.config.rotationSpeed"))
                                         .description(OptionDescription.createBuilder()
-                                                .text(Text.translatable("enhancedtooltips.config.rotationSpeed.desc"))
+                                                .text(Component.translatable("enhancedtooltips.config.rotationSpeed.desc"))
                                                 .build())
                                         .binding(
                                                 0.2f,
                                                 () -> config.mobs.rotationSpeed,
                                                 (value) -> config.mobs.rotationSpeed = value
                                         )
-                                        .customController(opt -> new FloatSliderController(opt, 0, 1, 0.05f, value -> Text.literal(String.format("%." + 0 /* decimal places */ + "f%%", value * 100.0F))))
+                                        .customController(opt -> new FloatSliderController(opt, 0, 1, 0.05f, value -> Component.literal(String.format("%." + 0 /* decimal places */ + "f%%", value * 100.0F))))
                                         .build())
-                                .option(Option.<Boolean>createBuilder()
-                                        .name(Text.translatable("enhancedtooltips.config.armorTooltip"))
+                                .option(Option.<EnhancedTooltipsConfig.ArmorTooltipMode>createBuilder()
+                                        .name(Component.translatable("enhancedtooltips.config.armorTooltip"))
                                         .description(OptionDescription.createBuilder()
-                                                .text(Text.translatable("enhancedtooltips.config.armorTooltip.desc"))
+                                                .text(Component.translatable("enhancedtooltips.config.armorTooltip.desc"))
                                                 .build())
                                         .binding(
-                                                true,
+                                                EnhancedTooltipsConfig.ArmorTooltipMode.PLAYER,
                                                 () -> config.mobs.armorTooltip,
                                                 (value) -> config.mobs.armorTooltip = value
                                         )
-                                        .controller(TickBoxControllerBuilder::create)
+                                        .customController(opt -> new EnumController<>(opt, EnhancedTooltipsConfig.ArmorTooltipMode.class))
                                         .build())
                                 .option(Option.<Boolean>createBuilder()
-                                        .name(Text.translatable("enhancedtooltips.config.horseArmorTooltip"))
+                                        .name(Component.translatable("enhancedtooltips.config.horseArmorTooltip"))
                                         .description(OptionDescription.createBuilder()
-                                                .text(Text.translatable("enhancedtooltips.config.horseArmorTooltip.desc"))
+                                                .text(Component.translatable("enhancedtooltips.config.horseArmorTooltip.desc"))
                                                 .build())
                                         .binding(
                                                 true,
@@ -307,9 +334,9 @@ public class EnhancedTooltipsGui {
                                         .controller(TickBoxControllerBuilder::create)
                                         .build())
                                 .option(Option.<Boolean>createBuilder()
-                                        .name(Text.translatable("enhancedtooltips.config.wolfArmorTooltip"))
+                                        .name(Component.translatable("enhancedtooltips.config.wolfArmorTooltip"))
                                         .description(OptionDescription.createBuilder()
-                                                .text(Text.translatable("enhancedtooltips.config.wolfArmorTooltip.desc"))
+                                                .text(Component.translatable("enhancedtooltips.config.wolfArmorTooltip.desc"))
                                                 .build())
                                         .binding(
                                                 true,
@@ -319,9 +346,9 @@ public class EnhancedTooltipsGui {
                                         .controller(TickBoxControllerBuilder::create)
                                         .build())
                                 .option(Option.<Boolean>createBuilder()
-                                        .name(Text.translatable("enhancedtooltips.config.bucketTooltip"))
+                                        .name(Component.translatable("enhancedtooltips.config.bucketTooltip"))
                                         .description(OptionDescription.createBuilder()
-                                                .text(Text.translatable("enhancedtooltips.config.bucketTooltip.desc"))
+                                                .text(Component.translatable("enhancedtooltips.config.bucketTooltip.desc"))
                                                 .build())
                                         .binding(
                                                 true,
@@ -331,9 +358,9 @@ public class EnhancedTooltipsGui {
                                         .controller(TickBoxControllerBuilder::create)
                                         .build())
                                 .option(Option.<Boolean>createBuilder()
-                                        .name(Text.translatable("enhancedtooltips.config.spawnEggTooltip"))
+                                        .name(Component.translatable("enhancedtooltips.config.spawnEggTooltip"))
                                         .description(OptionDescription.createBuilder()
-                                                .text(Text.translatable("enhancedtooltips.config.spawnEggTooltip.desc"))
+                                                .text(Component.translatable("enhancedtooltips.config.spawnEggTooltip.desc"))
                                                 .build())
                                         .binding(
                                                 true,
@@ -344,11 +371,11 @@ public class EnhancedTooltipsGui {
                                         .build())
                                 .build())
                         .group(OptionGroup.createBuilder()
-                                .name(Text.translatable("item.minecraft.filled_map"))
+                                .name(Component.translatable("item.minecraft.filled_map"))
                                 .option(Option.<Boolean>createBuilder()
-                                        .name(Text.translatable("enhancedtooltips.config.mapTooltip"))
+                                        .name(Component.translatable("enhancedtooltips.config.mapTooltip"))
                                         .description(OptionDescription.createBuilder()
-                                                .text(Text.translatable("enhancedtooltips.config.mapTooltip.desc"))
+                                                .text(Component.translatable("enhancedtooltips.config.mapTooltip.desc"))
                                                 .build())
                                         .binding(
                                                 true,
@@ -359,11 +386,11 @@ public class EnhancedTooltipsGui {
                                         .build())
                                 .build())
                         .group(OptionGroup.createBuilder()
-                                .name(Text.translatable("item.minecraft.painting"))
+                                .name(Component.translatable("item.minecraft.painting"))
                                 .option(Option.<Boolean>createBuilder()
-                                        .name(Text.translatable("enhancedtooltips.config.paintingTooltip"))
+                                        .name(Component.translatable("enhancedtooltips.config.paintingTooltip"))
                                         .description(OptionDescription.createBuilder()
-                                                .text(Text.translatable("enhancedtooltips.config.paintingTooltip.desc"))
+                                                .text(Component.translatable("enhancedtooltips.config.paintingTooltip.desc"))
                                                 .build())
                                         .binding(
                                                 true,
@@ -374,11 +401,11 @@ public class EnhancedTooltipsGui {
                                         .build())
                                 .build())
                         .group(OptionGroup.createBuilder()
-                                .name(Text.translatable("item.minecraft.mojang_banner_pattern"))
+                                .name(Component.translatable("item.minecraft.mojang_banner_pattern"))
                                 .option(Option.<Boolean>createBuilder()
-                                        .name(Text.translatable("enhancedtooltips.config.bannerPatternTooltip"))
+                                        .name(Component.translatable("enhancedtooltips.config.bannerPatternTooltip"))
                                         .description(OptionDescription.createBuilder()
-                                                .text(Text.translatable("enhancedtooltips.config.bannerPatternTooltip.desc"))
+                                                .text(Component.translatable("enhancedtooltips.config.bannerPatternTooltip.desc"))
                                                 .build())
                                         .binding(
                                                 true,
@@ -389,11 +416,11 @@ public class EnhancedTooltipsGui {
                                         .build())
                                 .build())
                         .group(OptionGroup.createBuilder()
-                                .name(Text.translatable("attribute.name.armor"))
+                                .name(Component.translatable("attribute.name.armor"))
                                 .option(Option.<Boolean>createBuilder()
-                                        .name(Text.translatable("enhancedtooltips.config.armorIconTooltip"))
+                                        .name(Component.translatable("enhancedtooltips.config.armorIconTooltip"))
                                         .description(OptionDescription.createBuilder()
-                                                .text(Text.translatable("enhancedtooltips.config.armorIconTooltip.desc"))
+                                                .text(Component.translatable("enhancedtooltips.config.armorIconTooltip.desc"))
                                                 .build())
                                         .binding(
                                                 true,
@@ -404,11 +431,11 @@ public class EnhancedTooltipsGui {
                                         .build())
                                 .build())
                         .group(OptionGroup.createBuilder()
-                                .name(Text.translatable("enhancedtooltips.tooltip.durability"))
+                                .name(Component.translatable("enhancedtooltips.tooltip.durability"))
                                 .option(Option.<EnhancedTooltipsConfig.DurabilityTooltipMode>createBuilder()
-                                        .name(Text.translatable("enhancedtooltips.config.durabilityTooltip"))
+                                        .name(Component.translatable("enhancedtooltips.config.durabilityTooltip"))
                                         .description(OptionDescription.createBuilder()
-                                                .text(Text.translatable("enhancedtooltips.config.durabilityTooltip.desc"))
+                                                .text(Component.translatable("enhancedtooltips.config.durabilityTooltip.desc"))
                                                 .build())
                                         .binding(
                                                 EnhancedTooltipsConfig.DurabilityTooltipMode.VALUE,
@@ -418,9 +445,9 @@ public class EnhancedTooltipsGui {
                                         .customController(opt -> new EnumController<>(opt, EnhancedTooltipsConfig.DurabilityTooltipMode.class))
                                         .build())
                                 .option(Option.<Boolean>createBuilder()
-                                        .name(Text.translatable("enhancedtooltips.config.durabilityBar"))
+                                        .name(Component.translatable("enhancedtooltips.config.durabilityBar"))
                                         .description(OptionDescription.createBuilder()
-                                                .text(Text.translatable("enhancedtooltips.config.durabilityBar.desc"))
+                                                .text(Component.translatable("enhancedtooltips.config.durabilityBar.desc"))
                                                 .build())
                                         .binding(
                                                 false,
@@ -431,11 +458,11 @@ public class EnhancedTooltipsGui {
                                         .build())
                                 .build())
                         .group(OptionGroup.createBuilder()
-                                .name(Text.translatable("enhancedtooltips.config.group.heldItemTooltip"))
+                                .name(Component.translatable("enhancedtooltips.config.group.heldItemTooltip"))
                                 .option(Option.<EnhancedTooltipsConfig.HeldItemTooltipMode>createBuilder()
-                                        .name(Text.translatable("advMode.mode"))
+                                        .name(Component.translatable("advMode.mode"))
                                         .description(OptionDescription.createBuilder()
-                                                .text(Text.translatable("enhancedtooltips.config.heldItemTooltip.desc"))
+                                                .text(Component.translatable("enhancedtooltips.config.heldItemTooltip.desc"))
                                                 .build())
                                         .binding(
                                                 EnhancedTooltipsConfig.HeldItemTooltipMode.ON,
@@ -445,9 +472,9 @@ public class EnhancedTooltipsGui {
                                         .customController(opt -> new EnumController<>(opt, EnhancedTooltipsConfig.HeldItemTooltipMode.class))
                                         .build())
                                 .option(Option.<Boolean>createBuilder()
-                                        .name(Text.translatable("enhancedtooltips.config.showHeldItemTooltipBackground"))
+                                        .name(Component.translatable("enhancedtooltips.config.showHeldItemTooltipBackground"))
                                         .description(OptionDescription.createBuilder()
-                                                .text(Text.translatable("enhancedtooltips.config.showHeldItemTooltipBackground.desc"))
+                                                .text(Component.translatable("enhancedtooltips.config.showHeldItemTooltipBackground.desc"))
                                                 .build())
                                         .binding(
                                                 true,
@@ -457,9 +484,9 @@ public class EnhancedTooltipsGui {
                                         .controller(TickBoxControllerBuilder::create)
                                         .build())
                                 .option(Option.<Integer>createBuilder()
-                                        .name(Text.translatable("enhancedtooltips.config.heldItemTooltipMaxLines"))
+                                        .name(Component.translatable("enhancedtooltips.config.heldItemTooltipMaxLines"))
                                         .description(OptionDescription.createBuilder()
-                                                .text(Text.translatable("enhancedtooltips.config.heldItemTooltipMaxLines.desc"))
+                                                .text(Component.translatable("enhancedtooltips.config.heldItemTooltipMaxLines.desc"))
                                                 .build())
                                         .binding(
                                                 5,
@@ -469,21 +496,33 @@ public class EnhancedTooltipsGui {
                                         .customController(opt -> new IntegerSliderController(opt, 3, 25, 1))
                                         .build())
                                 .option(Option.<Float>createBuilder()
-                                        .name(Text.translatable("enhancedtooltips.config.scaleFactor"))
+                                        .name(Component.translatable("enhancedtooltips.config.scaleFactor"))
                                         .description(OptionDescription.createBuilder()
-                                                .text(Text.translatable("enhancedtooltips.config.scaleFactor.desc"))
+                                                .text(Component.translatable("enhancedtooltips.config.scaleFactor.desc"))
                                                 .build())
                                         .binding(
                                                 1f,
                                                 () -> config.heldItemTooltip.scaleFactor,
                                                 (value) -> config.heldItemTooltip.scaleFactor = value
                                         )
-                                        .customController(opt -> new FloatSliderController(opt, 0.25f, 2f, 0.05f, value -> Text.literal(String.format("%." + 0 /* decimal places */ + "f%%", value * 100.0F))))
+                                        .customController(opt -> new FloatSliderController(opt, 0.25f, 2f, 0.05f, value -> Component.literal(String.format("%." + 0 /* decimal places */ + "f%%", value * 100.0F))))
                                         .build())
                                 .option(Option.<Boolean>createBuilder()
-                                        .name(Text.translatable("enhancedtooltips.config.heldItemTooltipTiltAnimation"))
+                                        .name(Component.translatable("enhancedtooltips.config.hideItemName"))
                                         .description(OptionDescription.createBuilder()
-                                                .text(Text.translatable("enhancedtooltips.config.heldItemTooltipTiltAnimation.desc"))
+                                                .text(Component.translatable("enhancedtooltips.config.hideItemName.desc"))
+                                                .build())
+                                        .binding(
+                                                false,
+                                                () -> config.heldItemTooltip.hideItemName,
+                                                (value) -> config.heldItemTooltip.hideItemName = value
+                                        )
+                                        .controller(TickBoxControllerBuilder::create)
+                                        .build())
+                                .option(Option.<Boolean>createBuilder()
+                                        .name(Component.translatable("enhancedtooltips.config.heldItemTooltipTiltAnimation"))
+                                        .description(OptionDescription.createBuilder()
+                                                .text(Component.translatable("enhancedtooltips.config.heldItemTooltipTiltAnimation.desc"))
                                                 .build())
                                         .binding(
                                                 true,
@@ -493,32 +532,32 @@ public class EnhancedTooltipsGui {
                                         .controller(TickBoxControllerBuilder::create)
                                         .build())
                                 .option(Option.<Integer>createBuilder()
-                                        .name(Text.translatable("stat.minecraft.play_time"))
+                                        .name(Component.translatable("stat.minecraft.play_time"))
                                         .binding(
                                                 300,
                                                 () -> config.heldItemTooltip.tiltDuration,
                                                 (value) -> config.heldItemTooltip.tiltDuration = value
                                         )
-                                        .customController(opt -> new IntegerSliderController(opt, 50, 1000, 50, value -> Text.literal(value == 1000 ? "1 second" : value + " ms")))
+                                        .customController(opt -> new IntegerSliderController(opt, 50, 1000, 50, value -> Component.literal(value == 1000 ? "1 second" : value + " ms")))
                                         .build())
                                 .option(Option.<Float>createBuilder()
-                                        .name(Text.translatable("enhancedtooltips.config.popUpAnimation.magnitude"))
+                                        .name(Component.translatable("enhancedtooltips.config.popUpAnimation.magnitude"))
                                         .binding(
                                                 10f,
                                                 () -> config.heldItemTooltip.tiltMagnitude,
                                                 (value) -> config.heldItemTooltip.tiltMagnitude = value
                                         )
-                                        .customController(opt -> new FloatSliderController(opt, 5f, 15f, 0.5f, value -> Text.literal(String.format("%." + 0 /* decimal places */ + "f%%", value * 10.0F))))
+                                        .customController(opt -> new FloatSliderController(opt, 5f, 15f, 0.5f, value -> Component.literal(String.format("%." + 0 /* decimal places */ + "f%%", value * 10.0F))))
                                         .build())
                                 .option(Option.<Float>createBuilder()
-                                        .name(Text.translatable("enhancedtooltips.config.heldItemTooltip.easing"))
+                                        .name(Component.translatable("enhancedtooltips.config.heldItemTooltip.easing"))
                                         .binding(
                                                 2f,
                                                 () -> config.heldItemTooltip.tiltEasing,
                                                 (value) -> config.heldItemTooltip.tiltEasing = value
                                         )
                                         .customController(opt -> new FloatSliderController(opt, 1f, 3f, 0.05f,
-                                                value -> Text.literal(BigDecimal.valueOf(value)
+                                                value -> Component.literal(BigDecimal.valueOf(value)
                                                         .setScale(2, RoundingMode.HALF_UP)
                                                         .stripTrailingZeros()
                                                         .toPlainString() + "x")

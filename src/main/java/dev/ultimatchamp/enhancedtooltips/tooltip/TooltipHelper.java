@@ -3,31 +3,30 @@ package dev.ultimatchamp.enhancedtooltips.tooltip;
 import dev.ultimatchamp.enhancedtooltips.EnhancedTooltips;
 import dev.ultimatchamp.enhancedtooltips.config.EnhancedTooltipsConfig;
 import dev.ultimatchamp.enhancedtooltips.util.TranslationStringColorParser;
-import net.minecraft.item.ItemStack;
-import net.minecraft.text.Style;
-import net.minecraft.text.Text;
-import net.minecraft.util.Colors;
-
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Style;
+import net.minecraft.util.CommonColors;
+import net.minecraft.world.item.ItemStack;
 import java.util.Optional;
 
 public class TooltipHelper {
-    public static Text getRarityName(ItemStack stack) {
+    public static Component getRarityName(ItemStack stack) {
         String key = EnhancedTooltips.MOD_ID + ".rarity." + stack.getRarity().name().toLowerCase();
-        return Text.translatable(key)
-                .setStyle(Style.EMPTY.withColor(Colors.GRAY));
+        return Component.translatable(key)
+                .setStyle(Style.EMPTY.withColor(CommonColors.GRAY));
     }
 
-    public static Text getDisplayName(ItemStack stack) {
+    public static Component getDisplayName(ItemStack stack) {
         //? if >1.21.3 {
-        return stack.getFormattedName();
+        return stack.getStyledHoverName();
         //?} else {
-        /*return Text.empty().append(stack.getName())
-                .formatted(stack.getRarity().getFormatting());
+        /*return Component.empty().append(stack.getDisplayName())
+                .withStyle(stack.getRarity().color());
         *///?}
     }
 
     public static Integer[] getItemBorderColor(ItemStack stack) {
-        Text displayName = getDisplayName(stack);
+        Component displayName = getDisplayName(stack);
         Integer[] colors = {null, null};
 
         if (EnhancedTooltipsConfig.load().border.borderColor == EnhancedTooltipsConfig.BorderColorMode.ITEM_NAME) {
@@ -35,9 +34,9 @@ public class TooltipHelper {
                 var color = style.getColor();
                 if (color != null) {
                     if (colors[0] == null)
-                        colors[0] = color.getRgb();
-                    else if (color.getRgb() != colors[0]) {
-                        colors[1] = color.getRgb();
+                        colors[0] = color.getValue();
+                    else if (color.getValue() != colors[0]) {
+                        colors[1] = color.getValue();
                     }
                 }
                 return Optional.empty();
@@ -52,14 +51,14 @@ public class TooltipHelper {
             if (colors[0] == null || colors[0] == -1 || colors[0] == 0xffffff) {
                 var clr = displayName.getStyle().getColor();
                 if (clr != null) {
-                    colors[0] = clr.getRgb();
+                    colors[0] = clr.getValue();
                     if (colors[0] == 0xffffff) colors[0] = -1;
                 }
             }
         } else {
             var clr = displayName.getStyle().getColor();
             if (clr != null) {
-                colors[0] = clr.getRgb();
+                colors[0] = clr.getValue();
                 if (colors[0] == 0xffffff) colors[0] = -1;
             }
         }

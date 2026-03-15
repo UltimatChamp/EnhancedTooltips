@@ -1,6 +1,6 @@
 package dev.ultimatchamp.enhancedtooltips.util;
 
-import net.minecraft.text.Text;
+import net.minecraft.network.chat.Component;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -27,7 +27,7 @@ public class TranslationStringColorParser {
         COLOR_MAP.put('f', 0xFFFFFF); // White
     }
 
-    public static Integer[] getColorsFromTranslation(Text text) {
+    public static Integer[] getColorsFromTranslation(Component text) {
         return getColorsFromTranslation(text.getString());
     }
 

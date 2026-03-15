@@ -1,94 +1,100 @@
 package dev.ultimatchamp.enhancedtooltips.component;
 
-import net.minecraft.block.entity.BannerPattern;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.tooltip.TooltipComponent;
-import net.minecraft.client.render.DiffuseLighting;
-import net.minecraft.client.render.entity.model.EntityModelLayers;
-import net.minecraft.component.DataComponentTypes;
-import net.minecraft.component.type.BannerPatternsComponent;
-import net.minecraft.item.ItemStack;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.registry.tag.TagKey;
-import net.minecraft.util.DyeColor;
-import net.minecraft.util.math.random.Random;
+import com.mojang.blaze3d.platform.Lighting;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
+import net.minecraft.client.model.geom.ModelLayers;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.tags.TagKey;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.entity.BannerPattern;
+import net.minecraft.world.level.block.entity.BannerPatternLayers;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-/*? if >1.21.8 {*/import net.minecraft.client.render.block.entity.model.BannerFlagBlockModel;/*?}*/
-//? if <1.21.6 {
-/*import net.minecraft.client.render.OverlayTexture;
-import net.minecraft.client.render.block.entity.BannerBlockEntityRenderer;
-*///?}
-/*? if <1.21.5 {*//*import net.minecraft.item.BannerPatternItem;*//*?}*/
-//? if <1.21.6 && >1.21.1 {
-/*import net.minecraft.client.render.model.ModelBaker;
-*///?} else if 1.21.1 {
-/*import net.minecraft.client.render.model.ModelLoader;
+//? if >1.21.10 {
+/*import net.minecraft.client.model.object.banner.BannerFlagModel;
+*///?} else if >1.21.8 {
+/*import net.minecraft.client.model.BannerFlagModel;
 *///?}
 
-public record BannerPatternTooltipComponent(ItemStack stack) implements TooltipComponent {
-    private TagKey<BannerPattern> getBannerPatternComponent() {
+//? if <1.21.6 {
+import net.minecraft.client.renderer.blockentity.BannerRenderer;
+import net.minecraft.client.renderer.texture.OverlayTexture;
+//?}
+/*? if <1.21.5 {*//*import net.minecraft.world.item.BannerPatternItem;*//*?}*/
+//? if <1.21.6 {
+import net.minecraft.client.resources.model.ModelBakery;
+//?}
+
+public record BannerPatternTooltipComponent(ItemStack stack) implements ClientTooltipComponent {
+    private TagKey<@NotNull BannerPattern> getBannerPatternComponent() {
         //? if >1.21.4 {
-        return stack.get(DataComponentTypes.PROVIDES_BANNER_PATTERNS);
+        return stack.get(DataComponents.PROVIDES_BANNER_PATTERNS);
         //?} else {
-        /*return ((BannerPatternItem) stack.getItem()).getPattern();
+        /*return ((BannerPatternItem) stack.getItem()).getBannerPattern();
         *///?}
     }
 
     @Override
-    public int getHeight(/*? if >1.21.1 {*/TextRenderer textRenderer/*?}*/) {
+    public int getHeight(/*? if >1.21.1 {*/@NotNull Font textRenderer/*?}*/) {
         return 45;
     }
 
     @Override
-    public int getWidth(TextRenderer textRenderer) {
+    public int getWidth(@NotNull Font textRenderer) {
         return 20;
     }
 
     @Override
     //? if >1.21.1 {
-    public void drawItems(TextRenderer textRenderer, int x, int y, int width, int height, DrawContext context) {
+    public void renderImage(@NotNull Font textRenderer, int x, int y, int width, int height, @NotNull GuiGraphics context) {
     //?} else {
-    /*public void drawItems(TextRenderer textRenderer, int x, int y, DrawContext context) {
+    /*public void renderImage(Font textRenderer, int x, int y, GuiGraphics context) {
     *///?}
         var c = getBannerPatternComponent();
-        var world = MinecraftClient.getInstance().world;
+        var world = Minecraft.getInstance().level;
 
         if (c == null || world == null) return;
 
-        world.getRegistryManager().getOptional(RegistryKeys.BANNER_PATTERN).flatMap(registry -> registry.getRandomEntry(c, Random.create())).ifPresent(entry -> {
-            var patterns = new BannerPatternsComponent(List.of(new BannerPatternsComponent.Layer(entry, DyeColor.WHITE)));
+        //? if >1.21.1 {
+        world.registryAccess().lookup(Registries.BANNER_PATTERN).flatMap(registry -> registry.getRandomElementOf(c, RandomSource.create())).ifPresent(entry -> {
+        //?} else {
+        /*world.registryAccess().registry(Registries.BANNER_PATTERN).flatMap(registry -> registry.getRandomElementOf(c, RandomSource.create())).ifPresent(entry -> {
+        *///?}
+            var patterns = new BannerPatternLayers(List.of(new BannerPatternLayers.Layer(entry, DyeColor.WHITE)));
 
             //? if >1.21.8 {
-            var modelPart = new BannerFlagBlockModel(MinecraftClient.getInstance().getLoadedEntityModels().getModelPart(EntityModelLayers.STANDING_BANNER_FLAG));
-            //?} else if >1.21.3 {
-            /*var modelPart = MinecraftClient.getInstance().getLoadedEntityModels().getModelPart(EntityModelLayers.STANDING_BANNER_FLAG).getChild("flag");
-            if (modelPart == null) return;
-            *///?} else {
-            /*var modelPart = MinecraftClient.getInstance().getEntityModelLoader().getModelPart(EntityModelLayers.BANNER).getChild("flag");
-            if (modelPart == null) return;
+            /*var modelPart = new BannerFlagModel(Minecraft.getInstance().getEntityModels().bakeLayer(ModelLayers.STANDING_BANNER_FLAG));
+            *///?} else if >1.21.3 {
+            var modelPart = Minecraft.getInstance().getEntityModels().bakeLayer(ModelLayers.STANDING_BANNER_FLAG).getChild("flag");
+            //?} else {
+            /*var modelPart = Minecraft.getInstance().getEntityModels().bakeLayer(ModelLayers.BANNER).getChild("flag");
             *///?}
 
             //? if >1.21.5 {
-            context.addBannerResult(modelPart, DyeColor.GRAY, patterns, x, y, x + 20, y + 40);
-            //?} else {
-            /*DiffuseLighting.disableGuiDepthLighting();
-            context.getMatrices().push();
-            context.getMatrices().translate(x, y + 56 /^? if <1.21.5 {^//^- 10^//^?}^/, 0);
-            context.getMatrices().scale(24, 24, 1);
-            context.getMatrices().translate(0.5, -0.5, 0.5);
+            /*context.submitBannerPatternRenderState(modelPart, DyeColor.GRAY, patterns, x, y, x + 20, y + 40);
+            *///?} else {
+            Lighting.setupForEntityInInventory();
+            context.pose().pushPose();;
+            context.pose().translate(x, y + 56 /*? if <1.21.5 {*//*- 10*//*?}*/, 0);
+            context.pose().scale(24, 24, 1);
+            context.pose().translate(0.5, -0.5, 0.5);
             float f = 0.6666667f;
-            context.getMatrices().scale(f, f, -f);
-            modelPart.pitch = 0;
-            /^? if <1.21.5 {^//^modelPart.pivotY = -32;^//^?}^/
-            BannerBlockEntityRenderer.renderCanvas(context.getMatrices(), MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers(), 15728880, OverlayTexture.DEFAULT_UV, modelPart, /^? if >1.21.1 {^/ModelBaker/^?} else {^//^ModelLoader^//^?}^/.BANNER_BASE, true, DyeColor.GRAY, patterns);
-            context.getMatrices().pop();
-            context.draw();
-            DiffuseLighting.enableGuiDepthLighting();
-            *///?}
+            context.pose().scale(f, f, -f);
+            modelPart.xRot = 0;
+            /*? if <1.21.5 {*//*modelPart.xRot = -32;*//*?}*/
+            BannerRenderer.renderPatterns(context.pose(), Minecraft.getInstance().renderBuffers().bufferSource(), 15728880, OverlayTexture.NO_OVERLAY, modelPart, ModelBakery.BANNER_BASE, true, DyeColor.GRAY, patterns);
+            context.pose().popPose();
+            context.flush();
+            Lighting.setupForFlatItems();
+            //?}
         });
     }
 }

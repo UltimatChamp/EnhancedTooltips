@@ -1,11 +1,11 @@
 package dev.ultimatchamp.enhancedtooltips.util;
 
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.registry.Registries;
-import net.minecraft.text.Text;
-import net.minecraft.util.Pair;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.chat.Component;
+import net.minecraft.util.Tuple;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
@@ -13,51 +13,52 @@ import java.util.HashMap;
 import java.util.Map;
 
 //? if fabric {
-import net.fabricmc.loader.api.FabricLoader;
+/*import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
-//?} else if neoforge {
-/*import net.neoforged.fml.ModList;
+*///?} else if neoforge {
+import net.neoforged.fml.ModList;
 import net.neoforged.fml.ModContainer;
-*///?}
+//?}
 
 public class BadgesUtils {
     private static Map<String, String> mods = new HashMap<>();
 
-    public static @NotNull Pair<Text, Integer> getBadgeText(ItemStack stack) {
-        Text text = Text.empty();
+    public static @NotNull Tuple<@NotNull Component, @NotNull Integer> getBadgeText(ItemStack stack) {
+        Component text = Component.empty();
         int fillColor = 0;
 
-        for (Map.Entry<Collection<Item>, Pair<Text, Integer>> entry : ItemGroupsUtils.getItemGroups().entrySet()) {
+        for (Map.Entry<Collection<Item>, Tuple<@NotNull Component, @NotNull Integer>> entry : ItemGroupsUtils.getItemGroups().entrySet()) {
             if (entry.getKey().contains(stack.getItem())) {
-                text = entry.getValue().getLeft();
-                fillColor = entry.getValue().getRight();
+                text = entry.getValue().getA();
+                fillColor = entry.getValue().getB();
                 break;
             }
         }
 
-        if (text.withoutStyle().isEmpty()) {
-            String namespace = Registries.ITEM.getId(stack.getItem()).getNamespace();
-            text = Text.literal(getMods().getOrDefault(namespace, ""));
+        String namespace = BuiltInRegistries.ITEM.getKey(stack.getItem()).getNamespace();
+        Component finalText = text;
+        if (text.toFlatList().isEmpty() || (!namespace.equals("minecraft") && ItemGroupsUtils.ITEM_GROUP_KEYS.stream().map(key -> Component.translatable(key).getString()).anyMatch(s -> s.contains(finalText.getString())))) {
+            text = Component.literal(getMods().getOrDefault(namespace, ""));
             fillColor = getColorFromModName(namespace);
         }
 
-        return new Pair<>(text, fillColor);
+        return new Tuple<>(text, fillColor);
     }
 
     public static Map<String, String> getMods() {
         if (!mods.isEmpty()) return mods;
 
         //? if fabric {
-        for (ModContainer modContainer : FabricLoader.getInstance().getAllMods()) {
+        /*for (ModContainer modContainer : FabricLoader.getInstance().getAllMods()) {
             if (modContainer.getMetadata().getId().equals("minecraft")) continue;
             mods.put(modContainer.getMetadata().getId(), modContainer.getMetadata().getName());
         }
-        //?} else {
-        /*for (ModContainer modContainer : ModList.get().getSortedMods()) {
+        *///?} else {
+        for (ModContainer modContainer : ModList.get().getSortedMods()) {
             if (modContainer.getModId().equals("minecraft")) continue;
             mods.put(modContainer.getNamespace(), modContainer.getModInfo().getDisplayName());
         }
-        *///?}
+        //?}
 
         return mods;
     }
@@ -86,18 +87,18 @@ public class BadgesUtils {
         return (a << 24) | (r << 16) | (g << 8) | b;
     }
 
-    public static void drawFrame(DrawContext context, int x, int y, int width, int height, int z, int color) {
+    public static void drawFrame(GuiGraphics context, int x, int y, int width, int height, int z, int color) {
         renderVerticalLine(context, x, y, height - 2, z, color);
         renderVerticalLine(context, x + width - 1, y, height - 2, z, color);
         renderHorizontalLine(context, x + 1, y - 1, width - 2, z, color);
         renderHorizontalLine(context, x + 1, y - 1 + height - 1, width - 2, z, color);
     }
 
-    private static void renderVerticalLine(DrawContext context, int x, int y, int height, int z, int color) {
+    private static void renderVerticalLine(GuiGraphics context, int x, int y, int height, int z, int color) {
         context.fill(x, y, x + 1, y + height, color);
     }
 
-    private static void renderHorizontalLine(DrawContext context, int x, int y, int width, int z, int color) {
+    private static void renderHorizontalLine(GuiGraphics context, int x, int y, int width, int z, int color) {
         context.fill(x, y, x + width, y + 1, color);
     }
 }

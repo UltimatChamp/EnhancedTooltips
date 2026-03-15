@@ -23,23 +23,28 @@
 
 package dev.ultimatchamp.enhancedtooltips.util;
 
-import net.minecraft.text.*;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Style;
+import net.minecraft.util.FormattedCharSequence;
+import net.minecraft.util.FormattedCharSink;
+import org.jetbrains.annotations.NotNull;
 
-public class EnhancedTooltipsTextVisitor implements CharacterVisitor {
-    private final MutableText text = Text.empty();
+public class EnhancedTooltipsTextVisitor implements FormattedCharSink {
+    private final MutableComponent text = Component.empty();
 
     @Override
-    public boolean accept(int index, Style style, int codePoint) {
+    public boolean accept(int index, @NotNull Style style, int codePoint) {
         String car = new String(Character.toChars(codePoint));
-        text.append(Text.literal(car).setStyle(style));
+        text.append(Component.literal(car).setStyle(style));
         return true;
     }
 
-    public Text getText() {
+    public Component getText() {
         return text;
     }
 
-    public static Text get(OrderedText text) {
+    public static Component get(FormattedCharSequence text) {
         EnhancedTooltipsTextVisitor visitor = new EnhancedTooltipsTextVisitor();
         text.accept(visitor);
         return visitor.getText();
