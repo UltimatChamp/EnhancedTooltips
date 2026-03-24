@@ -8,12 +8,12 @@ import dev.ultimatchamp.enhancedtooltips.util.EnhancedTooltipsTextVisitor;
 import dev.ultimatchamp.enhancedtooltips.util.MatricesUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipPositioner;
 import net.minecraft.client.gui.screens.inventory.tooltip.TooltipRenderUtil;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.item.ItemStack;
 import org.joml.Vector2ic;
@@ -21,7 +21,7 @@ import org.joml.Vector2ic;
 import java.util.ArrayList;
 import java.util.List;
 
-/*? if <1.21.6 {*/import dev.ultimatchamp.enhancedtooltips.mixin.accessors.GuiGraphicsAccessor;/*?}*/
+/*? if <1.21.6 {*//*import dev.ultimatchamp.enhancedtooltips.mixin.accessors.DrawContextAccessor;*//*?}*/
 
 public class EnhancedTooltipsDrawer {
     private static final int EDGE_SPACING = 32;
@@ -37,7 +37,7 @@ public class EnhancedTooltipsDrawer {
         return Minecraft.getInstance().getWindow().getGuiScaledWidth() / 2 - EDGE_SPACING;
     }
 
-    public static void drawTooltip(GuiGraphics context, Font textRenderer, List<ClientTooltipComponent> components, int x, int y, ClientTooltipPositioner positioner, ItemStack currentStack) {
+    public static void drawTooltip(GuiGraphicsExtractor context, Font textRenderer, List<ClientTooltipComponent> components, int x, int y, ClientTooltipPositioner positioner, ItemStack currentStack) {
         if (components == null || components.isEmpty() || currentStack.isEmpty()) {
             startTime = -1;
             lastStack = ItemStack.EMPTY;
@@ -66,7 +66,7 @@ public class EnhancedTooltipsDrawer {
         List<TooltipPage> pageList = new ArrayList<>();
 
         float scale = 1;
-        /*? if <1.21.6 {*/scale = EnhancedTooltipsConfig.load().general.scaleFactor;/*?}*/
+        /*? if <1.21.6 {*//*scale = EnhancedTooltipsConfig.load().general.scaleFactor;*//*?}*/
 
         int maxWidth = (int) (getMaxWidth() / scale);
         int totalWidth = 0;
@@ -154,7 +154,12 @@ public class EnhancedTooltipsDrawer {
             p.y = (int) (p.y / scale);
 
             if (backgroundComponent == null) {
-                TooltipRenderUtil.renderTooltipBackground(context, p.x, p.y, p.width, p.height/*? if <=1.21.5 {*/, 400/*?}*//*? if >1.21.1 {*/, ResourceLocation.withDefaultNamespace("tooltip/background")/*?}*/);
+                //? if >1.21.11 {
+                TooltipRenderUtil.extractTooltipBackground(
+                //?} else {
+                /*TooltipRenderUtil.renderTooltipBackground(
+                *///?}
+                        context, p.x, p.y, p.width, p.height/*? if <=1.21.5 {*//*, 400*//*?}*//*? if >1.21.1 {*/, Identifier.withDefaultNamespace("tooltip/background")/*?}*/);
             } else {
                 try {
                     backgroundComponent.render(context, p.x, p.y, p.width, p.height, 400, pageList.indexOf(p));
@@ -172,12 +177,18 @@ public class EnhancedTooltipsDrawer {
 
             for (ClientTooltipComponent component : p.components) {
                 try {
-                    //? if >1.21.5 {
+                    //? if >1.21.11 {
+                    component.extractText(context, textRenderer, cx, cy);
+                    //?} else if >1.21.5 {
                     /*component.renderText(context, textRenderer, cx, cy);
                     *///?} else {
-                    component.renderText(textRenderer, cx, cy, context.pose().last().pose(), ((GuiGraphicsAccessor) context).getBufferSource());
-                    //?}
-                    component.renderImage(textRenderer, cx, cy, /*? if >1.21.1 {*/p.width, p.height,/*?}*/ context);
+                    /*component.renderText(textRenderer, cx, cy, context.pose().last().pose(), ((DrawContextAccessor) context).getBufferSource());
+                    *///?}
+                    //? if >1.21.11 {
+                    component.extractImage(textRenderer, cx, cy, p.width, p.height, context);
+                    //?} else {
+                    /*component.renderImage(textRenderer, cx, cy, /^? if >1.21.1 {^/p.width, p.height,/^?}^/ context);
+                    *///?}
                     cy += component.getHeight(/*? if >1.21.1 {*/textRenderer/*?}*/);
 
                     if (p == pageList.getFirst() && component == p.components.getFirst() && components.size() > 1) {

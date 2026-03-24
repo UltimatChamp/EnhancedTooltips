@@ -1,16 +1,16 @@
 package dev.ultimatchamp.enhancedtooltips.component;
 
 import dev.ultimatchamp.enhancedtooltips.config.EnhancedTooltipsConfig;
+import dev.ultimatchamp.enhancedtooltips.tooltip.TooltipHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.effect.MobEffectUtil;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.ItemStack;
@@ -24,12 +24,12 @@ import net.minecraft.world.item.consume_effects.ConsumeEffect;
 //?}
 
 //? if >1.21.5 {
-/*import net.minecraft.client.renderer.RenderPipelines;
-*///?} else if >1.21.1 {
-import net.minecraft.client.renderer.RenderType;
-//?}
+import net.minecraft.client.renderer.RenderPipelines;
+//?} else if >1.21.1 {
+/*import net.minecraft.client.renderer.RenderType;
+*///?}
 
-public class FoodTooltipComponent implements ClientTooltipComponent {
+public class FoodTooltipComponent implements EnhancedTooltipsTooltipComponent {
     private final ItemStack stack;
     private final EnhancedTooltipsConfig config;
 
@@ -78,7 +78,7 @@ public class FoodTooltipComponent implements ClientTooltipComponent {
     }
 
     @Override
-    public int getHeight(/*? if >1.21.1 {*/@NotNull Font textRenderer/*?}*/) {
+    public int height() {
         int height = 0;
 
         FoodProperties foodComponent = getFoodComponent(this.stack);
@@ -99,8 +99,8 @@ public class FoodTooltipComponent implements ClientTooltipComponent {
                     continue;
                 }
 
-                for (MobEffectInstance statusEffect : applyEffectsConsumeEffect.effects()) {
-                    height += textRenderer.lineHeight + 1;
+                for (MobEffectInstance ignored : applyEffectsConsumeEffect.effects()) {
+                    height += Minecraft.getInstance().font.lineHeight + 1;
                 }
             //?} else {
             /*for (FoodProperties.PossibleEffect ignored : foodComponent.effects()) {
@@ -165,11 +165,7 @@ public class FoodTooltipComponent implements ClientTooltipComponent {
     }
 
     @Override
-    //? if >1.21.1 {
-    public void renderImage(@NotNull Font textRenderer, int x, int y, int width, int height, @NotNull GuiGraphics context) {
-    //?} else {
-    /*public void renderImage(Font textRenderer, int x, int y, GuiGraphics context) {
-    *///?}
+    public void drawImage(@NotNull Font textRenderer, int x, int y, int width, int height, @NotNull GuiGraphicsExtractor context) {
         FoodProperties foodComponent = getFoodComponent(this.stack);
         int hunger = getHunger();
         int saturation = getSaturation();
@@ -187,10 +183,10 @@ public class FoodTooltipComponent implements ClientTooltipComponent {
         var lineY = y;
 
         if (config.foodAndDrinks.hungerTooltip) {
-            context.drawString(textRenderer, hungerText, x, lineY, 0xffffffff, true);
+            TooltipHelper.renderText(context, textRenderer, hungerText, x, lineY, 0xffffffff, true);
 
-            ResourceLocation fullHunger = ResourceLocation.fromNamespaceAndPath("minecraft", "hud/food_full");
-            ResourceLocation halfHunger = ResourceLocation.fromNamespaceAndPath("minecraft", "hud/food_half");
+            Identifier fullHunger = Identifier.fromNamespaceAndPath("minecraft", "hud/food_full");
+            Identifier halfHunger = Identifier.fromNamespaceAndPath("minecraft", "hud/food_half");
 
             float fullHungers = hunger / 2f;
             boolean hasHalfHunger = (hunger % 2) != 0;
@@ -199,10 +195,10 @@ public class FoodTooltipComponent implements ClientTooltipComponent {
 
             for (int i = 0; i < (int) fullHungers; i++) {
                 //? if >1.21.5 {
-                /*context.blitSprite(RenderPipelines.GUI_TEXTURED, fullHunger, textRenderer.lineHeight, textRenderer.lineHeight, 0, 0, x + hungerWidth, lineY, textRenderer.lineHeight, textRenderer.lineHeight);
-                *///?} else if >1.21.1 {
-                context.blitSprite(RenderType::guiTextured, fullHunger, textRenderer.lineHeight, textRenderer.lineHeight, 0, 0, x + hungerWidth, lineY, textRenderer.lineHeight, textRenderer.lineHeight);
-                //?} else {
+                context.blitSprite(RenderPipelines.GUI_TEXTURED, fullHunger, textRenderer.lineHeight, textRenderer.lineHeight, 0, 0, x + hungerWidth, lineY, textRenderer.lineHeight, textRenderer.lineHeight);
+                //?} else if >1.21.1 {
+                /*context.blitSprite(RenderType::guiTextured, fullHunger, textRenderer.lineHeight, textRenderer.lineHeight, 0, 0, x + hungerWidth, lineY, textRenderer.lineHeight, textRenderer.lineHeight);
+                *///?} else {
                 /*context.blitSprite(fullHunger, x + hungerWidth, lineY, textRenderer.lineHeight, textRenderer.lineHeight);
                 *///?}
                 hungerWidth += textRenderer.lineHeight - 2;
@@ -210,10 +206,10 @@ public class FoodTooltipComponent implements ClientTooltipComponent {
 
             if (hasHalfHunger) {
                 //? if >1.21.5 {
-                /*context.blitSprite(RenderPipelines.GUI_TEXTURED, halfHunger, textRenderer.lineHeight, textRenderer.lineHeight, 0, 0, x + hungerWidth, lineY, textRenderer.lineHeight, textRenderer.lineHeight);
-                *///?} else if >1.21.1 {
-                context.blitSprite(RenderType::guiTextured, halfHunger, textRenderer.lineHeight, textRenderer.lineHeight, 0, 0, x + hungerWidth, lineY, textRenderer.lineHeight, textRenderer.lineHeight);
-                //?} else {
+                context.blitSprite(RenderPipelines.GUI_TEXTURED, halfHunger, textRenderer.lineHeight, textRenderer.lineHeight, 0, 0, x + hungerWidth, lineY, textRenderer.lineHeight, textRenderer.lineHeight);
+                //?} else if >1.21.1 {
+                /*context.blitSprite(RenderType::guiTextured, halfHunger, textRenderer.lineHeight, textRenderer.lineHeight, 0, 0, x + hungerWidth, lineY, textRenderer.lineHeight, textRenderer.lineHeight);
+                *///?} else {
                 /*context.blitSprite(halfHunger, x + hungerWidth, lineY, textRenderer.lineHeight, textRenderer.lineHeight);
                 *///?}
             }
@@ -222,7 +218,7 @@ public class FoodTooltipComponent implements ClientTooltipComponent {
         }
 
         if (config.foodAndDrinks.saturationTooltip) {
-            context.drawString(textRenderer, saturationText, x + 2, lineY, 0xff00ffff, true);
+            TooltipHelper.renderText(context, textRenderer, saturationText, x + 2, lineY, 0xff00ffff, true);
             lineY += textRenderer.lineHeight + 1;
         }
 
@@ -243,10 +239,10 @@ public class FoodTooltipComponent implements ClientTooltipComponent {
         *///?}
                 int amplifier = statusEffect.getAmplifier();
                 //? if >1.21.5 {
-                /*ResourceLocation effectTexture = Gui.getMobEffectSprite(statusEffect.getEffect());
-                *///?} else {
-                TextureAtlasSprite effectTexture = Minecraft.getInstance().getMobEffectTextures().get(statusEffect.getEffect());
-                //?}
+                Identifier effectTexture = Gui.getMobEffectSprite(statusEffect.getEffect());
+                //?} else {
+                /*TextureAtlasSprite effectTexture = Minecraft.getInstance().getMobEffectTextures().get(statusEffect.getEffect());
+                *///?}
 
                 MutableComponent effectText = amplifier > 0 ? Component.translatable("potion.withAmplifier", Component.translatable(statusEffect.getDescriptionId()), Component.translatable("potion.potency." + amplifier)) : Component.translatable(statusEffect.getDescriptionId());
 
@@ -267,15 +263,15 @@ public class FoodTooltipComponent implements ClientTooltipComponent {
 
                 if (config.foodAndDrinks.effectsTooltip == EnhancedTooltipsConfig.EffectsTooltipMode.WITH_ICONS) {
                     //? if >1.21.5 {
-                    /*context.blitSprite(RenderPipelines.GUI_TEXTURED, effectTexture, x, lineY - 1, textRenderer.lineHeight, textRenderer.lineHeight);
-                    *///?} else if >1.21.1 {
-                    context.blitSprite(RenderType::guiTextured, effectTexture, x, lineY - 1, textRenderer.lineHeight, textRenderer.lineHeight);
-                    //?} else {
+                    context.blitSprite(RenderPipelines.GUI_TEXTURED, effectTexture, x, lineY - 1, textRenderer.lineHeight, textRenderer.lineHeight);
+                    //?} else if >1.21.1 {
+                    /*context.blitSprite(RenderType::guiTextured, effectTexture, x, lineY - 1, textRenderer.lineHeight, textRenderer.lineHeight);
+                    *///?} else {
                     /*context.blit(x, lineY - 1, 0, textRenderer.lineHeight, textRenderer.lineHeight, effectTexture);
                     *///?}
-                    context.drawString(textRenderer, effectText, x + textRenderer.lineHeight + 3, lineY, c, true);
+                    TooltipHelper.renderText(context, textRenderer, effectText, x + textRenderer.lineHeight + 3, lineY, c, true);
                 } else {
-                    context.drawString(textRenderer, effectText, x, lineY, c, true);
+                    TooltipHelper.renderText(context, textRenderer, effectText, x, lineY, c, true);
                 }
 
                 lineY += textRenderer.lineHeight + 1;

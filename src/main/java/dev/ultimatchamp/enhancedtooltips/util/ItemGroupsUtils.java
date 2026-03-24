@@ -2,7 +2,7 @@ package dev.ultimatchamp.enhancedtooltips.util;
 
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.item.CreativeModeTab;
@@ -60,7 +60,7 @@ public class ItemGroupsUtils {
                 text = group.getDisplayName();
                 fillColor = VANILLA_GROUP_COLORS.get(groupKeyOpt.get());
             } else {
-                ResourceLocation groupId = BuiltInRegistries.CREATIVE_MODE_TAB.getKey(group);
+                Identifier groupId = BuiltInRegistries.CREATIVE_MODE_TAB.getKey(group);
                 if (groupId != null) {
                     String namespace = groupId.getNamespace();
                     text = Component.literal(BadgesUtils.getMods().getOrDefault(namespace, ""));

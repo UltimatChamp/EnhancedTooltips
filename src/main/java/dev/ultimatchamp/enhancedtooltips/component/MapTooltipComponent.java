@@ -3,16 +3,18 @@ package dev.ultimatchamp.enhancedtooltips.component;
 import dev.ultimatchamp.enhancedtooltips.util.MatricesUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
-import net.minecraft.client.renderer.LightTexture;
-import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.MapItem;
 import net.minecraft.world.level.saveddata.maps.MapId;
 import net.minecraft.world.level.saveddata.maps.MapItemSavedData;
 import org.jetbrains.annotations.NotNull;
+
+//? if <26.1 {
+/*import net.minecraft.client.renderer.LightTexture;
+import net.minecraft.client.renderer.MultiBufferSource;
+*///?}
 
 //? if >1.21.1 {
 import net.minecraft.client.renderer.MapRenderer;
@@ -21,8 +23,7 @@ import net.minecraft.client.renderer.state.MapRenderState;
 /*import net.minecraft.client.gui.MapRenderer;
 *///?}
 
-public record MapTooltipComponent(ItemStack stack) implements ClientTooltipComponent {
-
+public record MapTooltipComponent(ItemStack stack) implements EnhancedTooltipsTooltipComponent {
     @Override
     public int getHeight(/*? if >1.21.1 {*/@NotNull Font textRenderer/*?}*/) {
         return 128 + 2;
@@ -34,12 +35,8 @@ public record MapTooltipComponent(ItemStack stack) implements ClientTooltipCompo
     }
 
     @Override
-    //? if >1.21.1 {
-    public void renderImage(@NotNull Font textRenderer, int x, int y, int width, int height, @NotNull GuiGraphics context) {
-    //?} else {
-    /*public void renderImage(Font textRenderer, int x, int y, GuiGraphics context) {
-    *///?}
-        /*? if <1.21.6 {*/MultiBufferSource.BufferSource vertexConsumers = Minecraft.getInstance().renderBuffers().bufferSource();/*?}*/
+    public void drawImage(@NotNull Font textRenderer, int x, int y, int width, int height, @NotNull GuiGraphicsExtractor context) {
+        /*? if <1.21.6 {*//*MultiBufferSource.BufferSource vertexConsumers = Minecraft.getInstance().renderBuffers().bufferSource();*//*?}*/
 
         //? if >1.21.1 {
         MapRenderer mapRenderer = Minecraft.getInstance().getMapRenderer();
@@ -63,11 +60,13 @@ public record MapTooltipComponent(ItemStack stack) implements ClientTooltipCompo
         //?} else {
         /*mapRenderer.update(mapId, mapState);
         *///?}
-        //? if >1.21.5 {
+        //? if >1.21.11 {
+        context.map(renderState);
+        //?} else if >1.21.5 {
         /*context.submitMapRenderState(renderState);
         *///?} else {
-        mapRenderer.render(/*? if >1.21.1 {*/renderState, /*?}*/context.pose(), vertexConsumers, /*? if 1.21.1 {*//*mapId, mapState, *//*?}*/false, LightTexture.FULL_BRIGHT);
-        //?}
+        /*mapRenderer.render(/^? if >1.21.1 {^/renderState, /^?}^/context.pose(), vertexConsumers, /^? if 1.21.1 {^//^mapId, mapState, ^//^?}^/false, LightTexture.FULL_BRIGHT);
+        *///?}
         matrices.popMatrix();
     }
 }

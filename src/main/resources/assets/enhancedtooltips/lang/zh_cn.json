@@ -38,6 +38,8 @@
   "enhancedtooltips.config.armorTooltip.desc": "Shows a preview of the armor piece on an armor stand.",
   "enhancedtooltips.config.horseArmorTooltip": "Horse Armor Tooltip",
   "enhancedtooltips.config.horseArmorTooltip.desc": "Shows a preview of the horse armor on a horse.",
+  "enhancedtooltips.config.nautilusArmorTooltip": "Nautilus Armor Tooltip",
+  "enhancedtooltips.config.nautilusArmorTooltip.desc": "Shows a preview of the nautilus armor on a nautilus.",
   "enhancedtooltips.config.wolfArmorTooltip": "Wolf Armor Tooltip",
   "enhancedtooltips.config.wolfArmorTooltip.desc": "Shows a preview of the wolf armor on a wolf.",
   "enhancedtooltips.config.bucketTooltip": "Bucket Tooltip",

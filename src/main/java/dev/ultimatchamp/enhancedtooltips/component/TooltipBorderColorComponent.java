@@ -3,16 +3,16 @@ package dev.ultimatchamp.enhancedtooltips.component;
 import dev.ultimatchamp.enhancedtooltips.config.EnhancedTooltipsConfig;
 import dev.ultimatchamp.enhancedtooltips.tooltip.TooltipHelper;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 
 //? if >1.21.5 {
-/*import net.minecraft.client.renderer.RenderPipelines;
-*///?} else if >1.21.1 {
-import net.minecraft.client.renderer.RenderType;
-//?}
+import net.minecraft.client.renderer.RenderPipelines;
+//?} else if >1.21.1 {
+/*import net.minecraft.client.renderer.RenderType;
+*///?}
 
 public class TooltipBorderColorComponent extends TooltipBackgroundComponent {
     private final ItemStack stack;
@@ -24,24 +24,29 @@ public class TooltipBorderColorComponent extends TooltipBackgroundComponent {
     }
 
     @Override
-    protected void renderBorder(GuiGraphics context, int x, int y, int width, int height, int z, int page) {
+    protected void renderBorder(GuiGraphicsExtractor context, int x, int y, int width, int height, int z, int page) {
         if (config.border.borderColor == EnhancedTooltipsConfig.BorderColorMode.RARITY) {
-            ResourceLocation renderId = (stack.getRarity() == Rarity.COMMON) ? ResourceLocation.withDefaultNamespace("tooltip/frame") : ResourceLocation.withDefaultNamespace("tooltip/frame/" + stack.getRarity().name().toLowerCase());
-            ResourceLocation checkId = ResourceLocation.withDefaultNamespace("textures/gui/sprites/" + renderId.getPath() + ".png");
+            Identifier renderId = (stack.getRarity() == Rarity.COMMON) ? Identifier.withDefaultNamespace("tooltip/frame") : Identifier.withDefaultNamespace("tooltip/frame/" + stack.getRarity().name().toLowerCase());
+            Identifier checkId = Identifier.withDefaultNamespace("textures/gui/sprites/" + renderId.getPath() + ".png");
 
             if (Minecraft.getInstance().getResourceManager().getResource(checkId).isPresent()) {
+                //? if <1.21.6 {
+                /*context.pose().pushPose();
+                context.pose().translate(0, 0, z);
+                *///?}
                 context.blitSprite(
                         //? if >1.21.5 {
-                        /*RenderPipelines.GUI_TEXTURED,
-                        *///?} else if >1.21.1 {
-                        RenderType::guiTextured,
-                        //?}
+                        RenderPipelines.GUI_TEXTURED,
+                        //?} else if >1.21.1 {
+                        /*RenderType::guiTextured,
+                        *///?}
                         renderId,
                         x - 9,
                         y - 10,
                         width + 18,
                         height + 18
                 );
+                /*? if <1.21.6 {*//*context.pose().popPose();*//*?}*/
                 return;
             }
         }

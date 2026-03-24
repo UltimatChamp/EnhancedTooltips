@@ -2,10 +2,10 @@ package dev.ultimatchamp.enhancedtooltips.component;
 
 import com.google.common.collect.Lists;
 import com.mojang.datafixers.util.Pair;
+import dev.ultimatchamp.enhancedtooltips.tooltip.TooltipHelper;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
@@ -25,18 +25,18 @@ import java.util.function.Consumer;
 import org.jetbrains.annotations.NotNull;
 
 //? if >1.21.5 {
-/*import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.gui.Gui;
-import net.minecraft.resources.ResourceLocation;
-*///?} else {
-import net.minecraft.client.Minecraft;
+import net.minecraft.resources.Identifier;
+//?} else {
+/*import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-//?}
+*///?}
 
-public record PotionEffectTooltipComponent(ItemStack stack) implements ClientTooltipComponent {
+public record PotionEffectTooltipComponent(ItemStack stack) implements EnhancedTooltipsTooltipComponent {
     @Override
-    public int getHeight(/*? if >1.21.1 {*/@NotNull Font textRenderer/*?}*/) {
+    public int height() {
         int height = 0;
 
         var c = stack.get(DataComponents.POTION_CONTENTS);
@@ -90,11 +90,7 @@ public record PotionEffectTooltipComponent(ItemStack stack) implements ClientToo
     }
 
     @Override
-    //? if >1.21.1 {
-    public void renderImage(@NotNull Font textRenderer, int x, int y, int width, int height, @NotNull GuiGraphics context) {
-    //?} else {
-    /*public void renderImage(Font textRenderer, int x, int y, GuiGraphics context) {
-    *///?}
+    public void drawImage(@NotNull Font textRenderer, int x, int y, int width, int height, @NotNull GuiGraphicsExtractor context) {
         var c = stack.get(DataComponents.POTION_CONTENTS);
         if (c == null) return;
 
@@ -107,20 +103,21 @@ public record PotionEffectTooltipComponent(ItemStack stack) implements ClientToo
             lineY += textRenderer.lineHeight + 1;
 
             //? if >1.21.5 {
-            /*ResourceLocation effectTexture = Gui.getMobEffectSprite(effect.getEffect());
-            *///?} else {
-            TextureAtlasSprite effectTexture = Minecraft.getInstance().getMobEffectTextures().get(effect.getEffect());
-            //?}
+            Identifier effectTexture = Gui.getMobEffectSprite(effect.getEffect());
+            //?} else {
+            /*TextureAtlasSprite effectTexture = Minecraft.getInstance().getMobEffectTextures().get(effect.getEffect());
+            *///?}
 
             //? if >1.21.5 {
-            /*context.blitSprite(RenderPipelines.GUI_TEXTURED, effectTexture, x, lineY - 1, textRenderer.lineHeight, textRenderer.lineHeight);
-            *///?} else if >1.21.1 {
-            context.blitSprite(RenderType::guiTextured, effectTexture, x, lineY - 1, textRenderer.lineHeight, textRenderer.lineHeight);
-            //?} else {
+            context.blitSprite(RenderPipelines.GUI_TEXTURED, effectTexture, x, lineY - 1, textRenderer.lineHeight, textRenderer.lineHeight);
+            //?} else if >1.21.1 {
+            /*context.blitSprite(RenderType::guiTextured, effectTexture, x, lineY - 1, textRenderer.lineHeight, textRenderer.lineHeight);
+            *///?} else {
             /*context.blit(x, lineY - 1, 0, textRenderer.lineHeight, textRenderer.lineHeight, effectTexture);
             *///?}
 
-            context.drawString(
+            TooltipHelper.renderText(
+                    context,
                     textRenderer,
                     getEffectText(effect, list::add),
                     x + textRenderer.lineHeight + 3,
@@ -132,7 +129,8 @@ public record PotionEffectTooltipComponent(ItemStack stack) implements ClientToo
 
         if (isEmpty) {
             lineY += textRenderer.lineHeight + 1;
-            context.drawString(
+            TooltipHelper.renderText(
+                    context,
                     textRenderer,
                     Component.translatable("effect.none").withStyle(ChatFormatting.GRAY),
                     x,
@@ -144,7 +142,8 @@ public record PotionEffectTooltipComponent(ItemStack stack) implements ClientToo
 
         if (!list.isEmpty()) {
             lineY += textRenderer.lineHeight + 1;
-            context.drawString(
+            TooltipHelper.renderText(
+                    context,
                     textRenderer,
                     Component.translatable("potion.whenDrank").withStyle(ChatFormatting.DARK_PURPLE),
                     x,
@@ -160,7 +159,8 @@ public record PotionEffectTooltipComponent(ItemStack stack) implements ClientToo
             Component modifierText = getModifierText(pair);
             if (modifierText == null) continue;
 
-            context.drawString(
+            TooltipHelper.renderText(
+                    context,
                     textRenderer,
                     modifierText,
                     x + 3,

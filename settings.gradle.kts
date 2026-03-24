@@ -1,5 +1,6 @@
 pluginManagement {
     repositories {
+        mavenCentral()
         gradlePluginPortal()
         maven("https://maven.architectury.dev")
         maven("https://maven.fabricmc.net")
@@ -15,7 +16,11 @@ plugins {
 stonecutter {
     create(rootProject) {
         fun register(version: String, vararg loaders: String) = loaders
-            .forEach { version("$version-$it", version).buildscript = "build.$it.gradle.kts" }
+            .forEach {
+                if (it == "fabric" && stonecutter.eval(version, ">1.21.11"))
+                    version("$version-$it", version).buildscript = "build.fabric_noremap.gradle.kts"
+                else version("$version-$it", version).buildscript = "build.$it.gradle.kts"
+            }
 
         register("1.21.1", "fabric", "neo")
         register("1.21.3", "fabric", "neo")
@@ -24,8 +29,9 @@ stonecutter {
         register("1.21.8", "fabric", "neo")
         register("1.21.10", "fabric", "neo")
         register("1.21.11", "fabric", "neo")
+        register("26.1", "fabric")
 
-        vcsVersion = "1.21.11-fabric"
+        vcsVersion = "26.1-fabric"
     }
 }
 

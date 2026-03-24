@@ -3,6 +3,8 @@ package dev.ultimatchamp.enhancedtooltips.tooltip;
 import dev.ultimatchamp.enhancedtooltips.EnhancedTooltips;
 import dev.ultimatchamp.enhancedtooltips.config.EnhancedTooltipsConfig;
 import dev.ultimatchamp.enhancedtooltips.util.TranslationStringColorParser;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.util.CommonColors;
@@ -10,6 +12,16 @@ import net.minecraft.world.item.ItemStack;
 import java.util.Optional;
 
 public class TooltipHelper {
+    public static void renderText(final GuiGraphicsExtractor graphics, final Font font, final Component str, final int x, final int y, final int color, final boolean dropShadow) {
+        //? if >1.21.11 {
+        graphics.text(
+        //?} else {
+        /*graphics.drawString(
+        *///?}
+                font, str, x, y, color, dropShadow
+        );
+    }
+
     public static Component getRarityName(ItemStack stack) {
         String key = EnhancedTooltips.MOD_ID + ".rarity." + stack.getRarity().name().toLowerCase();
         return Component.translatable(key)
@@ -20,7 +32,7 @@ public class TooltipHelper {
         //? if >1.21.3 {
         return stack.getStyledHoverName();
         //?} else {
-        /*return Component.empty().append(stack.getDisplayName())
+        /*return Component.empty().append(stack.getHoverName())
                 .withStyle(stack.getRarity().color());
         *///?}
     }

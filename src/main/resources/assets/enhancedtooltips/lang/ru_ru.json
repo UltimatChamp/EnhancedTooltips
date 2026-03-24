@@ -38,6 +38,8 @@
   "enhancedtooltips.config.armorTooltip.desc": "Показывает броню на стойке для брони в подсказке.",
   "enhancedtooltips.config.horseArmorTooltip": "Отображение брони для лошадей",
   "enhancedtooltips.config.horseArmorTooltip.desc": "Показывает силуэт лошади с бронёй в подсказке.",
+  "enhancedtooltips.config.nautilusArmorTooltip": "Nautilus Armor Tooltip",
+  "enhancedtooltips.config.nautilusArmorTooltip.desc": "Shows a preview of the nautilus armor on a nautilus.",
   "enhancedtooltips.config.wolfArmorTooltip": "Отображение брони для волков",
   "enhancedtooltips.config.wolfArmorTooltip.desc": "Показывает силуэт волка с бронёй в подсказке.",
   "enhancedtooltips.config.bucketTooltip": "Отображение сущности в ведре",

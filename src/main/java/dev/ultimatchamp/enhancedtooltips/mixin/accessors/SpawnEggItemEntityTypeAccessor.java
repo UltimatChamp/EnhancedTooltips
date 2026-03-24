@@ -9,7 +9,7 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 @Mixin(SpawnEggItem.class)
 public interface SpawnEggItemEntityTypeAccessor {
     //? if <1.21.9 {
-    @Accessor("defaultType")
+    /*@Accessor("defaultType")
     EntityType<? extends Mob> get();
-    //?}
+    *///?}
 }

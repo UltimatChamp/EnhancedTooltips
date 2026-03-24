@@ -39,9 +39,9 @@ public class EnhancedTooltipsConfig {
         public boolean removeAllSpacing = false;
 
         //? if <1.21.6 {
-        @Comment("Adjusts the size of tooltips.\nA scale of 100% displays the tooltip at its default size.\n(default: 1.0)")
+        /*@Comment("Adjusts the size of tooltips.\nA scale of 100% displays the tooltip at its default size.\n(default: 1.0)")
         public float scaleFactor = 1f;
-        //?}
+        *///?}
     }
 
     public static class PopUpAnimationConfig {
@@ -184,6 +184,11 @@ public class EnhancedTooltipsConfig {
 
         @Comment("Shows a preview of the horse armor on a horse.\n(default: true)")
         public boolean horseArmorTooltip = true;
+
+        //? if >1.21.10 {
+        @Comment("Shows a preview of the nautilus armor on a nautilus.\n(default: true)")
+        public boolean nautilusArmorTooltip = true;
+        //?}
 
         @Comment("Shows a preview of the wolf armor on a wolf.\n(default: true)")
         public boolean wolfArmorTooltip = true;

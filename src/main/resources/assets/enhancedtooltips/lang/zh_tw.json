@@ -38,6 +38,8 @@
   "enhancedtooltips.config.armorTooltip.desc": "在提示中以盔甲座預覽該盔甲。",
   "enhancedtooltips.config.horseArmorTooltip": "馬鎧提示",
   "enhancedtooltips.config.horseArmorTooltip.desc": "在提示中以馬預覽該馬鎧。",
+  "enhancedtooltips.config.nautilusArmorTooltip": "Nautilus Armor Tooltip",
+  "enhancedtooltips.config.nautilusArmorTooltip.desc": "Shows a preview of the nautilus armor on a nautilus.",
   "enhancedtooltips.config.wolfArmorTooltip": "狼鎧提示",
   "enhancedtooltips.config.wolfArmorTooltip.desc": "在提示中以狼預覽該狼鎧。",
   "enhancedtooltips.config.bucketTooltip": "桶子提示",

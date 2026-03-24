@@ -1,16 +1,16 @@
 package dev.ultimatchamp.enhancedtooltips.component;
 
 import dev.ultimatchamp.enhancedtooltips.config.EnhancedTooltipsConfig;
+import dev.ultimatchamp.enhancedtooltips.tooltip.TooltipHelper;
 import dev.ultimatchamp.enhancedtooltips.util.BadgesUtils;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
-public class DurabilityTooltipComponent implements ClientTooltipComponent {
+public class DurabilityTooltipComponent implements EnhancedTooltipsTooltipComponent {
     private static final int SPACING = 4;
     private static final int WIDTH = 80;
     private final ItemStack stack;
@@ -44,7 +44,7 @@ public class DurabilityTooltipComponent implements ClientTooltipComponent {
     }
 
     @Override
-    public int getHeight(/*? if >1.21.1 {*/@NotNull Font textRenderer/*?}*/) {
+    public int height() {
         if (isDurabilityDisabled()) return 0;
         return (config.durability.durabilityBar ? 18 : 17) - (config.general.removeAllSpacing ? (config.durability.durabilityBar ? SPACING : SPACING + 2) : 0);
     }
@@ -61,11 +61,7 @@ public class DurabilityTooltipComponent implements ClientTooltipComponent {
     }
 
     @Override
-    //? if >1.21.1 {
-    public void renderImage(@NotNull Font textRenderer, int x, int y, int width, int height, @NotNull GuiGraphics context) {
-    //?} else {
-    /*public void renderImage(Font textRenderer, int x, int y, GuiGraphics context) {
-    *///?}
+    public void drawImage(@NotNull Font textRenderer, int x, int y, int width, int height, @NotNull GuiGraphicsExtractor context) {
         if (isDurabilityDisabled()) return;
 
         if (!config.general.removeAllSpacing)
@@ -75,7 +71,7 @@ public class DurabilityTooltipComponent implements ClientTooltipComponent {
         int textHeight = textRenderer.lineHeight;
         int textY = config.durability.durabilityBar ? y - textHeight + SPACING * 2 + 2 : y;
 
-        context.drawString(textRenderer, Component.translatable("enhancedtooltips.tooltip.durability"), x, textY, -4539718, true);
+        TooltipHelper.renderText(context, textRenderer, Component.translatable("enhancedtooltips.tooltip.durability"), x, textY, -4539718, true);
 
         x += textRenderer.width(Component.translatable("enhancedtooltips.tooltip.durability")) + SPACING;
         int remaining = stack.getMaxDamage() - stack.getDamageValue();
@@ -92,7 +88,7 @@ public class DurabilityTooltipComponent implements ClientTooltipComponent {
         Component durabilityText = getDurabilityText();
         if  (!durabilityText.equals(Component.empty())) {
             int textX = config.durability.durabilityBar ? x + ((WIDTH - textRenderer.width(durabilityText)) / 2) : x - SPACING;
-            context.drawString(textRenderer, durabilityText, textX, textY, 0xFFFFFFFF, true);
+            TooltipHelper.renderText(context, textRenderer, durabilityText, textX, textY, 0xFFFFFFFF, true);
         }
 
         if (config.durability.durabilityBar)

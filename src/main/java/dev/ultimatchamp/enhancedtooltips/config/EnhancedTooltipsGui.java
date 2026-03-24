@@ -59,7 +59,7 @@ public class EnhancedTooltipsGui {
                                         .controller(TickBoxControllerBuilder::create)
                                         .build())
                                 //? if <1.21.6 {
-                                .option(Option.<Float>createBuilder()
+                                /*.option(Option.<Float>createBuilder()
                                         .name(Component.translatable("enhancedtooltips.config.scaleFactor"))
                                         .description(OptionDescription.createBuilder()
                                                 .text(Component.translatable("enhancedtooltips.config.scaleFactor.desc"))
@@ -69,19 +69,19 @@ public class EnhancedTooltipsGui {
                                                 () -> config.general.scaleFactor,
                                                 (value) -> config.general.scaleFactor = value
                                         )
-                                        .customController(opt -> new FloatSliderController(opt, 0.25f, 2f, 0.05f, value -> Component.literal(String.format("%." + 0 /* decimal places */ + "f%%", value * 100.0F))))
+                                        .customController(opt -> new FloatSliderController(opt, 0.25f, 2f, 0.05f, value -> Component.literal(String.format("%." + 0 /^ decimal places ^/ + "f%%", value * 100.0F))))
                                         .build())
-                                //?}
+                                *///?}
                                 .build())
                         .group(OptionGroup.createBuilder()
                                 .name(Component.translatable("enhancedtooltips.config.popUpAnimation"))
                                 .option(Option.<Boolean>createBuilder()
                                         .name(Component.translatable(
                                                 //? if >1.21.8 {
-                                                /*"manageServer.resourcePack.enabled"
-                                                *///?} else {
-                                                "addServer.resourcePack.enabled"
-                                                //?}
+                                                "manageServer.resourcePack.enabled"
+                                                //?} else {
+                                                /*"addServer.resourcePack.enabled"
+                                                *///?}
                                         ))
                                         .description(OptionDescription.createBuilder()
                                                 .text(Component.translatable("enhancedtooltips.config.popUpAnimation.desc"))
@@ -123,10 +123,10 @@ public class EnhancedTooltipsGui {
                                 .option(Option.<Boolean>createBuilder()
                                         .name(Component.translatable(
                                                 //? if >1.21.8 {
-                                                /*"manageServer.resourcePack.enabled"
-                                                *///?} else {
-                                                "addServer.resourcePack.enabled"
-                                                //?}
+                                                "manageServer.resourcePack.enabled"
+                                                //?} else {
+                                                /*"addServer.resourcePack.enabled"
+                                                *///?}
                                         ))
                                         .description(OptionDescription.createBuilder()
                                                 .text(Component.translatable("enhancedtooltips.config.itemPreviewAnimation.desc"))
@@ -333,6 +333,20 @@ public class EnhancedTooltipsGui {
                                         )
                                         .controller(TickBoxControllerBuilder::create)
                                         .build())
+                                //? if >1.21.10 {
+                                .option(Option.<Boolean>createBuilder()
+                                        .name(Component.translatable("enhancedtooltips.config.nautilusArmorTooltip"))
+                                        .description(OptionDescription.createBuilder()
+                                                .text(Component.translatable("enhancedtooltips.config.nautilusArmorTooltip.desc"))
+                                                .build())
+                                        .binding(
+                                                true,
+                                                () -> config.mobs.nautilusArmorTooltip,
+                                                (value) -> config.mobs.nautilusArmorTooltip = value
+                                        )
+                                        .controller(TickBoxControllerBuilder::create)
+                                        .build())
+                                //?}
                                 .option(Option.<Boolean>createBuilder()
                                         .name(Component.translatable("enhancedtooltips.config.wolfArmorTooltip"))
                                         .description(OptionDescription.createBuilder()

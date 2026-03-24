@@ -1,7 +1,8 @@
 plugins {
     id("dev.kikugie.stonecutter")
-    id("me.modmuss50.mod-publish-plugin") version "1.1.0" apply false
-    id("dev.kikugie.fletching-table") version "0.1.0-alpha.22" apply false
+    id("net.fabricmc.fabric-loom") version "1.15-SNAPSHOT" apply false
+    id("net.fabricmc.fabric-loom-remap") version "1.15-SNAPSHOT" apply false
+    id("net.neoforged.moddev") version "2.0.140" apply false
 }
 
 stonecutter parameters {
@@ -11,4 +12,4 @@ stonecutter parameters {
     constants.match(loader, "fabric", "neoforge")
 }
 
-stonecutter active "1.21.5-neo"
+stonecutter active "26.1-fabric"

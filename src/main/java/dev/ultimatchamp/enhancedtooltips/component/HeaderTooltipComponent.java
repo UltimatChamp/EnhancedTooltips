@@ -4,19 +4,18 @@ import dev.ultimatchamp.enhancedtooltips.tooltip.TooltipHelper;
 import dev.ultimatchamp.enhancedtooltips.config.EnhancedTooltipsConfig;
 import dev.ultimatchamp.enhancedtooltips.util.*;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
 //? if <1.21.6 {
-import net.minecraft.client.renderer.MultiBufferSource;
+/*import net.minecraft.client.renderer.MultiBufferSource;
 import org.joml.Matrix4f;
-//?}
+*///?}
 
-public class HeaderTooltipComponent implements ClientTooltipComponent {
+public class HeaderTooltipComponent implements EnhancedTooltipsTooltipComponent {
     private static final int TEXTURE_SIZE = 16;
     private static final int SPACING = 4;
     private final ItemStack stack;
@@ -32,7 +31,7 @@ public class HeaderTooltipComponent implements ClientTooltipComponent {
     }
 
     @Override
-    public int getHeight(/*? if >1.21.1 {*/@NotNull Font textRenderer/*?}*/) {
+    public int height() {
         return getTitleOffset();
     }
 
@@ -61,10 +60,10 @@ public class HeaderTooltipComponent implements ClientTooltipComponent {
 
     @Override
     //? if >1.21.5 {
-    /*public void renderText(@NotNull GuiGraphics context, @NotNull Font textRenderer, int x, int y) {
-    *///?} else {
-    public void renderText(Font textRenderer, int x, int y, Matrix4f matrix, MultiBufferSource.BufferSource vertexConsumers) {
-    //?}
+    public void drawText(@NotNull GuiGraphicsExtractor context, @NotNull Font textRenderer, int x, int y) {
+    //?} else {
+    /*public void renderText(Font textRenderer, int x, int y, Matrix4f matrix, MultiBufferSource.BufferSource vertexConsumers) {
+    *///?}
         int startDrawX = x + getTitleOffset();
         int startDrawY = y;
 
@@ -74,27 +73,23 @@ public class HeaderTooltipComponent implements ClientTooltipComponent {
             startDrawY += (int) ((getTitleOffset() - textRenderer.lineHeight) / 2f);
 
         //? if >1.21.5 {
-        /*context.drawString(textRenderer, this.nameText, startDrawX, startDrawY, -1, true);
-        *///?} else {
-        textRenderer.drawInBatch(this.nameText, startDrawX, startDrawY, -1, true, matrix, vertexConsumers, Font.DisplayMode.NORMAL, 0, 0xF000F0);
-        //?}
+        TooltipHelper.renderText(context, textRenderer, this.nameText, startDrawX, startDrawY, -1, true);
+        //?} else {
+        /*textRenderer.drawInBatch(this.nameText, startDrawX, startDrawY, -1, true, matrix, vertexConsumers, Font.DisplayMode.NORMAL, 0, 0xF000F0);
+        *///?}
 
         if (config.general.rarityTooltip) {
             startDrawY += textRenderer.lineHeight + SPACING;
             //? if >1.21.5 {
-            /*context.drawString(textRenderer, this.rarityName, startDrawX, startDrawY, -1, true);
-            *///?} else {
-            textRenderer.drawInBatch(this.rarityName, startDrawX, startDrawY, -1, true, matrix, vertexConsumers, Font.DisplayMode.NORMAL, 0, 0xF000F0);
-            //?}
+            TooltipHelper.renderText(context, textRenderer, this.rarityName, startDrawX, startDrawY, -1, true);
+            //?} else {
+            /*textRenderer.drawInBatch(this.rarityName, startDrawX, startDrawY, -1, true, matrix, vertexConsumers, Font.DisplayMode.NORMAL, 0, 0xF000F0);
+            *///?}
         }
     }
 
     @Override
-    //? if >1.21.1 {
-    public void renderImage(@NotNull Font textRenderer, int x, int y, int width, int height, @NotNull GuiGraphics context) {
-    //?} else {
-    /*public void renderImage(Font textRenderer, int x, int y, GuiGraphics context) {
-    *///?}
+    public void drawImage(@NotNull Font textRenderer, int x, int y, int width, int height, @NotNull GuiGraphicsExtractor context) {
         int startDrawX = x + (getTitleOffset() - TEXTURE_SIZE) / 2 - 1;
         int startDrawY = y + (getTitleOffset() - TEXTURE_SIZE) / 2 - 1;
 
@@ -103,10 +98,14 @@ public class HeaderTooltipComponent implements ClientTooltipComponent {
             int sec = (int) (config.itemPreviewAnimation.time * 1000);
             float time = (float) (System.currentTimeMillis() % sec) / sec;
 
-            bounce = (float) Math.sin(time * Math.PI * 2) * (config.itemPreviewAnimation.magnitude * /*? if >1.21.5 {*//*1*//*?} else {*/config.general.scaleFactor/*?}*/);
+            bounce = (float) Math.sin(time * Math.PI * 2) * (config.itemPreviewAnimation.magnitude * /*? if >1.21.5 {*/1/*?} else {*//*config.general.scaleFactor*//*?}*/);
         }
 
-        context.renderItem(this.stack, startDrawX, (int) (startDrawY - bounce));
+        //? if >1.21.11 {
+        context.item(this.stack, startDrawX, (int) (startDrawY - bounce));
+        //?} else {
+        /*context.renderItem(this.stack, startDrawX, (int) (startDrawY - bounce));
+        *///?}
 
         if (!config.general.itemBadges) return;
         if (!config.general.rarityTooltip) y += textRenderer.lineHeight + SPACING;
@@ -115,7 +114,7 @@ public class HeaderTooltipComponent implements ClientTooltipComponent {
         if (!badgeText.getA().toFlatList().isEmpty()) drawBadge(textRenderer, badgeText.getA(), x, y, context, badgeText.getB());
     }
 
-    private void drawBadge(Font textRenderer, Component text, int x, int y, GuiGraphics context, int fillColor) {
+    private void drawBadge(Font textRenderer, Component text, int x, int y, GuiGraphicsExtractor context, int fillColor) {
         int textWidth = textRenderer.width(text);
         int textHeight = textRenderer.lineHeight;
 
@@ -130,7 +129,8 @@ public class HeaderTooltipComponent implements ClientTooltipComponent {
                 BadgesUtils.darkenColor(fillColor, 0.9f)
         );
 
-        context.drawString(
+        TooltipHelper.renderText(
+                context,
                 textRenderer,
                 text,
                 textX,

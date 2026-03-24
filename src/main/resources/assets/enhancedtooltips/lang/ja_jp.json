@@ -38,6 +38,8 @@
   "enhancedtooltips.config.armorTooltip.desc": "防具立て上の防具のプレビューを表示します。",
   "enhancedtooltips.config.horseArmorTooltip": "馬鎧のツールチップ",
   "enhancedtooltips.config.horseArmorTooltip.desc": "ウマに馬鎧を装着した状態のプレビューを表示します。",
+  "enhancedtooltips.config.nautilusArmorTooltip": "Nautilus Armor Tooltip",
+  "enhancedtooltips.config.nautilusArmorTooltip.desc": "Shows a preview of the nautilus armor on a nautilus.",
   "enhancedtooltips.config.wolfArmorTooltip": "オオカミの鎧のツールチップ",
   "enhancedtooltips.config.wolfArmorTooltip.desc": "オオカミにオオカミの鎧を装着した状態のプレビューを表示します。",
   "enhancedtooltips.config.bucketTooltip": "バケツのツールチップ",

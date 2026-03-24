@@ -38,11 +38,14 @@ import org.jetbrains.annotations.NotNull;
 import java.util.*;
 
 //? if fabric {
-/*import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroupEntries;
-import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
-*///?} else {
-import net.neoforged.neoforge.event.EventHooks;
-//?}
+//? if >1.21.11 {
+import net.fabricmc.fabric.api.creativetab.v1.*;
+//?} else {
+/*import net.fabricmc.fabric.api.itemgroup.v1.*;
+*///?}
+//?} else {
+/*import net.neoforged.neoforge.event.EventHooks;
+*///?}
 
 public class CreativeModeTabCollector {
     public static Map<CreativeModeTab, Collection<ItemStack>> collectTabs(@NotNull Level world) {
@@ -59,15 +62,15 @@ public class CreativeModeTabCollector {
                             .orElseThrow(() -> new IllegalStateException("Unregistered creative tab: " + group));
 
                     //? if fabric {
-                    /*((CreativeModeTabAccessor) group).getDisplayItemsGenerator().accept(parameters, builder);
+                    ((CreativeModeTabAccessor) group).getDisplayItemsGenerator().accept(parameters, builder);
                     map.put(group, postFabricEvents(group, parameters, resourceKey, builder.tabContents));
-                    *///?} else {
-                    EventHooks.onCreativeModeTabBuildContents(group, resourceKey, ((CreativeModeTabAccessor) group).getDisplayItemsGenerator(), parameters, (stack, visibility) -> {
+                    //?} else {
+                    /*EventHooks.onCreativeModeTabBuildContents(group, resourceKey, ((CreativeModeTabAccessor) group).getDisplayItemsGenerator(), parameters, (stack, visibility) -> {
                         if (visibility == CreativeModeTab.TabVisibility.SEARCH_TAB_ONLY) return;
                         builder.accept(stack, visibility);
                     });
                     map.put(group, builder.tabContents);
-                    //?}
+                    *///?}
                 } catch (Throwable throwable) {
                     EnhancedTooltips.LOGGER.error("Failed to collect creative tab: {}", group, throwable);
                 }
@@ -78,18 +81,29 @@ public class CreativeModeTabCollector {
     }
 
     //? if fabric {
-    /*@SuppressWarnings("UnstableApiUsage")
+    @SuppressWarnings("UnstableApiUsage")
     private static Collection<ItemStack> postFabricEvents(CreativeModeTab group, CreativeModeTab.ItemDisplayParameters context, ResourceKey<@NotNull CreativeModeTab> resourceKey, Collection<ItemStack> tabContents) {
         try {
             // Sorry!
-            FabricItemGroupEntries entries = new FabricItemGroupEntries(context, new LinkedList<>(tabContents), new LinkedList<>());
-            ItemGroupEvents.modifyEntriesEvent(resourceKey).invoker().modifyEntries(entries);
+            var entries =
+                    //? if >1.21.11 {
+                    new FabricCreativeModeTabOutput(
+                    //?} else {
+                    /*new FabricItemGroupEntries(
+                    *///?}
+                            context, new LinkedList<>(tabContents), new LinkedList<>());
+            //? if >1.21.11 {
+            CreativeModeTabEvents.modifyOutputEvent(resourceKey).invoker().modifyOutput(entries);
+            CreativeModeTabEvents.MODIFY_OUTPUT_ALL.invoker().modifyOutput(group, entries);
+            //?} else {
+            /*ItemGroupEvents.modifyEntriesEvent(resourceKey).invoker().modifyEntries(entries);
             ItemGroupEvents.MODIFY_ENTRIES_ALL.invoker().modifyEntries(group, entries);
+            *///?}
             return entries.getDisplayStacks();
         } catch (Throwable throwable) {
             EnhancedTooltips.LOGGER.error("Failed to collect fabric's creative group: {}", group, throwable);
             return tabContents;
         }
     }
-    *///?}
+    //?}
 }

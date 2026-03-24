@@ -1,6 +1,6 @@
 package dev.ultimatchamp.enhancedtooltips.util;
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Tuple;
@@ -13,12 +13,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 //? if fabric {
-/*import net.fabricmc.loader.api.FabricLoader;
+import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
-*///?} else if neoforge {
-import net.neoforged.fml.ModList;
+//?} else if neoforge {
+/*import net.neoforged.fml.ModList;
 import net.neoforged.fml.ModContainer;
-//?}
+*///?}
 
 public class BadgesUtils {
     private static Map<String, String> mods = new HashMap<>();
@@ -49,16 +49,16 @@ public class BadgesUtils {
         if (!mods.isEmpty()) return mods;
 
         //? if fabric {
-        /*for (ModContainer modContainer : FabricLoader.getInstance().getAllMods()) {
+        for (ModContainer modContainer : FabricLoader.getInstance().getAllMods()) {
             if (modContainer.getMetadata().getId().equals("minecraft")) continue;
             mods.put(modContainer.getMetadata().getId(), modContainer.getMetadata().getName());
         }
-        *///?} else {
-        for (ModContainer modContainer : ModList.get().getSortedMods()) {
+        //?} else {
+        /*for (ModContainer modContainer : ModList.get().getSortedMods()) {
             if (modContainer.getModId().equals("minecraft")) continue;
             mods.put(modContainer.getNamespace(), modContainer.getModInfo().getDisplayName());
         }
-        //?}
+        *///?}
 
         return mods;
     }
@@ -87,18 +87,18 @@ public class BadgesUtils {
         return (a << 24) | (r << 16) | (g << 8) | b;
     }
 
-    public static void drawFrame(GuiGraphics context, int x, int y, int width, int height, int z, int color) {
+    public static void drawFrame(GuiGraphicsExtractor context, int x, int y, int width, int height, int z, int color) {
         renderVerticalLine(context, x, y, height - 2, z, color);
         renderVerticalLine(context, x + width - 1, y, height - 2, z, color);
         renderHorizontalLine(context, x + 1, y - 1, width - 2, z, color);
         renderHorizontalLine(context, x + 1, y - 1 + height - 1, width - 2, z, color);
     }
 
-    private static void renderVerticalLine(GuiGraphics context, int x, int y, int height, int z, int color) {
+    private static void renderVerticalLine(GuiGraphicsExtractor context, int x, int y, int height, int z, int color) {
         context.fill(x, y, x + 1, y + height, color);
     }
 
-    private static void renderHorizontalLine(GuiGraphics context, int x, int y, int width, int z, int color) {
+    private static void renderHorizontalLine(GuiGraphicsExtractor context, int x, int y, int width, int z, int color) {
         context.fill(x, y, x + width, y + 1, color);
     }
 }

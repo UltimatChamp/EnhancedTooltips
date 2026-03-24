@@ -38,6 +38,8 @@
   "enhancedtooltips.config.armorTooltip.desc": "Zırh parçasının zırh standında önizlemesini gösterir.",
   "enhancedtooltips.config.horseArmorTooltip": "At Zırhı Alet İpucu",
   "enhancedtooltips.config.horseArmorTooltip.desc": "At zırhının at üstünde önizlemesini gösterir.",
+  "enhancedtooltips.config.nautilusArmorTooltip": "Nautilus Armor Tooltip",
+  "enhancedtooltips.config.nautilusArmorTooltip.desc": "Shows a preview of the nautilus armor on a nautilus.",
   "enhancedtooltips.config.wolfArmorTooltip": "Kurt Zırhı Alet İpucu",
   "enhancedtooltips.config.wolfArmorTooltip.desc": "Kurt zırhının kurt üstünde önizlemesini gösterir.",
   "enhancedtooltips.config.bucketTooltip": "Kova Alet İpucu",

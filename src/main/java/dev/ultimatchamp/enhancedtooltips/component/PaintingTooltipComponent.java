@@ -2,39 +2,38 @@ package dev.ultimatchamp.enhancedtooltips.component;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 
 import org.jetbrains.annotations.NotNull;
 
 //? if >1.21.5 {
-/*import net.minecraft.client.renderer.RenderPipelines;
-*///?} else if <1.21.5 {
+import net.minecraft.client.renderer.RenderPipelines;
+//?} else if <1.21.5 {
 /*import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.decoration.Painting;
 *///?}
 //? if <1.21.6 {
-import net.minecraft.client.renderer.RenderType;
-//?}
+/*import net.minecraft.client.renderer.RenderType;
+*///?}
 
 //? if >1.21.1 && <1.21.5 {
 /*import net.minecraft.world.entity.EntitySpawnReason;
 *///?}
 
 //? if >1.21.10 {
-/*import net.minecraft.world.entity.decoration.painting.PaintingVariant;
-*///?} else {
-import net.minecraft.world.entity.decoration.PaintingVariant;
-//?}
+import net.minecraft.world.entity.decoration.painting.PaintingVariant;
+//?} else {
+/*import net.minecraft.world.entity.decoration.PaintingVariant;
+*///?}
 
-public class PaintingTooltipComponent implements ClientTooltipComponent {
+public class PaintingTooltipComponent implements EnhancedTooltipsTooltipComponent {
     private final PaintingVariant variant;
     private final int width;
     private final int height;
@@ -64,7 +63,7 @@ public class PaintingTooltipComponent implements ClientTooltipComponent {
     }
 
     @Override
-    public int getHeight(/*? if >1.21.1 {*/@NotNull Font textRenderer/*?}*/) {
+    public int height() {
         return this.height;
     }
 
@@ -74,26 +73,22 @@ public class PaintingTooltipComponent implements ClientTooltipComponent {
     }
 
     @Override
-    //? if >1.21.1 {
-    public void renderImage(@NotNull Font textRenderer, int x, int y, int width, int height, @NotNull GuiGraphics context) {
-    //?} else {
-    /*public void renderImage(Font textRenderer, int x, int y, GuiGraphics context) {
-    *///?}
+    public void drawImage(@NotNull Font textRenderer, int x, int y, int width, int height, @NotNull GuiGraphicsExtractor context) {
         if (this.variant == null) return;
         //? if >1.21.8 {
-        /*TextureAtlas paintingAtlas = (TextureAtlas) Minecraft.getInstance()
+        TextureAtlas paintingAtlas = (TextureAtlas) Minecraft.getInstance()
                 .getTextureManager()
-                .getTexture(ResourceLocation.withDefaultNamespace("textures/atlas/paintings.png"));
+                .getTexture(Identifier.withDefaultNamespace("textures/atlas/paintings.png"));
         TextureAtlasSprite sprite = paintingAtlas.getSprite(variant.assetId());
-        *///?} else {
-        var paintingManager = Minecraft.getInstance().getPaintingTextures();
-        TextureAtlasSprite sprite = paintingManager.get(this.variant);
-        //?}
-        //? if >1.21.5 {
-        /*context.blitSprite(RenderPipelines.GUI_TEXTURED, sprite, x, y, this.width, this.height);
-        *///?} else if >1.21.1 {
-        context.blitSprite(RenderType::guiTextured, sprite, x, y, this.width, this.height);
         //?} else {
+        /*var paintingManager = Minecraft.getInstance().getPaintingTextures();
+        TextureAtlasSprite sprite = paintingManager.get(this.variant);
+        *///?}
+        //? if >1.21.5 {
+        context.blitSprite(RenderPipelines.GUI_TEXTURED, sprite, x, y, this.width, this.height);
+        //?} else if >1.21.1 {
+        /*context.blitSprite(RenderType::guiTextured, sprite, x, y, this.width, this.height);
+        *///?} else {
         /*context.blit(x, y, 0, this.width, this.height, sprite);
         *///?}
     }

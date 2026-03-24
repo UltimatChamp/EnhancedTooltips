@@ -7,6 +7,6 @@ public class EMFCompat {
     public static final Component KEY = Component.literal("enhancedtooltips entity do not touch");
 
     public static void registerVanillaModelCondition() {
-        EMFAnimationApi.registerVanillaModelCondition((entity) -> entity.etf$getCustomName().contains(KEY));
+        /*? if <26.1 {*//*EMFAnimationApi.registerVanillaModelCondition((entity) -> entity.etf$getCustomName().contains(KEY));*//*?}*/
     }
 }

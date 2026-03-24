@@ -7,7 +7,7 @@ import dev.ultimatchamp.enhancedtooltips.tooltip.TooltipHelper;
 import dev.ultimatchamp.enhancedtooltips.tooltip.TooltipItemStackCache;
 import dev.ultimatchamp.enhancedtooltips.util.EnhancedTooltipsTextVisitor;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipPositioner;
 import net.minecraft.network.chat.Component;
@@ -21,24 +21,32 @@ import java.util.ArrayList;
 import java.util.List;
 
 //? if >1.21.1 {
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.Nullable;
 //?}
 
-@Mixin(GuiGraphics.class)
-public class GuiGraphicsMixin {
-    //? if >1.21.5 {
-    /*//? if fabric {
-    /^@Inject(method = "renderTooltip", at = @At("HEAD"), cancellable = true)
-    private void enhancedTooltips$drawTooltip(Font textRenderer, List<ClientTooltipComponent> components, int x, int y, ClientTooltipPositioner positioner, @Nullable ResourceLocation texture, CallbackInfo ci) {
-    ^///?} else {
-    @Inject(method = "renderTooltip(Lnet/minecraft/client/gui/Font;Ljava/util/List;IILnet/minecraft/client/gui/screens/inventory/tooltip/ClientTooltipPositioner;Lnet/minecraft/resources/ResourceLocation;Lnet/minecraft/world/item/ItemStack;)V", at = @At("HEAD"), cancellable = true)
-    private void enhancedTooltips$drawTooltip(Font textRenderer, List<ClientTooltipComponent> components, int x, int y, ClientTooltipPositioner positioner, @Nullable ResourceLocation texture, ItemStack stack, CallbackInfo ci) {
-    //?}
-    *///?} else if >1.21.1 {
-    @Inject(method = "renderTooltipInternal", at = @At("HEAD"), cancellable = true)
-    private void enhancedTooltips$drawTooltip(Font textRenderer, List<ClientTooltipComponent> components, int x, int y, ClientTooltipPositioner positioner, @Nullable ResourceLocation texture, CallbackInfo ci) {
+@Mixin(GuiGraphicsExtractor.class)
+public class DrawContextMixin {
+    //? if >1.21.11 {
+    //? if fabric {
+    @Inject(method = "tooltip", at = @At("HEAD"), cancellable = true)
+    private void enhancedTooltips$drawTooltip(Font textRenderer, List<ClientTooltipComponent> components, int x, int y, ClientTooltipPositioner positioner, @Nullable Identifier texture, CallbackInfo ci) {
     //?} else {
+    /*@Inject(method = "tooltip(Lnet/minecraft/client/gui/Font;Ljava/util/List;IILnet/minecraft/client/gui/screens/inventory/tooltip/ClientTooltipPositioner;Lnet/minecraft/resources/Identifier;Lnet/minecraft/world/item/ItemStack;)V", at = @At("HEAD"), cancellable = true)
+        private void enhancedTooltips$drawTooltip(Font textRenderer, List<ClientTooltipComponent> components, int x, int y, ClientTooltipPositioner positioner, @Nullable Identifier texture, ItemStack stack, CallbackInfo ci) {
+    *///?}
+    //?} else if >1.21.5 {
+    /*//? if fabric {
+    @Inject(method = "renderTooltip", at = @At("HEAD"), cancellable = true)
+    private void enhancedTooltips$drawTooltip(Font textRenderer, List<ClientTooltipComponent> components, int x, int y, ClientTooltipPositioner positioner, @Nullable Identifier texture, CallbackInfo ci) {
+    //?} else {
+    /^@Inject(method = "renderTooltip(Lnet/minecraft/client/gui/Font;Ljava/util/List;IILnet/minecraft/client/gui/screens/inventory/tooltip/ClientTooltipPositioner;Lnet/minecraft/resources/Identifier;Lnet/minecraft/world/item/ItemStack;)V", at = @At("HEAD"), cancellable = true)
+    private void enhancedTooltips$drawTooltip(Font textRenderer, List<ClientTooltipComponent> components, int x, int y, ClientTooltipPositioner positioner, @Nullable Identifier texture, ItemStack stack, CallbackInfo ci) {
+    ^///?}
+    *///?} else if >1.21.1 {
+    /*@Inject(method = "renderTooltipInternal", at = @At("HEAD"), cancellable = true)
+    private void enhancedTooltips$drawTooltip(Font textRenderer, List<ClientTooltipComponent> components, int x, int y, ClientTooltipPositioner positioner, @Nullable Identifier texture, CallbackInfo ci) {
+    *///?} else {
     /*@Inject(method = "renderTooltipInternal", at = @At("HEAD"), cancellable = true)
     private void enhancedTooltips$drawTooltip(Font textRenderer, List<ClientTooltipComponent> components, int x, int y, ClientTooltipPositioner positioner, CallbackInfo ci) {
     *///?}
@@ -69,7 +77,7 @@ public class GuiGraphicsMixin {
         //?}
         TooltipComponentManager.invoke(tooltipComponents, cacheItemStack);
 
-        EnhancedTooltipsDrawer.drawTooltip((GuiGraphics) (Object) this, textRenderer, tooltipComponents, x, y, positioner, cacheItemStack);
+        EnhancedTooltipsDrawer.drawTooltip((GuiGraphicsExtractor) (Object) this, textRenderer, tooltipComponents, x, y, positioner, cacheItemStack);
         ci.cancel();
     }
 }

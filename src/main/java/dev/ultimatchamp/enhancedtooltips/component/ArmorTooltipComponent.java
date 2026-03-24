@@ -1,28 +1,27 @@
 package dev.ultimatchamp.enhancedtooltips.component;
 
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.*;
 import org.jetbrains.annotations.NotNull;
 
 //? if >1.21.5 {
-/*import net.minecraft.client.renderer.RenderPipelines;
-*///?} else {
-import net.minecraft.client.renderer.RenderType;
-//?}
+import net.minecraft.client.renderer.RenderPipelines;
+//?} else {
+/*import net.minecraft.client.renderer.RenderType;
+*///?}
 //? if 1.21.1 {
 /*import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.EntityType;
 *///?}
 
-public record ArmorTooltipComponent(ItemStack stack) implements ClientTooltipComponent {
+public record ArmorTooltipComponent(ItemStack stack) implements EnhancedTooltipsTooltipComponent {
     @Override
-    public int getHeight(/*? if >1.21.1 {*/@NotNull Font textRenderer/*?}*/) {
+    public int height() {
         int height = 0;
 
         //? if >1.21.1 {
@@ -72,12 +71,8 @@ public record ArmorTooltipComponent(ItemStack stack) implements ClientTooltipCom
     }
 
     @Override
-    //? if >1.21.1 {
     @SuppressWarnings("deprecation")
-    public void renderImage(@NotNull Font textRenderer, int x, int y, int width, int height, @NotNull GuiGraphics context) {
-    //?} else {
-    /*public void renderImage(Font textRenderer, int x, int y, GuiGraphics context) {
-    *///?}
+    public void drawImage(@NotNull Font textRenderer, int x, int y, int width, int height, @NotNull GuiGraphicsExtractor context) {
         //? if >1.21.1 {
         if (ModelViewerTooltipComponent.getEquipmentSlot(stack).getType() == EquipmentSlot.Type.HUMANOID_ARMOR) {
         //?} else {
@@ -97,21 +92,21 @@ public record ArmorTooltipComponent(ItemStack stack) implements ClientTooltipCom
 
                 for (int j = 0; j < prot / 2; j++) {
                     //? if >1.21.5 {
-                    /*context.blitSprite(RenderPipelines.GUI_TEXTURED, ResourceLocation.withDefaultNamespace("hud/armor_full"), x + j * 9, y, textRenderer.lineHeight, textRenderer.lineHeight);
-                    *///?} else if >1.21.1 {
-                    context.blitSprite(RenderType::guiTextured, ResourceLocation.withDefaultNamespace("hud/armor_full"), textRenderer.lineHeight, textRenderer.lineHeight, 0, 0, x + j * 9, y, textRenderer.lineHeight, textRenderer.lineHeight);
-                    //?} else {
-                    /*context.blitSprite(ResourceLocation.withDefaultNamespace("hud/armor_full"), x + j * 9, y, textRenderer.lineHeight, textRenderer.lineHeight);
+                    context.blitSprite(RenderPipelines.GUI_TEXTURED, Identifier.withDefaultNamespace("hud/armor_full"), x + j * 9, y, textRenderer.lineHeight, textRenderer.lineHeight);
+                    //?} else if >1.21.1 {
+                    /*context.blitSprite(RenderType::guiTextured, Identifier.withDefaultNamespace("hud/armor_full"), textRenderer.lineHeight, textRenderer.lineHeight, 0, 0, x + j * 9, y, textRenderer.lineHeight, textRenderer.lineHeight);
+                    *///?} else {
+                    /*context.blitSprite(Identifier.withDefaultNamespace("hud/armor_full"), x + j * 9, y, textRenderer.lineHeight, textRenderer.lineHeight);
                     *///?}
                 }
 
                 if (prot % 2 == 1) {
                     //? if >1.21.5 {
-                    /*context.blitSprite(RenderPipelines.GUI_TEXTURED, ResourceLocation.withDefaultNamespace("hud/armor_half"), x + prot / 2 * 9, y, textRenderer.lineHeight, textRenderer.lineHeight);
-                    *///?} else if >1.21.1 {
-                    context.blitSprite(RenderType::guiTextured, ResourceLocation.withDefaultNamespace("hud/armor_half"), textRenderer.lineHeight, textRenderer.lineHeight, 0, 0, x + prot / 2 * 9, y, textRenderer.lineHeight, textRenderer.lineHeight);
-                    //?} else {
-                    /*context.blitSprite(ResourceLocation.withDefaultNamespace("hud/armor_half"), x + prot / 2 * 9, y, textRenderer.lineHeight, textRenderer.lineHeight);
+                    context.blitSprite(RenderPipelines.GUI_TEXTURED, Identifier.withDefaultNamespace("hud/armor_half"), x + prot / 2 * 9, y, textRenderer.lineHeight, textRenderer.lineHeight);
+                    //?} else if >1.21.1 {
+                    /*context.blitSprite(RenderType::guiTextured, Identifier.withDefaultNamespace("hud/armor_half"), textRenderer.lineHeight, textRenderer.lineHeight, 0, 0, x + prot / 2 * 9, y, textRenderer.lineHeight, textRenderer.lineHeight);
+                    *///?} else {
+                    /*context.blitSprite(Identifier.withDefaultNamespace("hud/armor_half"), x + prot / 2 * 9, y, textRenderer.lineHeight, textRenderer.lineHeight);
                     *///?}
                 }
             }
