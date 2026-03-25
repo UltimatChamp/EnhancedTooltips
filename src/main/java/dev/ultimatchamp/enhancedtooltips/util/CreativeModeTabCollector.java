@@ -24,50 +24,52 @@
 package dev.ultimatchamp.enhancedtooltips.util;
 
 import dev.ultimatchamp.enhancedtooltips.EnhancedTooltips;
-import dev.ultimatchamp.enhancedtooltips.mixin.accessors.ClientWorldAccessor;
-import dev.ultimatchamp.enhancedtooltips.mixin.accessors.ItemGroupAccessor;
-import net.minecraft.client.world.ClientWorld;
-import net.minecraft.item.ItemGroups;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.resource.featuretoggle.FeatureFlags;
-import net.minecraft.resource.featuretoggle.FeatureSet;
+import dev.ultimatchamp.enhancedtooltips.mixin.accessors.CreativeModeTabAccessor;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.flag.FeatureFlagSet;
+import net.minecraft.world.flag.FeatureFlags;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.CreativeModeTabs;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
 //? if fabric {
-import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroupEntries;
-import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
+//? if >1.21.11 {
+import net.fabricmc.fabric.api.creativetab.v1.*;
+//?} else {
+/*import net.fabricmc.fabric.api.itemgroup.v1.*;
+*///?}
 //?} else {
 /*import net.neoforged.neoforge.event.EventHooks;
 *///?}
 
 public class CreativeModeTabCollector {
-    public static Map<ItemGroup, Collection<ItemStack>> collectTabs(@NotNull ClientWorld world) {
-        Map<ItemGroup, Collection<ItemStack>> map = new LinkedHashMap<>();
-        FeatureSet featureFlags = FeatureFlags.FEATURE_MANAGER.getFeatureSet();
-        ItemGroup.DisplayContext parameters = new ItemGroup.DisplayContext(featureFlags, true, ((ClientWorldAccessor) world).getNetworkHandler().getRegistryManager());
+    public static Map<CreativeModeTab, Collection<ItemStack>> collectTabs(@NotNull Level world) {
+        Map<CreativeModeTab, Collection<ItemStack>> map = new LinkedHashMap<>();
+        FeatureFlagSet featureFlags = FeatureFlags.REGISTRY.allFlags();
+        CreativeModeTab.ItemDisplayParameters parameters = new CreativeModeTab.ItemDisplayParameters(featureFlags, true, world.registryAccess());
 
-        for (ItemGroup group : ItemGroups.getGroups()) {
-            if (group.getType() != ItemGroup.Type.HOTBAR && group.getType() != ItemGroup.Type.INVENTORY) {
+        for (CreativeModeTab group : CreativeModeTabs.allTabs()) {
+            if (group.getType() != CreativeModeTab.Type.HOTBAR && group.getType() != CreativeModeTab.Type.INVENTORY) {
                 try {
-                    ItemGroup.EntriesImpl builder = new ItemGroup.EntriesImpl(group, featureFlags);
-                    RegistryKey<ItemGroup> resourceKey = Registries.ITEM_GROUP
-                            .getKey(group)
+                    CreativeModeTab.ItemDisplayBuilder builder = new CreativeModeTab.ItemDisplayBuilder(group, featureFlags);
+                    ResourceKey<@NotNull CreativeModeTab> resourceKey = BuiltInRegistries.CREATIVE_MODE_TAB
+                            .getResourceKey(group)
                             .orElseThrow(() -> new IllegalStateException("Unregistered creative tab: " + group));
 
                     //? if fabric {
-                    ((ItemGroupAccessor) group).getEntryCollector().accept(parameters, builder);
-                    map.put(group, postFabricEvents(group, parameters, resourceKey, builder.parentTabStacks));
+                    ((CreativeModeTabAccessor) group).getDisplayItemsGenerator().accept(parameters, builder);
+                    map.put(group, postFabricEvents(group, parameters, resourceKey, builder.tabContents));
                     //?} else {
-                    /*EventHooks.onCreativeModeTabBuildContents(group, resourceKey, ((ItemGroupAccessor) group).getEntryCollector(), parameters, (stack, visibility) -> {
-                        if (visibility == ItemGroup.StackVisibility.SEARCH_TAB_ONLY) return;
-                        builder.add(stack, visibility);
+                    /*EventHooks.onCreativeModeTabBuildContents(group, resourceKey, ((CreativeModeTabAccessor) group).getDisplayItemsGenerator(), parameters, (stack, visibility) -> {
+                        if (visibility == CreativeModeTab.TabVisibility.SEARCH_TAB_ONLY) return;
+                        builder.accept(stack, visibility);
                     });
-                    map.put(group, builder.parentTabStacks);
+                    map.put(group, builder.tabContents);
                     *///?}
                 } catch (Throwable throwable) {
                     EnhancedTooltips.LOGGER.error("Failed to collect creative tab: {}", group, throwable);
@@ -80,12 +82,23 @@ public class CreativeModeTabCollector {
 
     //? if fabric {
     @SuppressWarnings("UnstableApiUsage")
-    private static Collection<ItemStack> postFabricEvents(ItemGroup group, ItemGroup.DisplayContext context, RegistryKey<ItemGroup> resourceKey, Collection<ItemStack> tabContents) {
+    private static Collection<ItemStack> postFabricEvents(CreativeModeTab group, CreativeModeTab.ItemDisplayParameters context, ResourceKey<@NotNull CreativeModeTab> resourceKey, Collection<ItemStack> tabContents) {
         try {
             // Sorry!
-            FabricItemGroupEntries entries = new FabricItemGroupEntries(context, new LinkedList<>(tabContents), new LinkedList<>());
-            ItemGroupEvents.modifyEntriesEvent(resourceKey).invoker().modifyEntries(entries);
+            var entries =
+                    //? if >1.21.11 {
+                    new FabricCreativeModeTabOutput(
+                    //?} else {
+                    /*new FabricItemGroupEntries(
+                    *///?}
+                            context, new LinkedList<>(tabContents), new LinkedList<>());
+            //? if >1.21.11 {
+            CreativeModeTabEvents.modifyOutputEvent(resourceKey).invoker().modifyOutput(entries);
+            CreativeModeTabEvents.MODIFY_OUTPUT_ALL.invoker().modifyOutput(group, entries);
+            //?} else {
+            /*ItemGroupEvents.modifyEntriesEvent(resourceKey).invoker().modifyEntries(entries);
             ItemGroupEvents.MODIFY_ENTRIES_ALL.invoker().modifyEntries(group, entries);
+            *///?}
             return entries.getDisplayStacks();
         } catch (Throwable throwable) {
             EnhancedTooltips.LOGGER.error("Failed to collect fabric's creative group: {}", group, throwable);

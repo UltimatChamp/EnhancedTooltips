@@ -28,10 +28,13 @@ side="BOTH"
 
 [[dependencies.${mod_id}]]
 modId="yet_another_config_lib_v3"
-type="optional"
+type="required"
 versionRange="*"
 ordering="NONE"
 side="CLIENT"
 
 [[mixins]]
 config="${mod_id}.mixins.json"
+
+[[accessTransformers]]
+file="META-INF/accesstransformer.cfg"

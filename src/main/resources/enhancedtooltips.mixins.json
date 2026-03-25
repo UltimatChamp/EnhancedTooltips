@@ -1,19 +1,19 @@
 {
   "required": true,
+  "minVersion": "0.8",
   "package": "dev.ultimatchamp.enhancedtooltips.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
     "DrawContextMixin",
-    "InGameHudMixin",
+    "GuiMixin",
     "ItemStackMixin",
-    "PotionContentsComponentMixin",
-    "accessors.BucketItemEntityTypeAccessor",
-    "accessors.ClientWorldAccessor",
-    "accessors.DecorationItemEntityTypeAccessor",
+    "PotionContentsMixin",
+    "accessors.ClientTextTooltipAccessor",
+    "accessors.CreativeModeTabAccessor",
     "accessors.DrawContextAccessor",
-    "accessors.ItemGroupAccessor",
-    "accessors.OrderedTextTooltipComponentAccessor",
-    "accessors.PlayerInventoryAccessor",
+    "accessors.HangingEntityItemTypeAccessor",
+    "accessors.InventoryAccessor",
+    "accessors.MobBucketItemTypeAccessor",
     "accessors.SpawnEggItemEntityTypeAccessor"
   ],
   "injectors": {

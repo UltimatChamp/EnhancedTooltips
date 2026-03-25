@@ -11,8 +11,11 @@ public class EnhancedTooltipsFabric implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> {
-            if (client.world != null)
-                ItemGroupsUtils.tabs.putAll(CreativeModeTabCollector.collectTabs(client.world));
+            if (client.level != null) {
+                client.execute(() ->
+                        ItemGroupsUtils.tabs.putAll(CreativeModeTabCollector.collectTabs(client.level))
+                );
+            }
         });
 
         EnhancedTooltips.init();

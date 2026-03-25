@@ -1,11 +1,11 @@
 package dev.ultimatchamp.enhancedtooltips.mixin.accessors;
 
-import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.world.entity.player.Inventory;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
-@Mixin(PlayerInventory.class)
-public interface PlayerInventoryAccessor {
+@Mixin(Inventory.class)
+public interface InventoryAccessor {
     @Accessor
-    int getSelectedSlot();
+    int getSelected();
 }

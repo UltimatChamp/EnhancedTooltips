@@ -1,65 +1,71 @@
 package dev.ultimatchamp.enhancedtooltips.component;
 
 import dev.ultimatchamp.enhancedtooltips.util.MatricesUtil;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.tooltip.TooltipComponent;
-import net.minecraft.client.render.*;
-import net.minecraft.component.DataComponentTypes;
-import net.minecraft.component.type.MapIdComponent;
-import net.minecraft.item.FilledMapItem;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.map.MapState;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.MapItem;
+import net.minecraft.world.level.saveddata.maps.MapId;
+import net.minecraft.world.level.saveddata.maps.MapItemSavedData;
+import org.jetbrains.annotations.NotNull;
 
-/*? if <1.21.6 {*//*import net.minecraft.client.util.math.MatrixStack;*//*?}*/
+//? if <26.1 {
+/*import net.minecraft.client.renderer.LightTexture;
+import net.minecraft.client.renderer.MultiBufferSource;
+*///?}
 
-public record MapTooltipComponent(ItemStack stack) implements TooltipComponent {
+//? if >1.21.1 {
+import net.minecraft.client.renderer.MapRenderer;
+import net.minecraft.client.renderer.state.MapRenderState;
+//?} else {
+/*import net.minecraft.client.gui.MapRenderer;
+*///?}
 
+public record MapTooltipComponent(ItemStack stack) implements EnhancedTooltipsTooltipComponent {
     @Override
-    public int getHeight(/*? if >1.21.1 {*/TextRenderer textRenderer/*?}*/) {
+    public int getHeight(/*? if >1.21.1 {*/@NotNull Font textRenderer/*?}*/) {
         return 128 + 2;
     }
 
     @Override
-    public int getWidth(TextRenderer textRenderer) {
+    public int getWidth(@NotNull Font textRenderer) {
         return 128;
     }
 
     @Override
-    //? if >1.21.1 {
-    public void drawItems(TextRenderer textRenderer, int x, int y, int width, int height, DrawContext context) {
-    //?} else {
-    /*public void drawItems(TextRenderer textRenderer, int x, int y, DrawContext context) {
-    *///?}
-        /*? if <1.21.6 {*//*VertexConsumerProvider vertexConsumers = MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers();*//*?}*/
+    public void drawImage(@NotNull Font textRenderer, int x, int y, int width, int height, @NotNull GuiGraphicsExtractor context) {
+        /*? if <1.21.6 {*//*MultiBufferSource.BufferSource vertexConsumers = Minecraft.getInstance().renderBuffers().bufferSource();*//*?}*/
 
         //? if >1.21.1 {
-        MapRenderer mapRenderer = MinecraftClient.getInstance().getMapRenderer();
+        MapRenderer mapRenderer = Minecraft.getInstance().getMapRenderer();
         //?} else {
-        /*MapRenderer mapRenderer = MinecraftClient.getInstance().gameRenderer.getMapRenderer();
+        /*MapRenderer mapRenderer = Minecraft.getInstance().gameRenderer.getMapRenderer();
         *///?}
 
         /*? if >1.21.1 {*/MapRenderState renderState = new MapRenderState();/*?}*/
-        MapIdComponent mapId = stack.get(DataComponentTypes.MAP_ID);
+        MapId mapId = stack.get(DataComponents.MAP_ID);
 
-        MapState mapState = FilledMapItem.getMapState(this.stack, MinecraftClient.getInstance().world);
+        MapItemSavedData mapState = MapItem.getSavedData(this.stack, Minecraft.getInstance().level);
         if (mapState == null) return;
 
-        MatricesUtil matrices = new MatricesUtil(context.getMatrices());
+        MatricesUtil matrices = new MatricesUtil(context.pose());
 
         matrices.pushMatrix();
         matrices.trans(x, y, 0);
         matrices.scal(1, 1, 0);
         //? if >1.21.1 {
-        mapRenderer.update(mapId, mapState, renderState);
+        mapRenderer.extractRenderState(mapId, mapState, renderState);
         //?} else {
-        /*mapRenderer.updateTexture(mapId, mapState);
+        /*mapRenderer.update(mapId, mapState);
         *///?}
-        //? if >1.21.5 {
-        context.drawMap(renderState);
-        //?} else {
-        /*mapRenderer.draw(/^? if >1.21.1 {^/renderState, /^?}^/context.getMatrices(), vertexConsumers, /^? if 1.21.1 {^//^mapId, mapState, ^//^?}^/false, LightmapTextureManager.MAX_LIGHT_COORDINATE);
+        //? if >1.21.11 {
+        context.map(renderState);
+        //?} else if >1.21.5 {
+        /*context.submitMapRenderState(renderState);
+        *///?} else {
+        /*mapRenderer.render(/^? if >1.21.1 {^/renderState, /^?}^/context.pose(), vertexConsumers, /^? if 1.21.1 {^//^mapId, mapState, ^//^?}^/false, LightTexture.FULL_BRIGHT);
         *///?}
         matrices.popMatrix();
     }

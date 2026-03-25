@@ -1,12 +1,13 @@
+import dev.kikugie.stonecutter.build.StonecutterBuildExtension
+
 plugins {
-    id("dev.architectury.loom") version "1.13-SNAPSHOT"
-    id("me.modmuss50.mod-publish-plugin") version "1.1.0"
+    id("java-library")
+    id("me.modmuss50.mod-publish-plugin")
+    id("dev.kikugie.fletching-table")
+    kotlin("jvm")
 }
 
-var loader = project.property("loom.platform") as String
-
-var isFabric = loader == "fabric"
-var isNeo = loader == "neoforge"
+val stonecutter = project.extensions.getByType(StonecutterBuildExtension::class.java)
 
 var isSnapshot = false
 var mcVer = project.property("deps.minecraft_version") as String
@@ -14,6 +15,10 @@ if (mcVer.contains("-") || mcVer.contains("w")) {
     isSnapshot = true
     mcVer = mcVer.replace("-", "")
 }
+
+var loader = stonecutter.current.project.substringAfterLast("-")
+if (loader == "neo")
+    loader = "neoforge"
 
 version = "${project.property("mod_version")}+$loader.$mcVer"
 group = project.property("maven_group") as String
@@ -27,49 +32,30 @@ repositories {
         forRepository { maven("https://api.modrinth.com/maven") }
         filter { includeGroup("maven.modrinth") }
     }
-    maven("https://maven.neoforged.net/releases")
     maven("https://maven.isxander.dev/releases")
-    maven("https://thedarkcolour.github.io/KotlinForForge/")
-    mavenCentral()
+    maven("https://maven.parchmentmc.org")
 }
 
-loom {
-    runConfigs.all {
-        ideConfigGenerated(true)
-    }
-    accessWidenerPath.set(rootProject.file("src/main/resources/enhancedtooltips.accesswidener"))
-}
-
-dependencies {
-    minecraft("com.mojang:minecraft:${project.property("deps.minecraft_version")}")
-    mappings(loom.layered {
-        mappings("net.fabricmc:yarn:${project.property("deps.yarn_mappings")}:v2")
-        if (isNeo) {
-            mappings("dev.architectury:yarn-mappings-patch-neoforge:${project.property("deps.layered_mappings")}")
+project.afterEvaluate {
+    stonecutter.let { sc ->
+        sc.replacements {
+            string {
+                direction = sc.eval(sc.current.version, ">1.21.10")
+                replace("ResourceLocation", "Identifier")
+            }
+            string {
+                direction = sc.eval(sc.current.version, ">1.21.11")
+                replace("GuiGraphics", "GuiGraphicsExtractor")
+            }
         }
-    })
-
-    if (isFabric) {
-        modImplementation("net.fabricmc:fabric-loader:${project.property("loader_version")}")
-
-        modImplementation("net.fabricmc.fabric-api:fabric-api:${project.property("deps.fapi_version")}")
-        modImplementation("maven.modrinth:modmenu:${project.property("deps.modmenu_version")}")
-    } else if (isNeo) {
-        "neoForge"("net.neoforged:neoforge:${property("deps.neoforge")}")
     }
-
-    modImplementation("dev.isxander:yet-another-config-lib:${project.property("deps.yacl_version")}")
-
-    include("blue.endless:jankson:${project.property("deps.jankson_version")}")
-    modImplementation("blue.endless:jankson:${project.property("deps.jankson_version")}")
-}
-
-stonecutter {
-    const("fabric", isFabric)
-    const("neoforge", isNeo)
 }
 
 tasks.processResources {
+    var awPath = if (stonecutter.eval(stonecutter.current.version, ">1.21.11"))
+                     "_noremap"
+                 else ""
+
     val replaceProperties = mapOf(
         "minecraft_range" to project.property("deps.mc_range"),
         "mod_id" to project.property("mod_id"),
@@ -77,30 +63,25 @@ tasks.processResources {
         "mod_license" to project.property("mod_license"),
         "mod_version" to project.version,
         "mod_authors" to project.property("mod_authors"),
-        "mod_description" to project.property("mod_description")
+        "mod_description" to project.property("mod_description"),
+        "aw_path" to awPath
     )
-    replaceProperties.forEach { (key, value) -> inputs.property(key, value) }
 
-    if (isFabric) {
-        filesMatching("fabric.mod.json") {
-            expand(replaceProperties)
-        }
-
-        exclude("META-INF/neoforge.mods.toml")
-    } else if (isNeo) {
-        filesMatching("META-INF/neoforge.mods.toml") {
-            expand(replaceProperties)
-        }
-
-        exclude("fabric.mod.json")
+    filesMatching(listOf("fabric.mod.json", "META-INF/neoforge.mods.toml")) {
+        expand(replaceProperties)
     }
+    replaceProperties.forEach { (key, value) -> inputs.property(key, value) }
 }
 
 java {
     withSourcesJar()
 
-    sourceCompatibility = JavaVersion.VERSION_21
-    targetCompatibility = JavaVersion.VERSION_21
+    var javaVer = if (stonecutter.eval(stonecutter.current.version, ">1.21.11"))
+        JavaVersion.VERSION_25
+    else JavaVersion.VERSION_21
+
+    sourceCompatibility = javaVer
+    targetCompatibility = javaVer
 }
 
 tasks.jar {
@@ -118,21 +99,23 @@ publishMods {
     }
 
     changelog.set("# ${project.version}\n${rootProject.file("CHANGELOG.md").readText()}")
-    file.set(tasks.remapJar.get().archiveFile)
+
+    file = tasks.jar.map { it.archiveFile.get() }
+    additionalFiles.from(tasks.named<org.gradle.jvm.tasks.Jar>("sourcesJar").map { it.archiveFile.get() })
+
     displayName.set("EnhancedTooltips ${project.version}")
 
-    if (isFabric) {
+    if (loader == "fabric")
         modLoaders.addAll("fabric", "quilt")
-    } else if (isNeo) {
-        modLoaders.add("neoforge")
-    }
+    else modLoaders.add("neoforge")
 
     val mrOptions = modrinthOptions {
         projectId.set(project.property("modrinthId") as String)
         accessToken.set(providers.environmentVariable("MODRINTH_TOKEN"))
 
-        if (isFabric) requires("fabric-api")
-        optional("yacl")
+        requires("yacl")
+        if (loader == "fabric")
+            requires("fabric-api")
 
         // Discord
         announcementTitle.set("Download from Modrinth")
@@ -142,8 +125,9 @@ publishMods {
         projectId.set(project.property("curseforgeId") as String)
         accessToken.set(providers.environmentVariable("CURSEFORGE_API_KEY"))
 
-        if (isFabric) requires("fabric-api")
-        optional("yacl")
+        requires("yacl")
+        if (loader == "fabric")
+            requires("fabric-api")
 
         // Discord
         announcementTitle.set("Download from CurseForge")
@@ -231,6 +215,16 @@ publishMods {
             curseforge("c1.21.11") {
                 from(cfOptions)
                 minecraftVersions.add("1.21.11")
+            }
+        }
+        "26.1" -> {
+            modrinth("m26.1") {
+                from(mrOptions)
+                minecraftVersions.add("26.1")
+            }
+            curseforge("c26.1") {
+                from(cfOptions)
+                minecraftVersions.add("26.1")
             }
         }
     }

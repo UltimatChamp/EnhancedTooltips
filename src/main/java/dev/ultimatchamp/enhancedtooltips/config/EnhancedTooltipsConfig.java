@@ -3,22 +3,15 @@ package dev.ultimatchamp.enhancedtooltips.config;
 import blue.endless.jankson.*;
 import blue.endless.jankson.api.SyntaxError;
 import dev.isxander.yacl3.api.NameableEnum;
+import dev.isxander.yacl3.platform.YACLPlatform;
 import dev.ultimatchamp.enhancedtooltips.EnhancedTooltips;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.text.Text;
-
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Component;
 import java.awt.*;
 import java.io.IOException;
 import java.lang.reflect.Modifier;
 import java.nio.file.Files;
 import java.nio.file.Path;
-
-//? if fabric {
-import net.fabricmc.loader.api.FabricLoader;
-//?} else neoforge {
-/*import net.neoforged.fml.loading.FMLPaths;
-import net.neoforged.fml.ModList;
-*///?}
 
 public class EnhancedTooltipsConfig {
     public GeneralConfig general = new GeneralConfig();
@@ -41,6 +34,9 @@ public class EnhancedTooltipsConfig {
 
         @Comment("Shows the category of an item in a badge on its tooltip.\n(default: true)")
         public boolean itemBadges = true;
+
+        @Comment("Removes all spacing between lines.\n(default: false)")
+        public boolean removeAllSpacing = false;
 
         //? if <1.21.6 {
         /*@Comment("Adjusts the size of tooltips.\nA scale of 100% displays the tooltip at its default size.\n(default: 1.0)")
@@ -89,8 +85,8 @@ public class EnhancedTooltipsConfig {
             this.translationKey = translationKey;
         }
 
-        public Text getDisplayName() {
-            return Text.translatable(this.translationKey);
+        public Component getDisplayName() {
+            return Component.translatable(this.translationKey);
         }
     }
 
@@ -130,8 +126,26 @@ public class EnhancedTooltipsConfig {
     }
 
     public static class BackgroundConfig {
+        @Comment("Determines how the background of tooltips is set.\nDEFAULT/CUSTOM (default: DEFAULT)")
+        public BackgroundMode backgroundMode = BackgroundMode.DEFAULT;
+
         @Comment("Background color of the tooltip.\n(default: #100010F0)")
         public Color backgroundColor = new Color(0xF0100010, true);
+    }
+
+    public enum BackgroundMode implements NameableEnum {
+        DEFAULT("resourcePack.vanilla.name"),
+        CUSTOM("generator.custom");
+
+        private final String translationKey;
+
+        BackgroundMode(final String translationKey) {
+            this.translationKey = translationKey;
+        }
+
+        public Component getDisplayName() {
+            return Component.translatable(this.translationKey);
+        }
     }
 
     public static class FoodAndDrinksConfig {
@@ -156,8 +170,8 @@ public class EnhancedTooltipsConfig {
             this.translationKey = translationKey;
         }
 
-        public Text getDisplayName() {
-            return Text.translatable(this.translationKey);
+        public Component getDisplayName() {
+            return Component.translatable(this.translationKey);
         }
     }
 
@@ -165,11 +179,16 @@ public class EnhancedTooltipsConfig {
         @Comment("The rotation speed of the model.\n(default: 0.2)")
         public float rotationSpeed = 0.2f;
 
-        @Comment("Shows a preview of the armor piece on an armor stand.\n(default: true)")
-        public boolean armorTooltip = true;
+        @Comment("Shows a preview of the armor piece on an armor stand or the player.\nPLAYER/ARMOR_STAND/OFF (default: PLAYER)")
+        public ArmorTooltipMode armorTooltip = ArmorTooltipMode.PLAYER;
 
         @Comment("Shows a preview of the horse armor on a horse.\n(default: true)")
         public boolean horseArmorTooltip = true;
+
+        //? if >1.21.10 {
+        @Comment("Shows a preview of the nautilus armor on a nautilus.\n(default: true)")
+        public boolean nautilusArmorTooltip = true;
+        //?}
 
         @Comment("Shows a preview of the wolf armor on a wolf.\n(default: true)")
         public boolean wolfArmorTooltip = true;
@@ -179,6 +198,22 @@ public class EnhancedTooltipsConfig {
 
         @Comment("Shows a preview of the spawn egg entity.\n(default: true)")
         public boolean spawnEggTooltip = true;
+    }
+
+    public enum ArmorTooltipMode implements NameableEnum {
+        PLAYER("entity.minecraft.player"),
+        ARMOR_STAND("entity.minecraft.armor_stand"),
+        OFF("options.off");
+
+        private final String translationKey;
+
+        ArmorTooltipMode(final String translationKey) {
+            this.translationKey = translationKey;
+        }
+
+        public Component getDisplayName() {
+            return Component.translatable(this.translationKey);
+        }
     }
 
     public static class MapConfig {
@@ -220,8 +255,8 @@ public class EnhancedTooltipsConfig {
             this.translationKey = translationKey;
         }
 
-        public Text getDisplayName() {
-            return Text.translatable(this.translationKey);
+        public Component getDisplayName() {
+            return Component.translatable(this.translationKey);
         }
     }
 
@@ -237,6 +272,9 @@ public class EnhancedTooltipsConfig {
 
         @Comment("Adjusts the size of the held item tooltips.\nA scale of 100% displays the tooltip at its default size.\n(default: 1.0)")
         public float scaleFactor = 1f;
+
+        @Comment("Hides the item's name from its held item toolip.\n(default: false)")
+        public boolean hideItemName = false;
 
         @Comment("Shows a dynamic tilt animation for the held item tooltip when scrolling the hotbar.\n(default: true)")
         public boolean tiltAnimation = true;
@@ -262,8 +300,8 @@ public class EnhancedTooltipsConfig {
             this.translationKey = translationKey;
         }
 
-        public Text getDisplayName() {
-            return Text.translatable(this.translationKey);
+        public Component getDisplayName() {
+            return Component.translatable(this.translationKey);
         }
     }
 
@@ -287,13 +325,7 @@ public class EnhancedTooltipsConfig {
             })
             .build();
 
-    public static final Path CONFIG_PATH =
-            //? if fabric {
-            FabricLoader.getInstance().getConfigDir().resolve("enhancedtooltips.json5");
-            //?} else if neoforge {
-            /*FMLPaths.CONFIGDIR.get().resolve("enhancedtooltips.json5");
-            *///?}
-
+    public static final Path CONFIG_PATH = YACLPlatform.getConfigDir().resolve("enhancedtooltips.json5");
     private static EnhancedTooltipsConfig cachedConfig;
 
     public static EnhancedTooltipsConfig load() {
@@ -371,14 +403,6 @@ public class EnhancedTooltipsConfig {
     }
 
     public static Screen createConfigScreen(Screen parent) {
-        //? if fabric {
-        if (FabricLoader.getInstance().isModLoaded("yet_another_config_lib_v3")) {
-        //?} else if neoforge {
-        /*if (ModList.get().isLoaded("yet_another_config_lib_v3")) {
-        *///?}
-            return EnhancedTooltipsGui.createConfigScreen(parent);
-        } else {
-            return new NoConfigScreenWarning(parent);
-        }
+        return EnhancedTooltipsGui.createConfigScreen(parent);
     }
 }

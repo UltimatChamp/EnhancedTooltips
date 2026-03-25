@@ -25,13 +25,11 @@
   "mixins": [
     "enhancedtooltips.mixins.json"
   ],
-  "accessWidener": "enhancedtooltips.accesswidener",
+  "accessWidener": "enhancedtooltips${aw_path}.classtweaker",
   "depends": {
     "minecraft": "${minecraft_range}",
     "fabricloader": "*",
-    "fabric": "*"
-  },
-  "recommends": {
+    "fabric-api": "*",
     "yet_another_config_lib_v3": "*"
   },
   "custom": {

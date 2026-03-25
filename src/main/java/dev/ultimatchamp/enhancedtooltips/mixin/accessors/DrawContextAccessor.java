@@ -1,14 +1,14 @@
 package dev.ultimatchamp.enhancedtooltips.mixin.accessors;
 
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.renderer.MultiBufferSource;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
-@Mixin(DrawContext.class)
+@Mixin(GuiGraphicsExtractor.class)
 public interface DrawContextAccessor {
     //? if <1.21.6 {
-    /*@Accessor("vertexConsumers")
-    VertexConsumerProvider.Immediate getVertexConsumers();
+    /*@Accessor
+    MultiBufferSource.BufferSource getBufferSource();
     *///?}
 }

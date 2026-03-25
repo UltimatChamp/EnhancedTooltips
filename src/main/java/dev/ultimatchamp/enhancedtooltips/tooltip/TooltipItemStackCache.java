@@ -1,6 +1,6 @@
 package dev.ultimatchamp.enhancedtooltips.tooltip;
 
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
 public class TooltipItemStackCache {

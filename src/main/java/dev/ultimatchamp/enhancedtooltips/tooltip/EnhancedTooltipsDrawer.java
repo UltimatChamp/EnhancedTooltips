@@ -3,19 +3,19 @@ package dev.ultimatchamp.enhancedtooltips.tooltip;
 import dev.ultimatchamp.enhancedtooltips.EnhancedTooltips;
 import dev.ultimatchamp.enhancedtooltips.component.TooltipBackgroundComponent;
 import dev.ultimatchamp.enhancedtooltips.config.EnhancedTooltipsConfig;
-import dev.ultimatchamp.enhancedtooltips.mixin.accessors.OrderedTextTooltipComponentAccessor;
+import dev.ultimatchamp.enhancedtooltips.mixin.accessors.ClientTextTooltipAccessor;
 import dev.ultimatchamp.enhancedtooltips.util.EnhancedTooltipsTextVisitor;
 import dev.ultimatchamp.enhancedtooltips.util.MatricesUtil;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.tooltip.TooltipBackgroundRenderer;
-import net.minecraft.client.gui.tooltip.TooltipComponent;
-import net.minecraft.client.gui.tooltip.TooltipPositioner;
-import net.minecraft.item.ItemStack;
-import net.minecraft.text.OrderedText;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
+import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipPositioner;
+import net.minecraft.client.gui.screens.inventory.tooltip.TooltipRenderUtil;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
+import net.minecraft.util.FormattedCharSequence;
+import net.minecraft.world.item.ItemStack;
 import org.joml.Vector2ic;
 
 import java.util.ArrayList;
@@ -30,14 +30,14 @@ public class EnhancedTooltipsDrawer {
     private static ItemStack lastStack = ItemStack.EMPTY;
 
     private static int getMaxHeight() {
-        return MinecraftClient.getInstance().getWindow().getScaledHeight() - EDGE_SPACING * 2;
+        return Minecraft.getInstance().getWindow().getGuiScaledHeight() - EDGE_SPACING * 2;
     }
 
     private static int getMaxWidth() {
-        return MinecraftClient.getInstance().getWindow().getScaledWidth() / 2 - EDGE_SPACING;
+        return Minecraft.getInstance().getWindow().getGuiScaledWidth() / 2 - EDGE_SPACING;
     }
 
-    public static void drawTooltip(DrawContext context, TextRenderer textRenderer, List<TooltipComponent> components, int x, int y, TooltipPositioner positioner, ItemStack currentStack) {
+    public static void drawTooltip(GuiGraphicsExtractor context, Font textRenderer, List<ClientTooltipComponent> components, int x, int y, ClientTooltipPositioner positioner, ItemStack currentStack) {
         if (components == null || components.isEmpty() || currentStack.isEmpty()) {
             startTime = -1;
             lastStack = ItemStack.EMPTY;
@@ -46,7 +46,7 @@ public class EnhancedTooltipsDrawer {
         if (components == null || components.isEmpty()) return;
 
         if (!currentStack.isEmpty()) {
-            if (lastStack.isEmpty() || !ItemStack.areEqual(lastStack, currentStack)) {
+            if (lastStack.isEmpty() || !ItemStack.matches(lastStack, currentStack)) {
                 startTime = System.nanoTime();
                 lastStack = currentStack.copy();
             } else if (startTime == -1) {
@@ -59,7 +59,10 @@ public class EnhancedTooltipsDrawer {
         if (components.size() > 1 && components.get(1).getWidth(textRenderer) == 0)
             components.remove(1);
 
-        MatricesUtil matrices = new MatricesUtil(context.getMatrices());
+        if (EnhancedTooltipsConfig.load().general.removeAllSpacing)
+            components.removeIf(component -> component.getHeight(/*? if >1.21.1 {*/textRenderer/*?}*/) == 0 || component.getWidth(textRenderer) == 0);
+
+        MatricesUtil matrices = new MatricesUtil(context.pose());
         List<TooltipPage> pageList = new ArrayList<>();
 
         float scale = 1;
@@ -76,13 +79,13 @@ public class EnhancedTooltipsDrawer {
 
         TooltipPage page = new TooltipPage();
 
-        for (TooltipComponent tooltipComponent : components) {
+        for (ClientTooltipComponent tooltipComponent : components) {
             int width = tooltipComponent.getWidth(textRenderer);
             int height = tooltipComponent.getHeight(/*? if >1.21.1 {*/textRenderer/*?}*/);
 
             if (width > maxWidth) {
-                List<TooltipComponent> wrappedComponents = wrapComponent(tooltipComponent, textRenderer, maxWidth);
-                for (TooltipComponent wrappedComponent : wrappedComponents) {
+                List<ClientTooltipComponent> wrappedComponents = wrapComponent(tooltipComponent, textRenderer, maxWidth);
+                for (ClientTooltipComponent wrappedComponent : wrappedComponents) {
                     int wrappedWidth = wrappedComponent.getWidth(textRenderer);
                     int wrappedHeight = wrappedComponent.getHeight(/*? if >1.21.1 {*/textRenderer/*?}*/);
 
@@ -117,7 +120,7 @@ public class EnhancedTooltipsDrawer {
         }
 
         int scaledOffset = ((int) (12 * scale)) - 12;
-        Vector2ic vector2ic = positioner.getPosition(context.getScaledWindowWidth(), context.getScaledWindowHeight(), x + scaledOffset, y - scaledOffset, (int) (totalWidth * scale), (int) (pageList.getFirst().height * scale));
+        Vector2ic vector2ic = positioner.positionTooltip(context.guiWidth(), context.guiHeight(), x + scaledOffset, y - scaledOffset, (int) (totalWidth * scale), (int) (pageList.getFirst().height * scale));
         int n = vector2ic.x();
         int o = vector2ic.y();
 
@@ -151,13 +154,12 @@ public class EnhancedTooltipsDrawer {
             p.y = (int) (p.y / scale);
 
             if (backgroundComponent == null) {
-            //? if >1.21.5 {
-              TooltipBackgroundRenderer.render(context, p.x, p.y, p.width, p.height, Identifier.ofVanilla("tooltip/background"));
-            //?} else if >1.21.1 {
-              /*TooltipBackgroundRenderer.render(context, p.x, p.y, p.width, p.height, 400, Identifier.ofVanilla("tooltip/background"));
-            *///?} else {
-              /*TooltipBackgroundRenderer.render(context, p.x, p.y, p.width, p.height, 400);
-            *///?}
+                //? if >1.21.11 {
+                TooltipRenderUtil.extractTooltipBackground(
+                //?} else {
+                /*TooltipRenderUtil.renderTooltipBackground(
+                *///?}
+                        context, p.x, p.y, p.width, p.height/*? if <=1.21.5 {*//*, 400*//*?}*//*? if >1.21.1 {*/, Identifier.withDefaultNamespace("tooltip/background")/*?}*/);
             } else {
                 try {
                     backgroundComponent.render(context, p.x, p.y, p.width, p.height, 400, pageList.indexOf(p));
@@ -173,14 +175,20 @@ public class EnhancedTooltipsDrawer {
             int cx = p.x;
             int cy = p.y;
 
-            for (TooltipComponent component : p.components) {
+            for (ClientTooltipComponent component : p.components) {
                 try {
-                    //? if >1.21.5 {
-                    component.drawText(context, textRenderer, cx, cy);
-                    //?} else {
-                    /*component.drawText(textRenderer, cx, cy, context.getMatrices().peek().getPositionMatrix(), ((DrawContextAccessor) context).getVertexConsumers());
+                    //? if >1.21.11 {
+                    component.extractText(context, textRenderer, cx, cy);
+                    //?} else if >1.21.5 {
+                    /*component.renderText(context, textRenderer, cx, cy);
+                    *///?} else {
+                    /*component.renderText(textRenderer, cx, cy, context.pose().last().pose(), ((DrawContextAccessor) context).getBufferSource());
                     *///?}
-                    component.drawItems(textRenderer, cx, cy, /*? if >1.21.1 {*/p.width, p.height,/*?}*/ context);
+                    //? if >1.21.11 {
+                    component.extractImage(textRenderer, cx, cy, p.width, p.height, context);
+                    //?} else {
+                    /*component.renderImage(textRenderer, cx, cy, /^? if >1.21.1 {^/p.width, p.height,/^?}^/ context);
+                    *///?}
                     cy += component.getHeight(/*? if >1.21.1 {*/textRenderer/*?}*/);
 
                     if (p == pageList.getFirst() && component == p.components.getFirst() && components.size() > 1) {
@@ -195,8 +203,8 @@ public class EnhancedTooltipsDrawer {
         matrices.popMatrix();
     }
 
-    private static TooltipBackgroundComponent getBackgroundComponent(List<TooltipComponent> components) {
-        for (TooltipComponent component : components) {
+    private static TooltipBackgroundComponent getBackgroundComponent(List<ClientTooltipComponent> components) {
+        for (ClientTooltipComponent component : components) {
             if (component instanceof TooltipBackgroundComponent bgComponent) {
                 return bgComponent;
             }
@@ -205,15 +213,15 @@ public class EnhancedTooltipsDrawer {
         return null;
     }
 
-    private static List<TooltipComponent> wrapComponent(TooltipComponent component, TextRenderer textRenderer, int maxWidth) {
-        List<TooltipComponent> wrappedComponents = new ArrayList<>();
+    private static List<ClientTooltipComponent> wrapComponent(ClientTooltipComponent component, Font textRenderer, int maxWidth) {
+        List<ClientTooltipComponent> wrappedComponents = new ArrayList<>();
 
-        if (component instanceof OrderedTextTooltipComponentAccessor orderedTextTooltipComponent) {
-            Text text = EnhancedTooltipsTextVisitor.get(orderedTextTooltipComponent.getText());
+        if (component instanceof ClientTextTooltipAccessor orderedTextTooltipComponent) {
+            Component text = EnhancedTooltipsTextVisitor.get(orderedTextTooltipComponent.getText());
 
-            List<OrderedText> lines = textRenderer.wrapLines(text, maxWidth);
-            for (OrderedText line : lines) {
-                wrappedComponents.add(TooltipComponent.of(line));
+            List<FormattedCharSequence> lines = textRenderer.split(text, maxWidth);
+            for (FormattedCharSequence line : lines) {
+                wrappedComponents.add(ClientTooltipComponent.create(line));
             }
         } else {
             wrappedComponents.add(component);
@@ -227,13 +235,13 @@ public class EnhancedTooltipsDrawer {
         private int y;
         private int width;
         private int height;
-        private final List<TooltipComponent> components;
+        private final List<ClientTooltipComponent> components;
 
         private TooltipPage() {
             this(0, 0, 0, 0, new ArrayList<>());
         }
 
-        private TooltipPage(int x, int y, int width, int height, List<TooltipComponent> components) {
+        private TooltipPage(int x, int y, int width, int height, List<ClientTooltipComponent> components) {
             this.x = x;
             this.y = y;
             this.width = width;
