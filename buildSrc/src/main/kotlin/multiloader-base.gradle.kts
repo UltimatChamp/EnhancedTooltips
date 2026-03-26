@@ -100,7 +100,9 @@ publishMods {
 
     changelog.set("# ${project.version}\n${rootProject.file("CHANGELOG.md").readText()}")
 
-    file = tasks.jar.map { it.archiveFile.get() }
+    file = if (loader == "neo" || stonecutter.eval(stonecutter.current.project, ">1.21.11"))
+               tasks.jar.map { it.archiveFile.get() }
+           else tasks.named<org.gradle.jvm.tasks.Jar>("remapJar").map { it.archiveFile.get() }
     additionalFiles.from(tasks.named<org.gradle.jvm.tasks.Jar>("sourcesJar").map { it.archiveFile.get() })
 
     displayName.set("EnhancedTooltips ${project.version}")
