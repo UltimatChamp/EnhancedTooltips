@@ -65,7 +65,7 @@ public class CreativeModeTabCollector {
                     ((CreativeModeTabAccessor) group).getDisplayItemsGenerator().accept(parameters, builder);
                     map.put(group, postFabricEvents(group, parameters, resourceKey, builder.tabContents));
                     //?} else {
-                    /*EventHooks.onCreativeModeTabBuildContents(group, resourceKey, ((CreativeModeTabAccessor) group).getDisplayItemsGenerator(), parameters, (stack, visibility) -> {
+                    /*EventHooks.onCreativeModeTabBuildContents(group, /^? if <26.1 {^//^resourceKey, ^//^?}^/((CreativeModeTabAccessor) group).getDisplayItemsGenerator(), parameters, (stack, visibility) -> {
                         if (visibility == CreativeModeTab.TabVisibility.SEARCH_TAB_ONLY) return;
                         builder.accept(stack, visibility);
                     });

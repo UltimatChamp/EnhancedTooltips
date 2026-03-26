@@ -91,6 +91,12 @@ _(Displays mod name if the item is not in vanilla)_
 
 <img alt="Image" width="300px" src="https://cdn.modrinth.com/data/8H6RXl2q/images/df9ea34143aa6e23605976a9e18690dc8c3b7b97.png" />
 
+---
+
+## Recommended Tooltip Mods
+
+[**These**](https://modrinth.com/collection/1RzXo03F) mods are known to work well with **EnhancedTooltips**.
+
 ## Credits!
 
 ### [**Immersive:Tooltip**](https://modrinth.com/mod/immersive-tooltip)

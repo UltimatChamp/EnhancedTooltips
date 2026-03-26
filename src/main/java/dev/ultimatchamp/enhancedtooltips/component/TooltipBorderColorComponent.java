@@ -1,5 +1,6 @@
 package dev.ultimatchamp.enhancedtooltips.component;
 
+import dev.ultimatchamp.enhancedtooltips.EnhancedTooltips;
 import dev.ultimatchamp.enhancedtooltips.config.EnhancedTooltipsConfig;
 import dev.ultimatchamp.enhancedtooltips.tooltip.TooltipHelper;
 import net.minecraft.client.Minecraft;
@@ -26,8 +27,8 @@ public class TooltipBorderColorComponent extends TooltipBackgroundComponent {
     @Override
     protected void renderBorder(GuiGraphicsExtractor context, int x, int y, int width, int height, int z, int page) {
         if (config.border.borderColor == EnhancedTooltipsConfig.BorderColorMode.RARITY) {
-            Identifier renderId = (stack.getRarity() == Rarity.COMMON) ? Identifier.withDefaultNamespace("tooltip/frame") : Identifier.withDefaultNamespace("tooltip/frame/" + stack.getRarity().name().toLowerCase());
-            Identifier checkId = Identifier.withDefaultNamespace("textures/gui/sprites/" + renderId.getPath() + ".png");
+            Identifier renderId = (stack.getRarity() == Rarity.COMMON) ? Identifier.withDefaultNamespace("tooltip/frame") : Identifier.fromNamespaceAndPath(EnhancedTooltips.MOD_ID, "tooltip/frame/" + stack.getRarity().name().toLowerCase());
+            Identifier checkId = Identifier.fromNamespaceAndPath(renderId.getNamespace(), "textures/gui/sprites/" + renderId.getPath() + ".png");
 
             if (Minecraft.getInstance().getResourceManager().getResource(checkId).isPresent()) {
                 //? if <1.21.6 {

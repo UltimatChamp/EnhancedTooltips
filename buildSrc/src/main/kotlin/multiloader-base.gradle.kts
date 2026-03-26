@@ -28,11 +28,11 @@ base {
 }
 
 repositories {
+    mavenCentral()
     exclusiveContent {
         forRepository { maven("https://api.modrinth.com/maven") }
         filter { includeGroup("maven.modrinth") }
     }
-    maven("https://maven.isxander.dev/releases")
     maven("https://maven.parchmentmc.org")
 }
 

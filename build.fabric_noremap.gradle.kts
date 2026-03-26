@@ -17,10 +17,11 @@ dependencies {
 
     // Compat
     /*compileOnly(fletchingTable.modrinth("sophisticated-backpacks-(unoffical-fabric-port)", "1.21.1", "fabric")) // intentional spelling mistake
+    modCompileOnly(fletchingTable.modrinth("sophisticated-storage-(unofficial-fabric-port)", "1.21.1", "fabric"))
     compileOnly(fletchingTable.modrinth("sophisticated-core-(unofficial-fabric-port)", "1.21.1", "fabric"))*/
 
-    compileOnly(fletchingTable.modrinth("entity-model-features", "${project.property("deps.minecraft_version")} + 1.21.11", "fabric"))
-    compileOnly(fletchingTable.modrinth("entitytexturefeatures", "${project.property("deps.minecraft_version")} + 1.21.11", "fabric"))
+    compileOnly(fletchingTable.modrinth("entity-model-features", "${project.property("deps.minecraft_version")}", "fabric"))
+    compileOnly(fletchingTable.modrinth("entitytexturefeatures", "${project.property("deps.minecraft_version")}", "fabric"))
 }
 
 loom {
@@ -29,4 +30,8 @@ loom {
 
 tasks.named("processResources") {
     dependsOn(":${stonecutter.current.project}:stonecutterGenerate")
+}
+
+tasks.processResources {
+    exclude("META-INF/neoforge.mods.toml", "META-INF/accesstransformer.cfg", "enhancedtooltips.classtweaker")
 }

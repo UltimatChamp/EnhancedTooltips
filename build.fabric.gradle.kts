@@ -1,3 +1,5 @@
+@file:Suppress("UnstableApiUsage")
+
 plugins {
     id("multiloader-base")
     id("net.fabricmc.fabric-loom-remap")
@@ -22,6 +24,7 @@ dependencies {
 
     // Compat
     modCompileOnly(fletchingTable.modrinth("sophisticated-backpacks-(unoffical-fabric-port)", "1.21.1", "fabric")) // intentional spelling mistake
+    modCompileOnly(fletchingTable.modrinth("sophisticated-storage-(unofficial-fabric-port)", "1.21.1", "fabric"))
     modCompileOnly(fletchingTable.modrinth("sophisticated-core-(unofficial-fabric-port)", "1.21.1", "fabric"))
 
     modCompileOnly(fletchingTable.modrinth("entity-model-features", "${project.property("deps.minecraft_version")}", "fabric"))
@@ -37,5 +40,5 @@ tasks.named("processResources") {
 }
 
 tasks.processResources {
-    exclude("META-INF/neoforge.mods.toml", "META-INF/accesstransformer.cfg")
+    exclude("META-INF/neoforge.mods.toml", "META-INF/accesstransformer.cfg", "enhancedtooltips_noremap.classtweaker")
 }
