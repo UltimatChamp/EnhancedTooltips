@@ -42,3 +42,8 @@ tasks.named("processResources") {
 tasks.processResources {
     exclude("META-INF/neoforge.mods.toml", "META-INF/accesstransformer.cfg", "enhancedtooltips_noremap.classtweaker")
 }
+
+publishMods {
+    file.set(tasks.remapJar.flatMap { it.archiveFile })
+    additionalFiles.from(tasks.remapSourcesJar.flatMap { it.archiveFile })
+}

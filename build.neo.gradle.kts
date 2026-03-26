@@ -58,3 +58,8 @@ tasks.processResources {
 tasks.named("createMinecraftArtifacts") {
     dependsOn("stonecutterGenerate")
 }
+
+publishMods {
+    file.set(tasks.jar.flatMap { it.archiveFile })
+    additionalFiles.from(tasks.sourcesJar.flatMap { it.archiveFile })
+}
