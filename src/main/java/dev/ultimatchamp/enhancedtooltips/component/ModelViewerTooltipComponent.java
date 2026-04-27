@@ -444,7 +444,7 @@ public class ModelViewerTooltipComponent extends TooltipBorderColorComponent {
         context.pose().mulPose(new Matrix4f().scaling(scale, scale, scale));
         context.pose().mulPose(rotation);
 
-        entity.setCustomName(EMFCompat.KEY);
+        entity.setCustomName(Component.literal(EMFCompat.KEY));
         entity.setCustomNameVisible(false);
 
         var dispatcher = Minecraft.getInstance().getEntityRenderDispatcher();
