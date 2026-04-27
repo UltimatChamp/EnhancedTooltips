@@ -404,7 +404,7 @@ public class ModelViewerTooltipComponent extends TooltipBorderColorComponent {
                 .rotateY((float) Math.toRadians(rotationYaw))
                 .rotateX((float) Math.toRadians(180));
 
-        entity.setCustomName(EMFCompat.KEY);
+        entity.setCustomName(Component.literal(EMFCompat.KEY));
         entity.setCustomNameVisible(false);
 
         //? if >1.21.5 {
