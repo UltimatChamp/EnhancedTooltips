@@ -48,7 +48,7 @@ public class PaintingTooltipComponent implements EnhancedTooltipsTooltipComponen
         //?} else {
         /*CustomData nbtComponent = stack.getOrDefault(DataComponents.ENTITY_DATA, null);
         Painting painting = EntityType.PAINTING.create(Minecraft.getInstance().level/^? if >1.21.1 {^/, EntitySpawnReason.SPAWN_ITEM_USE/^?}^/);
-        if (painting != null) {
+        if (painting != null && nbtComponent != null) {
             painting.load(nbtComponent.copyTag());
 
             this.variant = painting.getVariant().value();

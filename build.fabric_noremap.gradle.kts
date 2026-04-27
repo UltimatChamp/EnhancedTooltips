@@ -16,9 +16,7 @@ dependencies {
     api("dev.isxander:yet-another-config-lib:${project.property("deps.yacl_version")}")
 
     // Compat
-    /*compileOnly(fletchingTable.modrinth("sophisticated-backpacks-(unoffical-fabric-port)", "1.21.1", "fabric")) // intentional spelling mistake
-    modCompileOnly(fletchingTable.modrinth("sophisticated-storage-(unofficial-fabric-port)", "1.21.1", "fabric"))
-    compileOnly(fletchingTable.modrinth("sophisticated-core-(unofficial-fabric-port)", "1.21.1", "fabric"))*/
+    //compileOnly(fletchingTable.modrinth("sophisticated-core-(unofficial-fabric-port)", "${project.property("deps.minecraft_version")}", "fabric"))
 
     compileOnly(fletchingTable.modrinth("entity-model-features", "${project.property("deps.minecraft_version")}", "fabric"))
     compileOnly(fletchingTable.modrinth("entitytexturefeatures", "${project.property("deps.minecraft_version")}", "fabric"))

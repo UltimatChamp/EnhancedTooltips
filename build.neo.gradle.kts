@@ -41,12 +41,7 @@ dependencies {
         "additionalRuntimeClasspath"("blue.endless:jankson:${project.property("deps.jankson_version")}")
 
     // Compat
-    if (stonecutter.eval("${project.property("deps.minecraft_version")}", "<26.1")) {
-        compileOnly(fletchingTable.modrinth("sophisticated-backpacks", "${project.property("deps.minecraft_version")} + 1.21.11", "neoforge"))
-        compileOnly(fletchingTable.modrinth("sophisticated-storage", "${project.property("deps.minecraft_version")} + 1.21.11", "neoforge"))
-        compileOnly(fletchingTable.modrinth("sophisticated-core", "${project.property("deps.minecraft_version")} + 1.21.11", "neoforge"))
-    }
-
+    compileOnly(fletchingTable.modrinth("sophisticated-core", "${project.property("deps.minecraft_version")} + 1.21.1", "neoforge"))
     compileOnly(fletchingTable.modrinth("entity-model-features", "${project.property("deps.minecraft_version")}", "neoforge"))
     compileOnly(fletchingTable.modrinth("entitytexturefeatures", "${project.property("deps.minecraft_version")}", "neoforge"))
 }

@@ -68,7 +68,7 @@ public class EnhancedTooltips {
             list.removeIf(c ->
                     c instanceof ClientTextTooltipAccessor component &&
                     EnhancedTooltipsTextVisitor.get(component.getText()).getString().equals(stack.getHoverName().getString()) &&
-                    !(BadgesUtils.getMods().containsKey("sophisticatedbackpacks") && SophisticatedBackpacksCompat.containsBackpackTooltip(list))
+                    !(BadgesUtils.getMods().containsKey("sophisticatedcore") && SophisticatedBackpacksCompat.containsBackpackTooltip(list))
             );
             list.addFirst(new HeaderTooltipComponent(stack));
 

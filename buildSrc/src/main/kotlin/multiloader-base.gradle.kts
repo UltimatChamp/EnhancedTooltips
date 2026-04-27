@@ -73,12 +73,12 @@ tasks.processResources {
     replaceProperties.forEach { (key, value) -> inputs.property(key, value) }
 }
 
+val javaVer = if (stonecutter.eval(stonecutter.current.version, ">1.21.11"))
+                  JavaVersion.VERSION_25
+              else JavaVersion.VERSION_21
+
 java {
     withSourcesJar()
-
-    var javaVer = if (stonecutter.eval(stonecutter.current.version, ">1.21.11"))
-        JavaVersion.VERSION_25
-    else JavaVersion.VERSION_21
 
     sourceCompatibility = javaVer
     targetCompatibility = javaVer
@@ -105,9 +105,20 @@ publishMods {
         modLoaders.addAll("fabric", "quilt")
     else modLoaders.add("neoforge")
 
-    val mrOptions = modrinthOptions {
+    modrinth {
         projectId.set(project.property("modrinthId") as String)
         accessToken.set(providers.environmentVariable("MODRINTH_TOKEN"))
+
+        when (stonecutter.current.project) {
+            "26.1.2" -> minecraftVersions.addAll("26.1", "26.1.1", "26.1.2")
+            "1.21.11" -> minecraftVersions.add("1.21.11")
+            "1.21.10" -> minecraftVersions.addAll("1.21.9", "1.21.10")
+            "1.21.8" -> minecraftVersions.addAll("1.21.6", "1.21.7", "1.21.8")
+            "1.21.5" -> minecraftVersions.add("1.21.5")
+            "1.21.4" -> minecraftVersions.add("1.21.4")
+            "1.21.3" -> minecraftVersions.addAll("1.21.2", "1.21.3")
+            "1.21.1" -> minecraftVersions.addAll("1.21", "1.21.1")
+        }
 
         requires("yacl")
         if (loader == "fabric")
@@ -117,9 +128,25 @@ publishMods {
         announcementTitle.set("Download from Modrinth")
     }
 
-    val cfOptions = curseforgeOptions {
+    curseforge {
         projectId.set(project.property("curseforgeId") as String)
         accessToken.set(providers.environmentVariable("CURSEFORGE_API_KEY"))
+
+        when (stonecutter.current.project) {
+            "26.1.2" -> minecraftVersions.addAll("26.1", "26.1.1", "26.1.2")
+            "1.21.11" -> minecraftVersions.add("1.21.11")
+            "1.21.10" -> minecraftVersions.addAll("1.21.9", "1.21.10")
+            "1.21.8" -> minecraftVersions.addAll("1.21.6", "1.21.7", "1.21.8")
+            "1.21.5" -> minecraftVersions.add("1.21.5")
+            "1.21.4" -> minecraftVersions.add("1.21.4")
+            "1.21.3" -> minecraftVersions.addAll("1.21.2", "1.21.3")
+            "1.21.1" -> minecraftVersions.addAll("1.21", "1.21.1")
+        }
+
+        javaVersions.add(javaVer)
+
+        clientRequired.set(true)
+        serverRequired.set(false)
 
         requires("yacl")
         if (loader == "fabric")
@@ -128,101 +155,6 @@ publishMods {
         // Discord
         announcementTitle.set("Download from CurseForge")
         projectSlug.set("enhancedtooltips")
-    }
-
-    when (project.property("deps.minecraft_version") as String) {
-        "1.21.1" -> {
-            modrinth("m1.21.1") {
-                from(mrOptions)
-                minecraftVersionRange {
-                    start = "1.21"
-                    end = "1.21.1"
-                }
-            }
-            curseforge("c1.21.1") {
-                from(cfOptions)
-                minecraftVersionRange {
-                    start = "1.21"
-                    end = "1.21.1"
-                }
-            }
-        }
-        "1.21.3" -> {
-            modrinth("m1.21.3") {
-                from(mrOptions)
-                minecraftVersionRange {
-                    start = "1.21.2"
-                    end = "1.21.3"
-                }
-            }
-            curseforge("c1.21.3") {
-                from(cfOptions)
-                minecraftVersionRange {
-                    start = "1.21.2"
-                    end = "1.21.3"
-                }
-            }
-        }
-        "1.21.4" -> {
-            modrinth("m1.21.4") {
-                from(mrOptions)
-                minecraftVersions.add("1.21.4")
-            }
-            curseforge("c1.21.4") {
-                from(cfOptions)
-                minecraftVersions.add("1.21.4")
-            }
-        }
-        "1.21.5" -> {
-            modrinth("m1.21.5") {
-                from(mrOptions)
-                minecraftVersions.add("1.21.5")
-            }
-            curseforge("c1.21.5") {
-                from(cfOptions)
-                minecraftVersions.add("1.21.5")
-            }
-        }
-        "1.21.8" -> {
-            modrinth("m1.21.8") {
-                from(mrOptions)
-                minecraftVersions.addAll("1.21.8", "1.21.7", "1.21.6")
-            }
-            curseforge("c1.21.8") {
-                from(cfOptions)
-                minecraftVersions.addAll("1.21.8", "1.21.7", "1.21.6")
-            }
-        }
-        "1.21.10" -> {
-            modrinth("m1.21.10") {
-                from(mrOptions)
-                minecraftVersions.addAll("1.21.9", "1.21.10")
-            }
-            curseforge("c1.21.10") {
-                from(cfOptions)
-                minecraftVersions.addAll("1.21.9", "1.21.10")
-            }
-        }
-        "1.21.11" -> {
-            modrinth("m1.21.11") {
-                from(mrOptions)
-                minecraftVersions.add("1.21.11")
-            }
-            curseforge("c1.21.11") {
-                from(cfOptions)
-                minecraftVersions.add("1.21.11")
-            }
-        }
-        "26.1" -> {
-            modrinth("m26.1") {
-                from(mrOptions)
-                minecraftVersions.add("26.1")
-            }
-            curseforge("c26.1") {
-                from(cfOptions)
-                minecraftVersions.add("26.1")
-            }
-        }
     }
 
     github {
