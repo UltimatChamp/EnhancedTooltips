@@ -3,6 +3,7 @@ package dev.ultimatchamp.enhancedtooltips.component;
 import dev.ultimatchamp.enhancedtooltips.compat.EMFCompat;
 import dev.ultimatchamp.enhancedtooltips.config.EnhancedTooltipsConfig;
 import dev.ultimatchamp.enhancedtooltips.mixin.accessors.MobBucketItemTypeAccessor;
+import dev.ultimatchamp.enhancedtooltips.util.BadgesUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -220,8 +221,10 @@ public class ModelViewerTooltipComponent extends TooltipBorderColorComponent {
             //?}
 
             @Override
-            public boolean isModelPartShown(PlayerModelPart part) {
-                return true;
+            public boolean isModelPartShown(@NotNull PlayerModelPart part) {
+                if (part == PlayerModelPart.CAPE && BadgesUtils.getMods().containsKey("waveycapes"))
+                    return false;
+                else return player.isModelPartShown(part);
             }
         };
         fakePlayer.setUUID(player.getUUID());
