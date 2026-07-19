@@ -12,4 +12,4 @@ stonecutter parameters {
     constants.match(loader, "fabric", "neoforge")
 }
 
-stonecutter active "26.1.2-fabric"
+stonecutter active "26.2-fabric"

@@ -46,6 +46,8 @@
   "enhancedtooltips.config.bucketTooltip.desc": "منونجوقکن ڤراليهت اينتيتي بلدي ددالم بلدي.",
   "enhancedtooltips.config.spawnEggTooltip": "ڤتوا الت تلور ڤنجلماٴن",
   "enhancedtooltips.config.spawnEggTooltip.desc": "منونجوقکن ڤراليهت اينتيتي تلور ڤنجلماٴن.",
+  "enhancedtooltips.config.disableEmfModels": "Disable EMF Models",
+  "enhancedtooltips.config.disableEmfModels.desc": "Disables EMF models completely. Can help prevent some UI glitches when used with resource-packs like Fresh Animations.",
   "enhancedtooltips.config.mapTooltip": "ڤتوا الت ڤتا",
   "enhancedtooltips.config.mapTooltip.desc": "منونجوقکن ڤراليهت ڤتا يڠ دأيسي ددالم ڤتوا التڽ.",
   "enhancedtooltips.config.paintingTooltip": "ڤتوا الت لوکيسن",

@@ -6,6 +6,7 @@ import dev.isxander.yacl3.api.controller.TickBoxControllerBuilder;
 import dev.isxander.yacl3.gui.controllers.cycling.EnumController;
 import dev.isxander.yacl3.gui.controllers.slider.FloatSliderController;
 import dev.isxander.yacl3.gui.controllers.slider.IntegerSliderController;
+import dev.ultimatchamp.enhancedtooltips.component.ModelViewerTooltipComponent;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import java.awt.*;
@@ -383,6 +384,18 @@ public class EnhancedTooltipsGui {
                                         )
                                         .controller(TickBoxControllerBuilder::create)
                                         .build())
+                                .option(Option.<Boolean>createBuilder()
+                                        .name(Component.translatable("enhancedtooltips.config.disableEmfModels"))
+                                        .description(OptionDescription.createBuilder()
+                                                .text(Component.translatable("enhancedtooltips.config.disableEmfModels.desc"))
+                                                .build())
+                                        .binding(
+                                                false,
+                                                () -> config.mobs.disableEmfModels,
+                                                (value) -> config.mobs.disableEmfModels = value
+                                        )
+                                        .controller(TickBoxControllerBuilder::create)
+                                        .build())
                                 .build())
                         .group(OptionGroup.createBuilder()
                                 .name(Component.translatable("item.minecraft.filled_map"))
@@ -579,7 +592,10 @@ public class EnhancedTooltipsGui {
                                         .build())
                                 .build())
                         .build())
-                .save(() -> EnhancedTooltipsConfig.save(config))
+                .save(() -> {
+                    EnhancedTooltipsConfig.save(config);
+                    ModelViewerTooltipComponent.reset();
+                })
                 .build()
                 .generateScreen(parent);
     }

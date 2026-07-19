@@ -46,6 +46,8 @@
   "enhancedtooltips.config.bucketTooltip.desc": "バケツ内のバケツエンティティのプレビューを表示します。",
   "enhancedtooltips.config.spawnEggTooltip": "スポーンエッグのツールチップ",
   "enhancedtooltips.config.spawnEggTooltip.desc": "スポーンエッグエンティティのプレビューを表示します。",
+  "enhancedtooltips.config.disableEmfModels": "Disable EMF Models",
+  "enhancedtooltips.config.disableEmfModels.desc": "Disables EMF models completely. Can help prevent some UI glitches when used with resource-packs like Fresh Animations.",
   "enhancedtooltips.config.mapTooltip": "地図のツールチップ",
   "enhancedtooltips.config.mapTooltip.desc": "ツールチップに記入された地図のプレビューを表示します。",
   "enhancedtooltips.config.paintingTooltip": "絵画のツールチップ",

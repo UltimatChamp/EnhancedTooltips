@@ -10,7 +10,6 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipPositioner;
-import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -30,29 +29,29 @@ public class DrawContextMixin {
     //? if >1.21.11 {
     //? if fabric {
     @Inject(method = "tooltip", at = @At("HEAD"), cancellable = true)
-    private void enhancedTooltips$drawTooltip(Font textRenderer, List<ClientTooltipComponent> components, int x, int y, ClientTooltipPositioner positioner, @Nullable Identifier texture, CallbackInfo ci) {
+    private void enhancedTooltips$drawTooltip(Font font, List<ClientTooltipComponent> lines, int xo, int yo, ClientTooltipPositioner positioner, @Nullable Identifier style, CallbackInfo ci) {
     //?} else {
     /*@Inject(method = "tooltip(Lnet/minecraft/client/gui/Font;Ljava/util/List;IILnet/minecraft/client/gui/screens/inventory/tooltip/ClientTooltipPositioner;Lnet/minecraft/resources/Identifier;Lnet/minecraft/world/item/ItemStack;)V", at = @At("HEAD"), cancellable = true)
-        private void enhancedTooltips$drawTooltip(Font textRenderer, List<ClientTooltipComponent> components, int x, int y, ClientTooltipPositioner positioner, @Nullable Identifier texture, ItemStack stack, CallbackInfo ci) {
+        private void enhancedTooltips$drawTooltip(Font font, List<ClientTooltipComponent> lines, int xo, int yo, ClientTooltipPositioner positioner, @Nullable Identifier style, ItemStack stack, CallbackInfo ci) {
     *///?}
     //?} else if >1.21.5 {
     /*//? if fabric {
     @Inject(method = "renderTooltip", at = @At("HEAD"), cancellable = true)
-    private void enhancedTooltips$drawTooltip(Font textRenderer, List<ClientTooltipComponent> components, int x, int y, ClientTooltipPositioner positioner, @Nullable Identifier texture, CallbackInfo ci) {
+    private void enhancedTooltips$drawTooltip(Font font, List<ClientTooltipComponent> lines, int xo, int yo, ClientTooltipPositioner positioner, @Nullable Identifier style, CallbackInfo ci) {
     //?} else {
     /^@Inject(method = "renderTooltip(Lnet/minecraft/client/gui/Font;Ljava/util/List;IILnet/minecraft/client/gui/screens/inventory/tooltip/ClientTooltipPositioner;Lnet/minecraft/resources/Identifier;Lnet/minecraft/world/item/ItemStack;)V", at = @At("HEAD"), cancellable = true)
-    private void enhancedTooltips$drawTooltip(Font textRenderer, List<ClientTooltipComponent> components, int x, int y, ClientTooltipPositioner positioner, @Nullable Identifier texture, ItemStack stack, CallbackInfo ci) {
+    private void enhancedTooltips$drawTooltip(Font font, List<ClientTooltipComponent> lines, int xo, int yo, ClientTooltipPositioner positioner, @Nullable Identifier style, ItemStack stack, CallbackInfo ci) {
     ^///?}
     *///?} else if >1.21.1 {
     /*@Inject(method = "renderTooltipInternal", at = @At("HEAD"), cancellable = true)
-    private void enhancedTooltips$drawTooltip(Font textRenderer, List<ClientTooltipComponent> components, int x, int y, ClientTooltipPositioner positioner, @Nullable Identifier texture, CallbackInfo ci) {
+    private void enhancedTooltips$drawTooltip(Font font, List<ClientTooltipComponent> lines, int xo, int yo, ClientTooltipPositioner positioner, @Nullable Identifier style, CallbackInfo ci) {
     *///?} else {
     /*@Inject(method = "renderTooltipInternal", at = @At("HEAD"), cancellable = true)
-    private void enhancedTooltips$drawTooltip(Font textRenderer, List<ClientTooltipComponent> components, int x, int y, ClientTooltipPositioner positioner, CallbackInfo ci) {
+    private void enhancedTooltips$drawTooltip(Font font, List<ClientTooltipComponent> lines, int xo, int yo, ClientTooltipPositioner positioner, CallbackInfo ci) {
     *///?}
-        if (components == null || components.isEmpty()) return;
+        if (lines == null || lines.isEmpty()) return;
 
-        List<ClientTooltipComponent> tooltipComponents = new ArrayList<>(components);
+        List<ClientTooltipComponent> tooltipComponents = new ArrayList<>(lines);
         ItemStack cacheItemStack =
                 //? if <=1.21.5 || !neoforge {
                 TooltipItemStackCache.getItemStack();
@@ -60,14 +59,8 @@ public class DrawContextMixin {
                 /*stack;
                 *///?}
 
-        boolean isEmpty = cacheItemStack == null || cacheItemStack.isEmpty();
-        if (isEmpty) cacheItemStack = ItemStack.EMPTY;
-
-        if (!isEmpty && components.getFirst() instanceof ClientTextTooltipAccessor ordered) {
-            Component name = EnhancedTooltipsTextVisitor.get(ordered.getText());
-            Component cachedName = EnhancedTooltipsTextVisitor.get(TooltipHelper.getDisplayName(cacheItemStack).getVisualOrderText());
-
-            if (!name.equals(cachedName)) {
+        if (!cacheItemStack.isEmpty() && lines.getFirst() instanceof ClientTextTooltipAccessor ordered) {
+            if (!EnhancedTooltipsTextVisitor.styledEquals(ordered.getText(), TooltipHelper.getDisplayName(cacheItemStack).getVisualOrderText())) {
                 cacheItemStack = ItemStack.EMPTY;
             }
         }
@@ -77,7 +70,7 @@ public class DrawContextMixin {
         //?}
         TooltipComponentManager.invoke(tooltipComponents, cacheItemStack);
 
-        EnhancedTooltipsDrawer.drawTooltip((GuiGraphicsExtractor) (Object) this, textRenderer, tooltipComponents, x, y, positioner, cacheItemStack);
+        EnhancedTooltipsDrawer.drawTooltip((GuiGraphicsExtractor) (Object) this, font, tooltipComponents, xo, yo, positioner, cacheItemStack);
         ci.cancel();
     }
 }

@@ -24,6 +24,10 @@ import java.util.function.Consumer;
 
 import org.jetbrains.annotations.NotNull;
 
+//? if >26.1.2 {
+import net.minecraft.client.gui.Hud;
+//?}
+
 //? if >1.21.5 {
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.gui.Gui;
@@ -102,9 +106,11 @@ public record PotionEffectTooltipComponent(ItemStack stack) implements EnhancedT
             isEmpty = false;
             lineY += textRenderer.lineHeight + 1;
 
-            //? if >1.21.5 {
-            Identifier effectTexture = Gui.getMobEffectSprite(effect.getEffect());
-            //?} else {
+            //? if >26.1.2 {
+            Identifier effectTexture = Hud.getMobEffectSprite(effect.getEffect());
+            //?} else if >1.21.5 {
+            /*Identifier effectTexture = Gui.getMobEffectSprite(effect.getEffect());
+            *///?} else {
             /*TextureAtlasSprite effectTexture = Minecraft.getInstance().getMobEffectTextures().get(effect.getEffect());
             *///?}
 

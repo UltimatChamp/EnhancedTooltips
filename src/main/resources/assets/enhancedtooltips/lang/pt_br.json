@@ -46,6 +46,8 @@
   "enhancedtooltips.config.bucketTooltip.desc": "Mostra uma prévia da entidade contida em um balde.",
   "enhancedtooltips.config.spawnEggTooltip": "Contexto de Ovo Gerador",
   "enhancedtooltips.config.spawnEggTooltip.desc": "Mostra uma prévia da entidade associada ao ovo gerador.",
+  "enhancedtooltips.config.disableEmfModels": "Disable EMF Models",
+  "enhancedtooltips.config.disableEmfModels.desc": "Disables EMF models completely. Can help prevent some UI glitches when used with resource-packs like Fresh Animations.",
   "enhancedtooltips.config.mapTooltip": "Map Tooltip",
   "enhancedtooltips.config.mapTooltip.desc": "Shows a preview of the filled map in its tooltip.",
   "enhancedtooltips.config.paintingTooltip": "Painting Tooltip",

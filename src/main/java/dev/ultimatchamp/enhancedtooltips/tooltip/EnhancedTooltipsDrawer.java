@@ -6,6 +6,7 @@ import dev.ultimatchamp.enhancedtooltips.config.EnhancedTooltipsConfig;
 import dev.ultimatchamp.enhancedtooltips.mixin.accessors.ClientTextTooltipAccessor;
 import dev.ultimatchamp.enhancedtooltips.util.EnhancedTooltipsTextVisitor;
 import dev.ultimatchamp.enhancedtooltips.util.MatricesUtil;
+import dev.ultimatchamp.enhancedtooltips.util.PositionUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -63,71 +64,65 @@ public class EnhancedTooltipsDrawer {
             components.removeIf(component -> component.getHeight(/*? if >1.21.1 {*/textRenderer/*?}*/) == 0 || component.getWidth(textRenderer) == 0);
 
         MatricesUtil matrices = new MatricesUtil(context.pose());
-        List<TooltipPage> pageList = new ArrayList<>();
 
         float scale = 1;
         /*? if <1.21.6 {*//*scale = EnhancedTooltipsConfig.load().general.scaleFactor;*//*?}*/
 
         int maxWidth = (int) (getMaxWidth() / scale);
-        int totalWidth = 0;
-
-        int pageHeight = -2;
         int maxHeight = (int) (getMaxHeight() / scale);
 
         int spacing = components.size() > 1 ? 4 : 0;
-        pageHeight += spacing;
 
-        TooltipPage page = new TooltipPage();
-
+        List<ClientTooltipComponent> lines = new ArrayList<>();
         for (ClientTooltipComponent tooltipComponent : components) {
-            int width = tooltipComponent.getWidth(textRenderer);
-            int height = tooltipComponent.getHeight(/*? if >1.21.1 {*/textRenderer/*?}*/);
-
-            if (width > maxWidth) {
-                List<ClientTooltipComponent> wrappedComponents = wrapComponent(tooltipComponent, textRenderer, maxWidth);
-                for (ClientTooltipComponent wrappedComponent : wrappedComponents) {
-                    int wrappedWidth = wrappedComponent.getWidth(textRenderer);
-                    int wrappedHeight = wrappedComponent.getHeight(/*? if >1.21.1 {*/textRenderer/*?}*/);
-
-                    if (pageHeight + wrappedHeight > maxHeight) {
-                        pageList.add(page);
-                        totalWidth += page.width;
-                        page = new TooltipPage();
-                        pageHeight = -2;
-                    }
-
-                    page.components.add(wrappedComponent);
-                    page.height = pageHeight += wrappedHeight;
-                    page.width = Math.max(page.width, wrappedWidth);
-                }
+            if (tooltipComponent.getWidth(textRenderer) > maxWidth) {
+                lines.addAll(wrapComponent(tooltipComponent, textRenderer, maxWidth));
             } else {
-                if (pageHeight + height > maxHeight) {
-                    pageList.add(page);
-                    totalWidth += page.width;
-                    page = new TooltipPage();
-                    pageHeight = -2;
-                }
-
-                page.components.add(tooltipComponent);
-                page.height = pageHeight += height;
-                page.width = Math.max(page.width, width);
+                lines.add(tooltipComponent);
             }
+        }
+
+        List<TooltipPage> pageList = new ArrayList<>();
+        TooltipPage page = new TooltipPage();
+        int pageHeight = -2 + spacing;
+
+        for (ClientTooltipComponent line : lines) {
+            int width = line.getWidth(textRenderer);
+            int height = line.getHeight(/*? if >1.21.1 {*/textRenderer/*?}*/);
+
+            if (pageHeight + height > maxHeight && !page.components.isEmpty()) {
+                pageList.add(page);
+                page = new TooltipPage();
+                pageHeight = -2;
+            }
+
+            page.components.add(line);
+            page.height = pageHeight += height;
+            page.width = Math.max(page.width, width);
         }
 
         if (!page.components.isEmpty()) {
             pageList.add(page);
-            totalWidth += page.width;
         }
 
-        int scaledOffset = ((int) (12 * scale)) - 12;
-        Vector2ic vector2ic = positioner.positionTooltip(context.guiWidth(), context.guiHeight(), x + scaledOffset, y - scaledOffset, (int) (totalWidth * scale), (int) (pageList.getFirst().height * scale));
-        int n = vector2ic.x();
-        int o = vector2ic.y();
+        if (pageList.isEmpty()) return;
 
-        for (TooltipPage tooltipPage : pageList) {
-            tooltipPage.x = n;
-            tooltipPage.y = (pageList.size() > 1) ? o - EDGE_SPACING : o - 6;
-            n += tooltipPage.width + PAGE_SPACING;
+        TooltipPage firstPage = pageList.getFirst();
+
+        int scaledOffset = ((int) (12 * scale)) - 12;
+        Vector2ic vector2ic = positioner.positionTooltip(context.guiWidth(), context.guiHeight(), x + scaledOffset, y - scaledOffset, (int) (firstPage.width * scale), (int) (firstPage.height * scale));
+
+        firstPage.x = vector2ic.x();
+        firstPage.y = (pageList.size() > 1) ? vector2ic.y() - EDGE_SPACING : vector2ic.y() - 6;
+
+        PositionUtil.Bounds placed = new PositionUtil.Bounds(firstPage.x, firstPage.y, (int) (firstPage.width * scale), (int) (firstPage.height * scale));
+
+        for (TooltipPage tooltipPage : pageList.subList(1, pageList.size())) {
+            PositionUtil.Bounds bounds = PositionUtil.clampToScreen(placed, (int) (tooltipPage.width * scale), (int) (tooltipPage.height * scale), PAGE_SPACING, PositionUtil.Side.RIGHT);
+
+            tooltipPage.x = bounds.x();
+            tooltipPage.y = bounds.y();
+            placed = placed.union(bounds);
         }
 
         matrices.pushMatrix();
@@ -149,8 +144,9 @@ public class EnhancedTooltipsDrawer {
 
         matrices.scal(scale, scale, 1);
 
-        for (TooltipPage p : pageList) {
-            if (pageList.getFirst() == p) p.x = (int) (p.x / scale);
+        for (int i = 0; i < pageList.size(); i++) {
+            TooltipPage p = pageList.get(i);
+            p.x = (int) (p.x / scale);
             p.y = (int) (p.y / scale);
 
             if (backgroundComponent == null) {
@@ -162,7 +158,7 @@ public class EnhancedTooltipsDrawer {
                         context, p.x, p.y, p.width, p.height/*? if <=1.21.5 {*//*, 400*//*?}*//*? if >1.21.1 {*/, Identifier.withDefaultNamespace("tooltip/background")/*?}*/);
             } else {
                 try {
-                    backgroundComponent.render(context, p.x, p.y, p.width, p.height, 400, pageList.indexOf(p));
+                    backgroundComponent.render(context, p.x, p.y, p.width, p.height, 400, i);
                 } catch (Exception e) {
                     EnhancedTooltips.LOGGER.error("[{}]", EnhancedTooltips.MOD_NAME, e);
                 }
@@ -171,11 +167,14 @@ public class EnhancedTooltipsDrawer {
 
         matrices.trans(0.0f, 0.0f, 400.0f);
 
-        for (TooltipPage p : pageList) {
+        for (int i = 0; i < pageList.size(); i++) {
+            TooltipPage p = pageList.get(i);
             int cx = p.x;
             int cy = p.y;
 
-            for (ClientTooltipComponent component : p.components) {
+            for (int j = 0; j < p.components.size(); j++) {
+                ClientTooltipComponent component = p.components.get(j);
+
                 try {
                     //? if >1.21.11 {
                     component.extractText(context, textRenderer, cx, cy);
@@ -189,13 +188,14 @@ public class EnhancedTooltipsDrawer {
                     //?} else {
                     /*component.renderImage(textRenderer, cx, cy, /^? if >1.21.1 {^/p.width, p.height,/^?}^/ context);
                     *///?}
-                    cy += component.getHeight(/*? if >1.21.1 {*/textRenderer/*?}*/);
-
-                    if (p == pageList.getFirst() && component == p.components.getFirst() && components.size() > 1) {
-                        cy += spacing;
-                    }
                 } catch (Exception e) {
                     EnhancedTooltips.LOGGER.error("[{}]", EnhancedTooltips.MOD_NAME, e);
+                }
+
+                cy += component.getHeight(/*? if >1.21.1 {*/textRenderer/*?}*/);
+
+                if (i == 0 && j == 0 && spacing > 0) {
+                    cy += spacing;
                 }
             }
         }

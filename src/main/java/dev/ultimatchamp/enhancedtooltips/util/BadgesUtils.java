@@ -1,14 +1,13 @@
 package dev.ultimatchamp.enhancedtooltips.util;
 
+import it.unimi.dsi.fastutil.Pair;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.util.Tuple;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Collection;
+import java.awt.Color;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -21,32 +20,43 @@ import net.neoforged.fml.ModContainer;
 *///?}
 
 public class BadgesUtils {
-    private static Map<String, String> mods = new HashMap<>();
+    private static final Map<String, String> mods = new HashMap<>();
+    private static boolean modsCollected = false;
 
-    public static @NotNull Tuple<@NotNull Component, @NotNull Integer> getBadgeText(ItemStack stack) {
+    public static @NotNull Pair<@NotNull Component, @NotNull Integer> getBadgeText(ItemStack stack) {
         Component text = Component.empty();
         int fillColor = 0;
 
-        for (Map.Entry<Collection<Item>, Tuple<@NotNull Component, @NotNull Integer>> entry : ItemGroupsUtils.getItemGroups().entrySet()) {
-            if (entry.getKey().contains(stack.getItem())) {
-                text = entry.getValue().getA();
-                fillColor = entry.getValue().getB();
-                break;
-            }
+        Pair<@NotNull Component, @NotNull Integer> badge = ItemGroupsUtils.getItemBadge(stack.getItem());
+        if (badge != null) {
+            text = badge.left();
+            fillColor = badge.right();
         }
 
         String namespace = BuiltInRegistries.ITEM.getKey(stack.getItem()).getNamespace();
-        Component finalText = text;
-        if (text.toFlatList().isEmpty() || (!namespace.equals("minecraft") && ItemGroupsUtils.ITEM_GROUP_KEYS.stream().map(key -> Component.translatable(key).getString()).anyMatch(s -> s.contains(finalText.getString())))) {
+        boolean hasBadge = !text.toFlatList().isEmpty();
+
+        boolean asVanillaGroup = false;
+        if (hasBadge && !namespace.equals("minecraft")) {
+            String badgeString = text.getString();
+            for (String groupName : ItemGroupsUtils.getItemGroupNames()) {
+                if (groupName.contains(badgeString)) {
+                    asVanillaGroup = true;
+                    break;
+                }
+            }
+        }
+
+        if (!hasBadge || asVanillaGroup) {
             text = Component.literal(getMods().getOrDefault(namespace, ""));
             fillColor = getColorFromModName(namespace);
         }
 
-        return new Tuple<>(text, fillColor);
+        return Pair.of(text, fillColor);
     }
 
     public static Map<String, String> getMods() {
-        if (!mods.isEmpty()) return mods;
+        if (modsCollected) return mods;
 
         //? if fabric {
         for (ModContainer modContainer : FabricLoader.getInstance().getAllMods()) {
@@ -60,6 +70,7 @@ public class BadgesUtils {
         }
         *///?}
 
+        modsCollected = true;
         return mods;
     }
 
@@ -77,14 +88,8 @@ public class BadgesUtils {
     }
 
     public static int getColorFromModName(String modName) {
-        int hash = modName.hashCode();
-
-        int r = (hash >> 16) & 0xFF;
-        int g = (hash >> 8) & 0xFF;
-        int b = hash & 0xFF;
-        int a = 0xFF;
-
-        return (a << 24) | (r << 16) | (g << 8) | b;
+        float hue = Math.floorMod(modName.hashCode(), 360) / 360f;
+        return 0xFF000000 | (Color.HSBtoRGB(hue, 0.6f, 0.85f) & 0xFFFFFF);
     }
 
     public static void drawFrame(GuiGraphicsExtractor context, int x, int y, int width, int height, int z, int color) {

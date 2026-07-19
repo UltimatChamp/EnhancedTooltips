@@ -8,10 +8,10 @@ import dev.ultimatchamp.enhancedtooltips.tooltip.TooltipItemStackCache;
 import dev.ultimatchamp.enhancedtooltips.util.BadgesUtils;
 import dev.ultimatchamp.enhancedtooltips.util.EnhancedTooltipsTextVisitor;
 import dev.ultimatchamp.enhancedtooltips.util.MatricesUtil;
+import it.unimi.dsi.fastutil.Pair;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.component.DataComponents;
@@ -19,7 +19,6 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
-import net.minecraft.util.Tuple;
 import net.minecraft.world.effect.MobEffectUtil;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.ItemStack;
@@ -37,6 +36,12 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
+//? if >26.1.2 {
+import net.minecraft.client.gui.Hud;
+//?} else {
+/*import net.minecraft.client.gui.Gui;
+*///?}
+
 /*? if <1.21.6 {*//*import com.mojang.math.Axis;*//*?}*/
 
 //? if >1.21.1 {
@@ -46,7 +51,7 @@ import net.minecraft.world.item.consume_effects.ConsumeEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 //?}
 
-@Mixin(Gui.class)
+@Mixin(/*? if >26.1.2 {*/Hud/*?} else {*//*Gui*//*?}*/.class)
 public abstract class GuiMixin {
     @Unique private long enhancedTooltips$tiltStartTime = 0;
     @Unique private int enhancedTooltips$lastTiltSlot = -1;
@@ -68,7 +73,7 @@ public abstract class GuiMixin {
             *///?}
             cancellable = true
     )
-    private void enhancedTooltips$renderHeldItemTooltipBackground(GuiGraphicsExtractor context,/*? if neoforge {*/ /*int yShift,*//*?}*/ CallbackInfo ci) {
+    private void enhancedTooltips$renderHeldItemTooltipBackground(GuiGraphicsExtractor graphics,/*? if neoforge {*/ /*int yShift,*//*?}*/ CallbackInfo ci) {
         EnhancedTooltipsConfig config = EnhancedTooltipsConfig.load();
         if (config.heldItemTooltip.mode == EnhancedTooltipsConfig.HeldItemTooltipMode.OFF) return;
 
@@ -98,10 +103,10 @@ public abstract class GuiMixin {
             enhancedTooltips$lastTiltSlot = currentSlot;
         }
 
-        Tuple<@NotNull Component, @NotNull Integer> badgeText = BadgesUtils.getBadgeText(lastToolHighlight);
-        if (config.general.itemBadges && !badgeText.getA().toFlatList().isEmpty()) {
+        Pair<@NotNull Component, @NotNull Integer> badgeText = BadgesUtils.getBadgeText(lastToolHighlight);
+        if (config.general.itemBadges && !badgeText.left().toFlatList().isEmpty()) {
             MutableComponent name = tooltip.getFirst().copy();
-            Component badge = badgeText.getA().copy().withColor(badgeText.getB());
+            Component badge = badgeText.left().copy().withColor(badgeText.right());
 
             if (!config.heldItemTooltip.hideItemName) {
                 Component combined = name
@@ -135,7 +140,7 @@ public abstract class GuiMixin {
             tooltip.add(Component.translatable("enhancedtooltips.tooltip.durability").append(enhancedTooltips$getDurabilityText()));
 
         float scale = config.heldItemTooltip.scaleFactor;
-        float maxWidth = context.guiWidth() / (2 * scale);
+        float maxWidth = graphics.guiWidth() / (2 * scale);
         for (Component component : new ArrayList<>(tooltip)) {
             if (textRenderer.width(component) > maxWidth) {
                 List<Component> wrapped = new ArrayList<>();
@@ -159,9 +164,9 @@ public abstract class GuiMixin {
             tooltip.add(Component.literal("(+" + cutOff.get() + " more...)").withColor(-4539718).withStyle(s -> s.withItalic(true)));
 
         int width = tooltip.stream().mapToInt(textRenderer::width).max().orElse(0);
-        float x = (context.guiWidth() - width * scale) / 2;
+        float x = (graphics.guiWidth() - width * scale) / 2;
         /*? if fabric {*/int yShift = 0;/*?}*/
-        float y = context.guiHeight() - Math.max(yShift, 59);
+        float y = graphics.guiHeight() - Math.max(yShift, 59);
         y -= (textRenderer.lineHeight + enhancedTooltips$SPACING / 2f) * tooltip.size() * scale - enhancedTooltips$SPACING * 3 + enhancedTooltips$SPACING / 2f;
         if (minecraft.player.getArmorValue() > 0 &&
                 minecraft.gameMode != null &&
@@ -173,11 +178,11 @@ public abstract class GuiMixin {
             alpha = 255;
         }
 
-        MatricesUtil matrices = new MatricesUtil(context.pose());
+        MatricesUtil matrices = new MatricesUtil(graphics.pose());
 
         if (!tooltip.isEmpty()) {
             matrices.pushMatrix();
-            enhancedTooltips$drawTextWithBackground(textRenderer, tooltip, (int) x, (int) y, width, context, (int) alpha, scale);
+            enhancedTooltips$drawTextWithBackground(textRenderer, tooltip, (int) x, (int) y, width, graphics, (int) alpha, scale);
             matrices.popMatrix();
         }
 
@@ -317,25 +322,25 @@ public abstract class GuiMixin {
     }
 
     @Unique
-    private void enhancedTooltips$drawTextWithBackground(Font textRenderer, List<Component> lines, int x, int y, int width, GuiGraphicsExtractor context, int alpha, float scale) {
+    private void enhancedTooltips$drawTextWithBackground(Font textRenderer, List<Component> lines, int x, int y, int width, GuiGraphicsExtractor graphics, int alpha, float scale) {
         int bgAlpha = (0x80 * alpha) / 255 << 24;
         float tilt = enhancedTooltips$getTilt();
 
-        MatricesUtil matrices = new MatricesUtil(context.pose());
+        MatricesUtil matrices = new MatricesUtil(graphics.pose());
 
         matrices.pushMatrix();
         matrices.trans(x + width * scale / 2f, y + (textRenderer.lineHeight * lines.size() * scale) / 2f, 0);
         matrices.scal(scale, scale, 0);
 
         //? if >1.21.5 {
-        context.pose().rotate((float) Math.toRadians(tilt));
+        graphics.pose().rotate((float) Math.toRadians(tilt));
         //?} else {
-        /*context.pose().mulPose(Axis.ZP.rotationDegrees(tilt));
+        /*graphics.pose().mulPose(Axis.ZP.rotationDegrees(tilt));
         *///?}
 
         matrices.trans(-(x / scale + width / 2f), -(y / scale + (textRenderer.lineHeight * lines.size()) / 2f), 0);
 
-        if (EnhancedTooltipsConfig.load().heldItemTooltip.showBackground) context.fill(
+        if (EnhancedTooltipsConfig.load().heldItemTooltip.showBackground) graphics.fill(
                 (int) (x / scale - enhancedTooltips$SPACING + 1),
                 (int) (y / scale - enhancedTooltips$SPACING / 2f),
                 (int) (x / scale + width + enhancedTooltips$SPACING - 1),
@@ -346,15 +351,15 @@ public abstract class GuiMixin {
         int textY = (int) (y / scale);
         for (Component line : lines) {
             int color = (line.getStyle().getColor() != null ? line.getStyle().getColor().getValue() : 0xFFFFFF) | (alpha << 24);
-            TooltipHelper.renderText(context, textRenderer, line.copy().withColor(color),
-                    (int) ((context.guiWidth() / scale - textRenderer.width(line)) / 2), textY, color, true
+            TooltipHelper.renderText(graphics, textRenderer, line.copy().withColor(color),
+                    (int) ((graphics.guiWidth() / scale - textRenderer.width(line)) / 2), textY, color, true
             );
             textY += textRenderer.lineHeight + enhancedTooltips$SPACING / 2;
         }
 
         int frameAlpha = (0x70 * alpha) / 255 << 24;
         if (EnhancedTooltipsConfig.load().heldItemTooltip.showBackground)
-            BadgesUtils.drawFrame(context, (int) (x / scale - enhancedTooltips$SPACING),
+            BadgesUtils.drawFrame(graphics, (int) (x / scale - enhancedTooltips$SPACING),
                     (int) (y / scale - enhancedTooltips$SPACING / 2f), width + enhancedTooltips$SPACING * 2,
                     (textRenderer.lineHeight + enhancedTooltips$SPACING / 2) * lines.size() + enhancedTooltips$SPACING / 2,
                     400, frameAlpha

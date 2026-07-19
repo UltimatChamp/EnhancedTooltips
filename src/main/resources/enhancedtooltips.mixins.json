@@ -14,7 +14,7 @@
     "accessors.HangingEntityItemTypeAccessor",
     "accessors.InventoryAccessor",
     "accessors.MobBucketItemTypeAccessor",
-    "accessors.SpawnEggItemEntityTypeAccessor"
+    "accessors.SpawnEggItemEntityAccessor"
   ],
   "injectors": {
     "defaultRequire": 1

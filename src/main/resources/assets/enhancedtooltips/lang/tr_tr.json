@@ -46,6 +46,8 @@
   "enhancedtooltips.config.bucketTooltip.desc": "Kovadaki varlığın önizlemesini gösterir.",
   "enhancedtooltips.config.spawnEggTooltip": "Çağırma Yumurtası Alet İpucu",
   "enhancedtooltips.config.spawnEggTooltip.desc": "Bir çağırma yumurtasının varlığının önizlemesini gösterir.",
+  "enhancedtooltips.config.disableEmfModels": "Disable EMF Models",
+  "enhancedtooltips.config.disableEmfModels.desc": "Disables EMF models completely. Can help prevent some UI glitches when used with resource-packs like Fresh Animations.",
   "enhancedtooltips.config.mapTooltip": "Harita Alet İpucu",
   "enhancedtooltips.config.mapTooltip.desc": "Dolu haritanın önizlemesini alet ipucunda gösterir.",
   "enhancedtooltips.config.paintingTooltip": "Tablo Alet İpucu",

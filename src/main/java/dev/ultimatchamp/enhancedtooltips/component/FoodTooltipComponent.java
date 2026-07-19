@@ -4,7 +4,6 @@ import dev.ultimatchamp.enhancedtooltips.config.EnhancedTooltipsConfig;
 import dev.ultimatchamp.enhancedtooltips.tooltip.TooltipHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.component.DataComponents;
@@ -22,6 +21,12 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.item.consume_effects.ApplyStatusEffectsConsumeEffect;
 import net.minecraft.world.item.consume_effects.ConsumeEffect;
 //?}
+
+//? if >26.1.2 {
+import net.minecraft.client.gui.Hud;
+//?} else {
+/*import net.minecraft.client.gui.Gui;
+*///?}
 
 //? if >1.21.5 {
 import net.minecraft.client.renderer.RenderPipelines;
@@ -238,9 +243,11 @@ public class FoodTooltipComponent implements EnhancedTooltipsTooltipComponent {
             int c = statusEffect.getEffect().value().getColor();
         *///?}
                 int amplifier = statusEffect.getAmplifier();
-                //? if >1.21.5 {
-                Identifier effectTexture = Gui.getMobEffectSprite(statusEffect.getEffect());
-                //?} else {
+                //? if >26.1.2 {
+                Identifier effectTexture = Hud.getMobEffectSprite(statusEffect.getEffect());
+                //?} else if >1.21.5 {
+                /*Identifier effectTexture = Gui.getMobEffectSprite(statusEffect.getEffect());
+                *///?} else {
                 /*TextureAtlasSprite effectTexture = Minecraft.getInstance().getMobEffectTextures().get(statusEffect.getEffect());
                 *///?}
 

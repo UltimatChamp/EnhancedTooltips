@@ -46,6 +46,8 @@
   "enhancedtooltips.config.bucketTooltip.desc": "在提示框中预览桶中的实体外观",
   "enhancedtooltips.config.spawnEggTooltip": "刷怪蛋预览",
   "enhancedtooltips.config.spawnEggTooltip.desc": "在提示框中预览刷怪蛋生成的实体",
+  "enhancedtooltips.config.disableEmfModels": "Disable EMF Models",
+  "enhancedtooltips.config.disableEmfModels.desc": "Disables EMF models completely. Can help prevent some UI glitches when used with resource-packs like Fresh Animations.",
   "enhancedtooltips.config.mapTooltip": "地图预览",
   "enhancedtooltips.config.mapTooltip.desc": "在提示框中显示填充地图的预览",
   "enhancedtooltips.config.paintingTooltip": "画预览",

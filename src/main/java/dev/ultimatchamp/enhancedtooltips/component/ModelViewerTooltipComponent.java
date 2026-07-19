@@ -1,9 +1,11 @@
+//~ entity_types
 package dev.ultimatchamp.enhancedtooltips.component;
 
 import dev.ultimatchamp.enhancedtooltips.compat.EMFCompat;
 import dev.ultimatchamp.enhancedtooltips.config.EnhancedTooltipsConfig;
 import dev.ultimatchamp.enhancedtooltips.mixin.accessors.MobBucketItemTypeAccessor;
 import dev.ultimatchamp.enhancedtooltips.util.BadgesUtils;
+import dev.ultimatchamp.enhancedtooltips.util.PositionUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -14,8 +16,10 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.*;
-import net.minecraft.world.entity.animal.Bucketable;
 import net.minecraft.world.entity.decoration.ArmorStand;
+import net.minecraft.world.entity.monster.Ghast;
+import net.minecraft.world.entity.monster.hoglin.Hoglin;
+import net.minecraft.world.entity.monster.piglin.AbstractPiglin;
 import net.minecraft.world.entity.player.PlayerModelPart;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -31,7 +35,7 @@ import org.joml.*;
 import java.lang.Math;
 import java.util.List;
 
-/*? if <1.21.9 {*//*import dev.ultimatchamp.enhancedtooltips.mixin.accessors.SpawnEggItemEntityTypeAccessor;*//*?}*/
+/*? if <1.21.9 {*//*import dev.ultimatchamp.enhancedtooltips.mixin.accessors.SpawnEggItemEntityAccessor;*//*?}*/
 //? if >1.21.10 {
 import net.minecraft.world.entity.npc.villager.VillagerDataHolder;
 import net.minecraft.world.entity.npc.villager.VillagerProfession;
@@ -56,6 +60,12 @@ import net.minecraft.world.item.equipment.trim.ArmorTrim;
 /*import com.mojang.blaze3d.platform.Lighting;
 *///?}
 
+//? if >26.1.2 {
+import net.minecraft.world.entity.Bucketable;
+//?} else {
+/*import net.minecraft.world.entity.animal.Bucketable;
+ *///?}
+
 //? if >1.21.10 {
 import net.minecraft.world.entity.animal.fish.AbstractSchoolingFish;
 import net.minecraft.world.entity.animal.fish.Pufferfish;
@@ -66,8 +76,23 @@ import net.minecraft.world.entity.animal.Pufferfish;
 import net.minecraft.world.entity.animal.SnowGolem;
 *///?}
 
+//? if >1.21.10 {
+import net.minecraft.world.entity.animal.happyghast.HappyGhast;
+import net.minecraft.world.entity.animal.parrot.Parrot;
+//?} else if >1.21.5 {
+/*import net.minecraft.world.entity.animal.HappyGhast;
+import net.minecraft.world.entity.animal.Parrot;
+*///?} else {
+/*import net.minecraft.world.entity.animal.Parrot;
+*///?}
+
 public class ModelViewerTooltipComponent extends TooltipBorderColorComponent {
+    private static ModelViewerState lastEntity = new ModelViewerState();
+
     private static float currentRotation = 0f;
+    private static long lastIdleTimeNanos = 0L;
+    private static float idleTickAccumulator = 0f;
+
     private static final int SPACING = 20;
     private static final int MAX_TOOLTIP_SIZE = 80;
     private static final float REFERENCE_SIZE = 3.5f;
@@ -83,6 +108,24 @@ public class ModelViewerTooltipComponent extends TooltipBorderColorComponent {
         this.ROTATION_INCREMENT = config.mobs.rotationSpeed;
     }
 
+    public record ModelViewerState(EntityState entityState, TooltipState tooltipState) {
+        public ModelViewerState() {
+            this(new EntityState(), new TooltipState());
+        }
+    }
+
+    public record EntityState(ItemStack stack, int x, int y, float scale, Entity entity, ClientLevel level) {
+        public EntityState() {
+            this(ItemStack.EMPTY, 0, 0, 0, null, null);
+        }
+    }
+
+    public record TooltipState(int x, int width, int height) {
+        public TooltipState() {
+            this(0, 0, 0);
+        }
+    }
+
     //? if >1.21.1 {
     public static EquipmentSlot getEquipmentSlot(ItemStack itemStack) {
         var equippable = itemStack.get(DataComponents.EQUIPPABLE);
@@ -90,46 +133,97 @@ public class ModelViewerTooltipComponent extends TooltipBorderColorComponent {
     }
     //?}
 
+    private float advanceRotation() {
+        float degreesPerSecond = ROTATION_INCREMENT * 60f;
+        if (degreesPerSecond <= 0f) return 0f;
+
+        int sec = (int) (360f / degreesPerSecond * 1000f);
+        float time = (float) (System.currentTimeMillis() % sec) / sec;
+
+        return time * 360f;
+    }
+
+    private static float advanceVirtualTime() {
+        long now = System.nanoTime();
+        float elapsedSeconds = 0f;
+
+        if (lastIdleTimeNanos != 0L) {
+            elapsedSeconds = (now - lastIdleTimeNanos) / 1_000_000_000f;
+            elapsedSeconds = Math.min(elapsedSeconds, 0.5f);
+        }
+        lastIdleTimeNanos = now;
+
+        return elapsedSeconds;
+    }
+
+    public static void reset() {
+        lastEntity = new ModelViewerState();
+        lastIdleTimeNanos = 0L;
+        idleTickAccumulator = 0f;
+    }
+
+    private boolean isCached() {
+        return lastEntity.entityState.entity != null
+            && lastEntity.entityState.level == Minecraft.getInstance().level
+            && ItemStack.matches(stack, lastEntity.entityState.stack);
+    }
+
+    private static void advanceEntityAge(Entity entity, float ticksElapsed) {
+        idleTickAccumulator += ticksElapsed;
+
+        while (idleTickAccumulator >= 1f) {
+            entity.tickCount++;
+            idleTickAccumulator--;
+        }
+    }
+
     @Override
     public void render(GuiGraphicsExtractor context, int x, int y, int width, int height, int z, int page) throws Exception {
         super.render(context, x, y, width, height, z, page);
 
         if (page != 0) return;
 
-        currentRotation = (currentRotation + ROTATION_INCREMENT) % 360;
+        float ticksElapsed = advanceVirtualTime() * 20f;
+        currentRotation = advanceRotation();
+        if (isCached()) {
+            advanceEntityAge(lastEntity.entityState.entity, ticksElapsed);
+            drawModelViewer(context, x, y, width, height, z, lastEntity);
+
+            return;
+        }
 
         //? if >1.21.1 {
         if (getEquipmentSlot(stack).getType() == EquipmentSlot.Type.HUMANOID_ARMOR ||
         //?} else {
-        /*if (EntityType.ARMOR_STAND.create(Minecraft.getInstance().level).getEquipmentSlotForItem(stack).getType() == EquipmentSlot.Type.HUMANOID_ARMOR ||
+        /*if (EntityTypes.ARMOR_STAND.create(Minecraft.getInstance().level).getEquipmentSlotForItem(stack).getType() == EquipmentSlot.Type.HUMANOID_ARMOR ||
         *///?}
             stack.is(Items.ELYTRA)) {
             if (config.mobs.armorTooltip == EnhancedTooltipsConfig.ArmorTooltipMode.OFF) return;
-            renderArmor(context, x, y, z);
+            renderArmor(context, x, y, width, height, z);
         } else if (stack.getItem() instanceof SmithingTemplateItem) {
             if (config.mobs.armorTooltip == EnhancedTooltipsConfig.ArmorTooltipMode.OFF) return;
-            renderArmorTrim(context, x, y, z);
+            renderArmorTrim(context, x, y, width, height, z);
         } else if (stack.getItem().toString().contains("horse_armor")) {
             if (!config.mobs.horseArmorTooltip) return;
-            renderHorseArmor(context, x, y, z);
+            renderHorseArmor(context, x, y, width, height, z);
         //? if >1.21.10 {
         } else if (stack.getItem().toString().contains("nautilus_armor")) {
             if (!config.mobs.nautilusArmorTooltip) return;
-            renderNautilusArmor(context, x, y, z);
+            renderNautilusArmor(context, x, y, width, height, z);
         //?}
         } else if (stack.is(Items.WOLF_ARMOR)) {
             if (!config.mobs.wolfArmorTooltip) return;
-            renderWolfArmor(context, x, y, z);
+            renderWolfArmor(context, x, y, width, height, z);
         } else if (stack.getItem() instanceof MobBucketItem bucketItem) {
             if (!config.mobs.bucketTooltip) return;
-            renderBucketEntity(context, x, y, z, bucketItem);
+            renderBucketEntity(context, x, y, width, height, z, bucketItem);
         } else if (stack.getItem() instanceof SpawnEggItem spawnEggItem) {
             if (!config.mobs.spawnEggTooltip) return;
-            renderSpawnEggEntity(context, x, y, z, spawnEggItem);
+            renderSpawnEggEntity(context, x, y, width, height, z, spawnEggItem);
         }
     }
 
-    private void renderArmor(GuiGraphicsExtractor context, int x, int y, int z) throws Exception {
+    private void renderArmor(GuiGraphicsExtractor context, int x, int y, int width, int height, int z) throws Exception {
         LivingEntity entity;
         if (config.mobs.armorTooltip == EnhancedTooltipsConfig.ArmorTooltipMode.PLAYER) {
             entity = createFakePlayer();
@@ -145,11 +239,15 @@ public class ModelViewerTooltipComponent extends TooltipBorderColorComponent {
         /*entity.setItemSlot(entity.getEquipmentSlotForItem(stack), stack.copy());
         *///?}
 
-        super.render(context, x - 65, y, 40, 70, z, -1);
-        drawEntity(context, x - 30 / 2 - SPACING - 10, y + 65, 30, currentRotation, entity);
+        int panelOffsetX = - 65, panelWidth = 40, panelHeight = 70;
+        int entityOffsetX = - 30 / 2 - SPACING - 10, entityOffsetY = 65;
+
+        lastEntity = new ModelViewerState(new EntityState(stack, entityOffsetX, entityOffsetY, 30, entity, Minecraft.getInstance().level), new TooltipState(panelOffsetX, panelWidth, panelHeight));
+
+        drawModelViewer(context, x, y, width, height, z, lastEntity);
     }
 
-    private void renderArmorTrim(GuiGraphicsExtractor context, int x, int y, int z) throws Exception {
+    private void renderArmorTrim(GuiGraphicsExtractor context, int x, int y, int width, int height, int z) throws Exception {
         LivingEntity entity;
 
         if (config.mobs.armorTooltip == EnhancedTooltipsConfig.ArmorTooltipMode.PLAYER) {
@@ -202,8 +300,12 @@ public class ModelViewerTooltipComponent extends TooltipBorderColorComponent {
             *///?}
         }
 
-        super.render(context, x - 65, y, 40, 70, z, -1);
-        drawEntity(context, x - 30 / 2 - SPACING - 10, y + 65, 30, currentRotation, entity);
+        int panelOffsetX = - 65, panelWidth = 40, panelHeight = 70;
+        int entityOffsetX = - 30 / 2 - SPACING - 10, entityOffsetY = 65;
+
+        lastEntity = new ModelViewerState(new EntityState(stack, entityOffsetX, entityOffsetY, 30, entity, Minecraft.getInstance().level), new TooltipState(panelOffsetX, panelWidth, panelHeight));
+
+        drawModelViewer(context, x, y, width, height, z, lastEntity);
     }
 
     private AbstractClientPlayer createFakePlayer() {
@@ -242,11 +344,11 @@ public class ModelViewerTooltipComponent extends TooltipBorderColorComponent {
     }
 
     private ArmorStand createArmorStand() {
-        return new ArmorStand(EntityType.ARMOR_STAND, Minecraft.getInstance().level);
+        return new ArmorStand(EntityTypes.ARMOR_STAND, Minecraft.getInstance().level);
     }
 
-    private void renderHorseArmor(GuiGraphicsExtractor context, int x, int y, int z) throws Exception {
-        var entityType = EntityType.HORSE;
+    private void renderHorseArmor(GuiGraphicsExtractor context, int x, int y, int width, int height, int z) throws Exception {
+        var entityType = EntityTypes.HORSE;
         //? if >1.21.1 {
         var horse = entityType.create(Minecraft.getInstance().level, EntitySpawnReason.SPAWN_ITEM_USE);
         //?} else {
@@ -263,13 +365,17 @@ public class ModelViewerTooltipComponent extends TooltipBorderColorComponent {
         int scaledHeight = (int) (entityHeight * entityScale);
         int entityOffset = scaledWidth + SPACING - 10;
 
-        super.render(context, x - entityOffset - 70, y, scaledWidth + 60, scaledHeight + 20, z, -1);
-        drawEntity(context, x - scaledWidth / 2 - SPACING - 30, y + scaledHeight + SPACING, entityScale, currentRotation, horse);
+        int panelOffsetX = - entityOffset - 70, panelWidth = scaledWidth + 60, panelHeight = scaledHeight + 20;
+        int entityOffsetX = - scaledWidth / 2 - SPACING - 30, entityOffsetY = scaledHeight + SPACING;
+
+        lastEntity = new ModelViewerState(new EntityState(stack, entityOffsetX, entityOffsetY, entityScale, horse, Minecraft.getInstance().level), new TooltipState(panelOffsetX, panelWidth, panelHeight));
+
+        drawModelViewer(context, x, y, width, height, z, lastEntity);
     }
 
     //? if >1.21.10 {
-    private void renderNautilusArmor(GuiGraphicsExtractor context, int x, int y, int z) throws Exception {
-        var nautilus = EntityType.NAUTILUS.create(Minecraft.getInstance().level, EntitySpawnReason.SPAWN_ITEM_USE);
+    private void renderNautilusArmor(GuiGraphicsExtractor context, int x, int y, int width, int height, int z) throws Exception {
+        var nautilus = EntityTypes.NAUTILUS.create(Minecraft.getInstance().level, EntitySpawnReason.SPAWN_ITEM_USE);
 
         if (nautilus == null) return;
         nautilus.setItemSlot(EquipmentSlot.BODY, stack);
@@ -281,13 +387,17 @@ public class ModelViewerTooltipComponent extends TooltipBorderColorComponent {
         int scaledHeight = (int) (entityHeight * entityScale);
         int entityOffset = scaledWidth + SPACING - 10;
 
-        super.render(context, x - entityOffset - 70, y, scaledWidth + 50, scaledHeight + 20, z, -1);
-        drawEntity(context, x - scaledWidth / 2 - SPACING - 35, y + scaledHeight + SPACING, entityScale, currentRotation, nautilus);
+        int panelOffsetX = - entityOffset - 70, panelWidth = scaledWidth + 50, panelHeight = scaledHeight + 20;
+        int entityOffsetX = - scaledWidth / 2 - SPACING - 35, entityOffsetY = scaledHeight + SPACING;
+
+        lastEntity = new ModelViewerState(new EntityState(stack, entityOffsetX, entityOffsetY, entityScale, nautilus, Minecraft.getInstance().level), new TooltipState(panelOffsetX, panelWidth, panelHeight));
+
+        drawModelViewer(context, x, y, width, height, z, lastEntity);
     }
     //?}
 
-    private void renderWolfArmor(GuiGraphicsExtractor context, int x, int y, int z) throws Exception {
-        var entityType = EntityType.WOLF;
+    private void renderWolfArmor(GuiGraphicsExtractor context, int x, int y, int width, int height, int z) throws Exception {
+        var entityType = EntityTypes.WOLF;
         //? if >1.21.1 {
         var wolf = entityType.create(Minecraft.getInstance().level, EntitySpawnReason.SPAWN_ITEM_USE);
         //?} else {
@@ -304,11 +414,15 @@ public class ModelViewerTooltipComponent extends TooltipBorderColorComponent {
         int scaledHeight = (int) (entityHeight * entityScale);
         int entityOffset = scaledWidth + SPACING - 10;
 
-        super.render(context, x - entityOffset - 70, y, scaledWidth + 50, scaledHeight + 10, z, -1);
-        drawEntity(context, x - scaledWidth / 2 - SPACING - 35, y + scaledHeight + 10, entityScale, currentRotation, wolf);
+        int panelOffsetX = - entityOffset - 70, panelWidth = scaledWidth + 50, panelHeight = scaledHeight + 10;
+        int entityOffsetX = - scaledWidth / 2 - SPACING - 35, entityOffsetY = scaledHeight + 10;
+
+        lastEntity = new ModelViewerState(new EntityState(stack, entityOffsetX, entityOffsetY, entityScale, wolf, Minecraft.getInstance().level), new TooltipState(panelOffsetX, panelWidth, panelHeight));
+
+        drawModelViewer(context, x, y, width, height, z, lastEntity);
     }
 
-    private void renderBucketEntity(GuiGraphicsExtractor context, int x, int y, int z, MobBucketItem bucketItem) throws Exception {
+    private void renderBucketEntity(GuiGraphicsExtractor context, int x, int y, int width, int height, int z, MobBucketItem bucketItem) throws Exception {
         var entityType = ((MobBucketItemTypeAccessor) bucketItem).get();
         //? if >1.21.1 {
         LivingEntity entity = entityType.create(Minecraft.getInstance().level, EntitySpawnReason.BUCKET);
@@ -330,27 +444,32 @@ public class ModelViewerTooltipComponent extends TooltipBorderColorComponent {
             int scaledHeight = (int) (entityHeight * entityScale);
             int entityOffset = scaledWidth + SPACING - 10;
 
-            super.render(context, x - entityOffset - 70, y, scaledWidth + 50, scaledHeight + 20, z, -1);
-            drawEntity(context, x - scaledWidth / 2 - SPACING - 35, y + scaledHeight + SPACING, entityScale, currentRotation, (LivingEntity) bucketable);
+            int panelOffsetX = - entityOffset - 70, panelWidth = scaledWidth + 50, panelHeight = scaledHeight + 20;
+            int entityOffsetX = - scaledWidth / 2 - SPACING - 35, entityOffsetY = scaledHeight + SPACING;
+
+            lastEntity = new ModelViewerState(new EntityState(stack, entityOffsetX, entityOffsetY, entityScale, (LivingEntity) bucketable, Minecraft.getInstance().level), new TooltipState(panelOffsetX, panelWidth, panelHeight));
+
+            drawModelViewer(context, x, y, width, height, z, lastEntity);
         }
     }
 
-    private void renderSpawnEggEntity(GuiGraphicsExtractor context, int x, int y, int z, SpawnEggItem spawnEggItem) throws Exception {
+    private void renderSpawnEggEntity(GuiGraphicsExtractor context, int x, int y, int width, int height, int z, SpawnEggItem spawnEggItem) throws Exception {
         //? if >1.21.8 {
         var entityType = spawnEggItem.getType(stack);
         if (entityType == null) return;
         //?} else {
-        /*var entityType = ((SpawnEggItemEntityTypeAccessor) spawnEggItem).get();
+        /*var entityType = ((SpawnEggItemEntityAccessor) spawnEggItem).get();
         *///?}
         //? if >1.21.1 {
         var entity = entityType.create(Minecraft.getInstance().level, EntitySpawnReason.COMMAND);
         //?} else {
         /*var entity = entityType.create(Minecraft.getInstance().level);
         *///?}
+        if (entity == null) return;
 
-        if (entityType == EntityType.VILLAGER || entityType == EntityType.ZOMBIE_VILLAGER) {
+        if (entityType == EntityTypes.VILLAGER || entityType == EntityTypes.ZOMBIE_VILLAGER) {
             var world = Minecraft.getInstance().level;
-            if (entity != null && world != null) {
+            if (world != null) {
                 //? if >1.21.4 {
                 ((VillagerDataHolder) entity).setVillagerData(Villager.createDefaultVillagerData()
                         .withLevel(1)
@@ -373,6 +492,8 @@ public class ModelViewerTooltipComponent extends TooltipBorderColorComponent {
         if (entity instanceof AbstractSchoolingFish) return;
         if (entity instanceof Pufferfish pufferfishEntity) pufferfishEntity.setPuffState(2);
         if (entity instanceof SnowGolem snowGolemEntity) snowGolemEntity.setPumpkin(false);
+        if (entity instanceof AbstractPiglin piglinEntity) piglinEntity.setImmuneToZombification(true);
+        if (entity instanceof Hoglin hoglinEntity) hoglinEntity.setImmuneToZombification(true);
 
         float entityWidth = entity.getBbWidth();
         float entityHeight = entity.getBbHeight();
@@ -381,8 +502,22 @@ public class ModelViewerTooltipComponent extends TooltipBorderColorComponent {
         int scaledHeight = (int) (entityHeight * entityScale);
         int entityOffset = scaledWidth + SPACING - 10;
 
-        super.render(context, x - entityOffset - 70, y, scaledWidth + 50, scaledHeight + 20, z, -1);
-        drawEntity(context, x - scaledWidth / 2 - SPACING - 35, y + scaledHeight + SPACING, entityScale, currentRotation, entity);
+        int panelOffsetX = - entityOffset - 70, panelWidth = scaledWidth + 50, panelHeight = scaledHeight + 20;
+        int entityOffsetX = - scaledWidth / 2 - SPACING - 35, entityOffsetY = scaledHeight + SPACING;
+
+        lastEntity = new ModelViewerState(new EntityState(stack, entityOffsetX, entityOffsetY, entityScale, entity, Minecraft.getInstance().level), new TooltipState(panelOffsetX, panelWidth, panelHeight));
+
+        drawModelViewer(context, x, y, width, height, z, lastEntity);
+    }
+
+    private void drawModelViewer(GuiGraphicsExtractor context, int x, int y, int width, int height, int z, ModelViewerState state) throws Exception {
+        var entityState = state.entityState;
+        var tooltipState = state.tooltipState;
+
+        var panel = PositionUtil.clampToScreen(new PositionUtil.Bounds(x, y, width, height), tooltipState.width, tooltipState.height, - tooltipState.x - tooltipState.width, PositionUtil.Side.LEFT);
+
+        super.render(context, panel.x(), panel.y(), tooltipState.width, tooltipState.height, z, -1);
+        drawEntity(context, panel.x() + entityState.x - tooltipState.x, panel.y() + entityState.y, entityState.scale, currentRotation, entityState.entity);
     }
 
     private float calculateScale(float width, float height) {
@@ -398,7 +533,21 @@ public class ModelViewerTooltipComponent extends TooltipBorderColorComponent {
         return scale / longerDimension;
     }
 
-    public static void drawEntity(GuiGraphicsExtractor context, int x, int y, float scale, float rotationYaw, Entity entity) {
+    public void drawEntity(GuiGraphicsExtractor context, int x, int y, float scale, float rotationYaw, Entity entity) {
+        //? if >26.1.2 {
+        entity.setId(1);
+        //?}
+
+        boolean isFlyingMob = entity instanceof Ghast
+                //? if >1.21.5 {
+                || entity instanceof HappyGhast
+                //?}
+                || entity instanceof Parrot;
+
+        if (!isFlyingMob) {
+            entity.setOnGround(true);
+            entity.fallDistance = 0f;
+        }
         entity.setYBodyRot(rotationYaw);
         entity.setYRot(rotationYaw);
         entity.setYHeadRot(rotationYaw);
@@ -439,16 +588,13 @@ public class ModelViewerTooltipComponent extends TooltipBorderColorComponent {
     }
 
     //? if <1.21.6 {
-    /*public static void drawEntity(GuiGraphicsExtractor context, int x, int y, float scale, Quaternionf rotation, Entity entity) {
+    /*public void drawEntity(GuiGraphicsExtractor context, int x, int y, float scale, Quaternionf rotation, Entity entity) {
         Lighting.setupForEntityInInventory();
         context.pose().pushPose();
 
         context.pose().translate(x, y, 450);
         context.pose().mulPose(new Matrix4f().scaling(scale, scale, scale));
         context.pose().mulPose(rotation);
-
-        entity.setCustomName(Component.literal(EMFCompat.KEY));
-        entity.setCustomNameVisible(false);
 
         var dispatcher = Minecraft.getInstance().getEntityRenderDispatcher();
         dispatcher.setRenderShadow(false);

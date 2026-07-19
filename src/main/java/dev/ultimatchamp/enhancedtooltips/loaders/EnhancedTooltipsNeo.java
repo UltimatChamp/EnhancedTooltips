@@ -2,8 +2,8 @@
 /*package dev.ultimatchamp.enhancedtooltips.loaders;
 
 import dev.ultimatchamp.enhancedtooltips.EnhancedTooltips;
+import dev.ultimatchamp.enhancedtooltips.component.ModelViewerTooltipComponent;
 import dev.ultimatchamp.enhancedtooltips.config.EnhancedTooltipsConfig;
-import dev.ultimatchamp.enhancedtooltips.util.CreativeModeTabCollector;
 import dev.ultimatchamp.enhancedtooltips.util.ItemGroupsUtils;
 import net.minecraft.client.Minecraft;
 import net.neoforged.bus.api.IEventBus;
@@ -19,6 +19,7 @@ public final class EnhancedTooltipsNeo {
     public EnhancedTooltipsNeo(ModContainer modContainer, IEventBus modBus) {
         modBus.addListener(this::onClientSetup);
         NeoForge.EVENT_BUS.addListener(this::collectTabsOnJoin);
+        NeoForge.EVENT_BUS.addListener(this::resetModelViewerOnQuit);
 
         modContainer.registerExtensionPoint(IConfigScreenFactory.class, (client, parent) -> EnhancedTooltipsConfig.createConfigScreen(parent));
     }
@@ -29,8 +30,12 @@ public final class EnhancedTooltipsNeo {
 
     private void collectTabsOnJoin(ClientPlayerNetworkEvent.LoggingIn event) {
         Minecraft.getInstance().execute(() ->
-                ItemGroupsUtils.tabs.putAll(CreativeModeTabCollector.collectTabs(event.getPlayer().level()))
+                ItemGroupsUtils.populateTabs(event.getPlayer().level())
         );
+    }
+
+    private void resetModelViewerOnQuit(ClientPlayerNetworkEvent.LoggingOut event) {
+        ModelViewerTooltipComponent.reset();
     }
 }
 *///?}

@@ -1,3 +1,4 @@
+//~ entity_types
 package dev.ultimatchamp.enhancedtooltips;
 
 import dev.ultimatchamp.enhancedtooltips.compat.EMFCompat;
@@ -10,19 +11,19 @@ import dev.ultimatchamp.enhancedtooltips.tooltip.TooltipComponentManager;
 import dev.ultimatchamp.enhancedtooltips.util.BadgesUtils;
 import dev.ultimatchamp.enhancedtooltips.util.EnhancedTooltipsTextVisitor;
 import dev.ultimatchamp.enhancedtooltips.util.ItemGroupsUtils;
-import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.item.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /*? if >1.21.4 {*/import net.minecraft.world.entity.EquipmentSlot;/*?}*/
 
@@ -40,23 +41,28 @@ public class EnhancedTooltips {
         TooltipComponentManager.register((list, stack) -> {
             if (list.isEmpty()) return;
 
-            List<ClientTooltipComponent> copy = new ArrayList<>(list);
             List<ClientTooltipComponent> advanced = new ArrayList<>();
             if (Minecraft.getInstance().options.advancedItemTooltips) {
-                list.removeIf(component ->
-                        component instanceof ClientTextTooltipAccessor c &&
-                        (!EnhancedTooltipsConfig.load().durability.durabilityTooltip.equals(EnhancedTooltipsConfig.DurabilityTooltipMode.OFF) || EnhancedTooltipsConfig.load().durability.durabilityBar) &&
-                        EnhancedTooltipsTextVisitor.get(c.getText()).getString().contains((stack.getMaxDamage() - stack.getDamageValue()) + " / " + stack.getMaxDamage()));
-                copy.forEach(component -> {
-                    if (!(component instanceof ClientTextTooltipAccessor c)) return;
-                    if (
-                            EnhancedTooltipsTextVisitor.get(c.getText()).getString().contains((stack.getMaxDamage() - stack.getDamageValue()) + " / " + stack.getMaxDamage()) ||
-                            EnhancedTooltipsTextVisitor.get(c.getText()).getString().contains(Component.literal(BuiltInRegistries.ITEM.getKey(stack.getItem()).toString()).withStyle(ChatFormatting.DARK_GRAY).getString()) ||
-                            EnhancedTooltipsTextVisitor.get(c.getText()).getString().contains(Component.translatable("item.components", stack.getComponents().size()).withStyle(ChatFormatting.DARK_GRAY).getString())
-                    ) {
-                        advanced.add(component);
-                        list.remove(component);
+                String damageString = (stack.getMaxDamage() - stack.getDamageValue()) + " / " + stack.getMaxDamage();
+                String idString = BuiltInRegistries.ITEM.getKey(stack.getItem()).toString();
+                String componentsString = Component.translatable("item.components", stack.getComponents().size()).getString();
+                boolean durabilityShown = !EnhancedTooltipsConfig.load().durability.durabilityTooltip.equals(EnhancedTooltipsConfig.DurabilityTooltipMode.OFF) || EnhancedTooltipsConfig.load().durability.durabilityBar;
+
+                list.removeIf(component -> {
+                    if (!(component instanceof ClientTextTooltipAccessor c)) return false;
+                    String componentText = EnhancedTooltipsTextVisitor.getString(c.getText());
+
+                    if (componentText.contains(damageString)) {
+                        if (!durabilityShown) advanced.add(component);
+                        return true;
                     }
+
+                    if (componentText.contains(idString) || componentText.contains(componentsString)) {
+                        advanced.add(component);
+                        return true;
+                    }
+
+                    return false;
                 });
             }
 
@@ -65,25 +71,19 @@ public class EnhancedTooltips {
                 return;
             }
 
-            list.removeIf(c ->
-                    c instanceof ClientTextTooltipAccessor component &&
-                    EnhancedTooltipsTextVisitor.get(component.getText()).getString().equals(stack.getHoverName().getString()) &&
-                    !(BadgesUtils.getMods().containsKey("sophisticatedcore") && SophisticatedBackpacksCompat.containsBackpackTooltip(list))
-            );
+            boolean keepVanillaName = BadgesUtils.getMods().containsKey("sophisticatedcore")
+                    && SophisticatedBackpacksCompat.containsBackpackTooltip(list);
+            if (!keepVanillaName) {
+                String hoverName = stack.getHoverName().getString();
+                list.removeIf(c -> c instanceof ClientTextTooltipAccessor component &&
+                        EnhancedTooltipsTextVisitor.getString(component.getText()).equals(hoverName));
+            }
             list.addFirst(new HeaderTooltipComponent(stack));
 
             if (EnhancedTooltipsConfig.load().general.itemBadges) {
-                list.removeIf(component -> {
-                    if (component instanceof ClientTextTooltipAccessor textComponent) {
-                        Component text = EnhancedTooltipsTextVisitor.get(textComponent.getText());
-                        for (String group : ItemGroupsUtils.ITEM_GROUP_KEYS) {
-                            if (text.getString().equals(EnhancedTooltipsTextVisitor.get(Component.translatable(group).getVisualOrderText()).getString()))
-                                return true;
-                        }
-                    }
-
-                    return false;
-                });
+                Set<String> groupNames = ItemGroupsUtils.getItemGroupNames();
+                list.removeIf(component -> component instanceof ClientTextTooltipAccessor textComponent &&
+                        groupNames.contains(EnhancedTooltipsTextVisitor.getString(textComponent.getText())));
             }
 
             if (FoodTooltipComponent.getFoodComponent(stack) != null)
@@ -112,7 +112,7 @@ public class EnhancedTooltips {
                 list.add(new MapTooltipComponent(stack));
 
             if (stack.getItem() instanceof HangingEntityItemTypeAccessor decorationItem &&
-                decorationItem.get() == EntityType.PAINTING &&
+                decorationItem.get() == EntityTypes.PAINTING &&
                 EnhancedTooltipsConfig.load().paintingTooltip.enabled
             ) list.add(new PaintingTooltipComponent(stack));
 

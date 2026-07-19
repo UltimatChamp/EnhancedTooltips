@@ -1,22 +1,27 @@
 package dev.ultimatchamp.enhancedtooltips.util;
 
+import it.unimi.dsi.fastutil.Pair;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.util.Tuple;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class ItemGroupsUtils {
     private static final Map<ResourceKey<@NotNull CreativeModeTab>, Integer> VANILLA_GROUP_COLORS = new LinkedHashMap<>();
     public static Map<CreativeModeTab, Collection<ItemStack>> tabs = new LinkedHashMap<>();
+    private static Map<Item, Pair<@NotNull Component, @NotNull Integer>> itemBadgeCache = null;
+    private static Set<String> itemGroupNameCache = null;
+    private static Language itemGroupNameLanguage = null;
     public static final List<String> ITEM_GROUP_KEYS = List.of(
             "itemGroup.combat",
             "itemGroup.tools",
@@ -45,11 +50,44 @@ public class ItemGroupsUtils {
         VANILLA_GROUP_COLORS.put(CreativeModeTabs.BUILDING_BLOCKS, 0xfff2c94c);
     }
 
-    public static @NotNull Map<Collection<Item>, Tuple<@NotNull Component, @NotNull Integer>> getItemGroups() {
-        Map<Collection<Item>, Tuple<@NotNull Component, @NotNull Integer>> resultGroups = new LinkedHashMap<>();
-        Map<CreativeModeTab, Collection<ItemStack>> collectedGroups = ItemGroupsUtils.tabs;
+    public static void populateTabs(@NotNull Level world) {
+        Map<CreativeModeTab, Collection<ItemStack>> merged = new LinkedHashMap<>(CreativeModeTabCollector.collectTabs(world));
+        tabs.forEach(merged::putIfAbsent);
 
-        for (Map.Entry<CreativeModeTab, Collection<ItemStack>> entry : collectedGroups.entrySet()) {
+        tabs = merged;
+        itemBadgeCache = null;
+    }
+
+    public static @NotNull Set<String> getItemGroupNames() {
+        Language language = Language.getInstance();
+        Set<String> cache = itemGroupNameCache;
+
+        if (cache == null || itemGroupNameLanguage != language) {
+            cache = new HashSet<>(ITEM_GROUP_KEYS.size());
+            for (String key : ITEM_GROUP_KEYS) {
+                cache.add(Component.translatable(key).getString());
+            }
+
+            itemGroupNameCache = cache;
+            itemGroupNameLanguage = language;
+        }
+
+        return cache;
+    }
+
+    public static @Nullable Pair<@NotNull Component, @NotNull Integer> getItemBadge(Item item) {
+        Map<Item, Pair<@NotNull Component, @NotNull Integer>> cache = itemBadgeCache;
+        if (cache == null) {
+            cache = buildItemBadgeCache();
+            itemBadgeCache = cache;
+        }
+        return cache.get(item);
+    }
+
+    private static @NotNull Map<Item, Pair<@NotNull Component, @NotNull Integer>> buildItemBadgeCache() {
+        Map<Item, Pair<@NotNull Component, @NotNull Integer>> cache = new HashMap<>();
+
+        for (Map.Entry<CreativeModeTab, Collection<ItemStack>> entry : tabs.entrySet()) {
             CreativeModeTab group = entry.getKey();
             int fillColor;
             Component text;
@@ -71,12 +109,12 @@ public class ItemGroupsUtils {
                 }
             }
 
-            Collection<Item> items = entry.getValue().stream()
-                    .map(ItemStack::getItem)
-                    .collect(Collectors.toList());
-
-            resultGroups.put(items, new Tuple<>(text, fillColor));
+            Pair<@NotNull Component, @NotNull Integer> badge = Pair.of(text, fillColor);
+            for (ItemStack stack : entry.getValue()) {
+                cache.putIfAbsent(stack.getItem(), badge);
+            }
         }
-        return resultGroups;
+
+        return cache;
     }
 }

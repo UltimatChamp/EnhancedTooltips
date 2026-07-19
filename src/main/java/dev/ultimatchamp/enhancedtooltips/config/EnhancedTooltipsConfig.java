@@ -198,6 +198,9 @@ public class EnhancedTooltipsConfig {
 
         @Comment("Shows a preview of the spawn egg entity.\n(default: true)")
         public boolean spawnEggTooltip = true;
+
+        @Comment("Disables EMF models completely. Can help prevent some UI glitches when used with resource-packs like Fresh Animations.\n(default: false)")
+        public boolean disableEmfModels = false;
     }
 
     public enum ArmorTooltipMode implements NameableEnum {
@@ -326,7 +329,7 @@ public class EnhancedTooltipsConfig {
             .build();
 
     public static final Path CONFIG_PATH = YACLPlatform.getConfigDir().resolve("enhancedtooltips.json5");
-    private static EnhancedTooltipsConfig cachedConfig;
+    private static volatile EnhancedTooltipsConfig cachedConfig;
 
     public static EnhancedTooltipsConfig load() {
         if (cachedConfig != null) {

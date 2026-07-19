@@ -46,6 +46,8 @@
   "enhancedtooltips.config.bucketTooltip.desc": "Menunjukkan pralihat entiti baldi di dalam baldi.",
   "enhancedtooltips.config.spawnEggTooltip": "Petua Alat Telur Penjelmaan",
   "enhancedtooltips.config.spawnEggTooltip.desc": "Menunjukkan pralihat entiti telur penjelmaan.",
+  "enhancedtooltips.config.disableEmfModels": "Disable EMF Models",
+  "enhancedtooltips.config.disableEmfModels.desc": "Disables EMF models completely. Can help prevent some UI glitches when used with resource-packs like Fresh Animations.",
   "enhancedtooltips.config.mapTooltip": "Petua Alat Peta",
   "enhancedtooltips.config.mapTooltip.desc": "Menunjukkan pralihat peta yang diisi di dalam petua alatnya.",
   "enhancedtooltips.config.paintingTooltip": "Petua Alat Lukisan",

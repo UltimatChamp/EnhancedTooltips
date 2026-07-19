@@ -46,6 +46,8 @@
   "enhancedtooltips.config.bucketTooltip.desc": "Shows a preview of the bucket entity in a bucket.",
   "enhancedtooltips.config.spawnEggTooltip": "Spawn Egg Tooltip",
   "enhancedtooltips.config.spawnEggTooltip.desc": "Shows a preview of the spawn egg entity.",
+  "enhancedtooltips.config.disableEmfModels": "Disable EMF Models",
+  "enhancedtooltips.config.disableEmfModels.desc": "Disables EMF models completely. Can help prevent some UI glitches when used with resource-packs like Fresh Animations.",
   "enhancedtooltips.config.mapTooltip": "Map Tooltip",
   "enhancedtooltips.config.mapTooltip.desc": "Shows a preview of the filled map in its tooltip.",
   "enhancedtooltips.config.paintingTooltip": "Painting Tooltip",

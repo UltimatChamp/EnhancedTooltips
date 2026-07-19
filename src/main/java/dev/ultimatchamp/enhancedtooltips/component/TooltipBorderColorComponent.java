@@ -9,6 +9,8 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 
+import java.util.Locale;
+
 //? if >1.21.5 {
 import net.minecraft.client.renderer.RenderPipelines;
 //?} else if >1.21.1 {
@@ -27,10 +29,10 @@ public class TooltipBorderColorComponent extends TooltipBackgroundComponent {
     @Override
     protected void renderBorder(GuiGraphicsExtractor context, int x, int y, int width, int height, int z, int page) {
         if (config.border.borderColor == EnhancedTooltipsConfig.BorderColorMode.RARITY) {
-            Identifier renderId = (stack.getRarity() == Rarity.COMMON) ? Identifier.withDefaultNamespace("tooltip/frame") : Identifier.fromNamespaceAndPath(EnhancedTooltips.MOD_ID, "tooltip/frame/" + stack.getRarity().name().toLowerCase());
-            Identifier checkId = Identifier.fromNamespaceAndPath(renderId.getNamespace(), "textures/gui/sprites/" + renderId.getPath() + ".png");
+            Identifier renderId = (stack.getRarity() == Rarity.COMMON) ? Identifier.withDefaultNamespace("tooltip/frame") : Identifier.tryBuild(EnhancedTooltips.MOD_ID, "tooltip/frame/" + stack.getRarity().name().toLowerCase(Locale.ROOT));
+            Identifier checkId = renderId == null ? null : Identifier.fromNamespaceAndPath(renderId.getNamespace(), "textures/gui/sprites/" + renderId.getPath() + ".png");
 
-            if (Minecraft.getInstance().getResourceManager().getResource(checkId).isPresent()) {
+            if (checkId != null && Minecraft.getInstance().getResourceManager().getResource(checkId).isPresent()) {
                 //? if <1.21.6 {
                 /*context.pose().pushPose();
                 context.pose().translate(0, 0, z);

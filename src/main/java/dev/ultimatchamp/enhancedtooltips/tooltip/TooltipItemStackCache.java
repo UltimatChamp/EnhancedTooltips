@@ -1,17 +1,16 @@
 package dev.ultimatchamp.enhancedtooltips.tooltip;
 
 import net.minecraft.world.item.ItemStack;
-import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 public class TooltipItemStackCache {
     private static ItemStack cache = ItemStack.EMPTY;
 
-    public static void saveItemStack(ItemStack stack) {
+    public static void saveItemStack(@NotNull ItemStack stack) {
         cache = stack;
     }
 
-    @Nullable
-    public static ItemStack getItemStack() {
+    public static @NotNull ItemStack getItemStack() {
         return cache;
     }
 }

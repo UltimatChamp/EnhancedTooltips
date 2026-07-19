@@ -46,6 +46,8 @@
   "enhancedtooltips.config.bucketTooltip.desc": "Показывает силуэт сущности в ведре в подсказке.",
   "enhancedtooltips.config.spawnEggTooltip": "Отображение сущности",
   "enhancedtooltips.config.spawnEggTooltip.desc": "Показывает силуэт сущности, призываемой из яйца, в подсказке.",
+  "enhancedtooltips.config.disableEmfModels": "Disable EMF Models",
+  "enhancedtooltips.config.disableEmfModels.desc": "Disables EMF models completely. Can help prevent some UI glitches when used with resource-packs like Fresh Animations.",
   "enhancedtooltips.config.mapTooltip": "Отображение карты",
   "enhancedtooltips.config.mapTooltip.desc": "Показывает заполненную карту в подсказке.",
   "enhancedtooltips.config.paintingTooltip": "Отображение картин",

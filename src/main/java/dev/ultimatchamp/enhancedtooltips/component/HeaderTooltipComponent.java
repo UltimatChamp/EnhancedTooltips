@@ -3,10 +3,10 @@ package dev.ultimatchamp.enhancedtooltips.component;
 import dev.ultimatchamp.enhancedtooltips.tooltip.TooltipHelper;
 import dev.ultimatchamp.enhancedtooltips.config.EnhancedTooltipsConfig;
 import dev.ultimatchamp.enhancedtooltips.util.*;
+import it.unimi.dsi.fastutil.Pair;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
-import net.minecraft.util.Tuple;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
@@ -22,12 +22,20 @@ public class HeaderTooltipComponent implements EnhancedTooltipsTooltipComponent 
     private final Component nameText;
     private final Component rarityName;
     private final EnhancedTooltipsConfig config;
+    private final Component badgeText;
+    private final int badgeColor;
+    private final boolean hasBadge;
 
     public HeaderTooltipComponent(ItemStack stack) {
         this.stack = stack;
         this.nameText = TooltipHelper.getDisplayName(stack);
         this.rarityName = TooltipHelper.getRarityName(stack);
         this.config = EnhancedTooltipsConfig.load();
+
+        Pair<@NotNull Component, @NotNull Integer> badge = BadgesUtils.getBadgeText(stack);
+        this.badgeText = badge.left();
+        this.badgeColor = badge.right();
+        this.hasBadge = !this.badgeText.toFlatList().isEmpty();
     }
 
     @Override
@@ -41,8 +49,7 @@ public class HeaderTooltipComponent implements EnhancedTooltipsTooltipComponent 
         if (config.general.rarityTooltip) rarityWidth = textRenderer.width(this.rarityName);
 
         int badgeWidth = 0;
-        Component badgeText = BadgesUtils.getBadgeText(stack).getA();
-        if (config.general.itemBadges && !badgeText.toFlatList().isEmpty()) badgeWidth = textRenderer.width(badgeText) + SPACING * 2;
+        if (config.general.itemBadges && hasBadge) badgeWidth = textRenderer.width(this.badgeText) + SPACING * 2;
 
         int titleWidth;
         if (config.general.rarityTooltip) {
@@ -69,7 +76,7 @@ public class HeaderTooltipComponent implements EnhancedTooltipsTooltipComponent 
 
         if (config.general.rarityTooltip)
             startDrawY += 2;
-        else if (!config.general.itemBadges || BadgesUtils.getBadgeText(stack).getA().toFlatList().isEmpty())
+        else if (!config.general.itemBadges || !hasBadge)
             startDrawY += (int) ((getTitleOffset() - textRenderer.lineHeight) / 2f);
 
         //? if >1.21.5 {
@@ -93,9 +100,10 @@ public class HeaderTooltipComponent implements EnhancedTooltipsTooltipComponent 
         int startDrawX = x + (getTitleOffset() - TEXTURE_SIZE) / 2 - 1;
         int startDrawY = y + (getTitleOffset() - TEXTURE_SIZE) / 2 - 1;
 
+        int sec = (int) (config.itemPreviewAnimation.time * 1000);
+
         float bounce = 0f;
-        if (config.itemPreviewAnimation.enabled) {
-            int sec = (int) (config.itemPreviewAnimation.time * 1000);
+        if (config.itemPreviewAnimation.enabled && sec > 0) {
             float time = (float) (System.currentTimeMillis() % sec) / sec;
 
             bounce = (float) Math.sin(time * Math.PI * 2) * (config.itemPreviewAnimation.magnitude * /*? if >1.21.5 {*/1/*?} else {*//*config.general.scaleFactor*//*?}*/);
@@ -110,8 +118,7 @@ public class HeaderTooltipComponent implements EnhancedTooltipsTooltipComponent 
         if (!config.general.itemBadges) return;
         if (!config.general.rarityTooltip) y += textRenderer.lineHeight + SPACING;
 
-        Tuple<@NotNull Component, @NotNull Integer> badgeText = BadgesUtils.getBadgeText(stack);
-        if (!badgeText.getA().toFlatList().isEmpty()) drawBadge(textRenderer, badgeText.getA(), x, y, context, badgeText.getB());
+        if (hasBadge) drawBadge(textRenderer, this.badgeText, x, y, context, this.badgeColor);
     }
 
     private void drawBadge(Font textRenderer, Component text, int x, int y, GuiGraphicsExtractor context, int fillColor) {

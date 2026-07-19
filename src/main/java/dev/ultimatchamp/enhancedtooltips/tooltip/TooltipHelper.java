@@ -3,9 +3,12 @@ package dev.ultimatchamp.enhancedtooltips.tooltip;
 import dev.ultimatchamp.enhancedtooltips.EnhancedTooltips;
 import dev.ultimatchamp.enhancedtooltips.config.EnhancedTooltipsConfig;
 import dev.ultimatchamp.enhancedtooltips.util.TranslationStringColorParser;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.util.CommonColors;
 import net.minecraft.world.item.ItemStack;
@@ -32,8 +35,16 @@ public class TooltipHelper {
         //? if >1.21.3 {
         return stack.getStyledHoverName();
         //?} else {
-        /*return Component.empty().append(stack.getHoverName())
+        /*MutableComponent name = Component.empty().append(stack.getHoverName())
+                //? if fabric {
                 .withStyle(stack.getRarity().color());
+                //?} else {
+                /^.withStyle(stack.getRarity().getStyleModifier());
+                ^///?}
+        if (stack.has(DataComponents.CUSTOM_NAME)) {
+            name.withStyle(ChatFormatting.ITALIC);
+        }
+        return name;
         *///?}
     }
 

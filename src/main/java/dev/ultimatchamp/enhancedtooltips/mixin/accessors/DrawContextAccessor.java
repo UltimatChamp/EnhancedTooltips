@@ -1,9 +1,12 @@
 package dev.ultimatchamp.enhancedtooltips.mixin.accessors;
 
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.client.renderer.MultiBufferSource;
 import org.spongepowered.asm.mixin.Mixin;
+
+//? if <1.21.6 {
+/*import net.minecraft.client.renderer.MultiBufferSource;
 import org.spongepowered.asm.mixin.gen.Accessor;
+*///?}
 
 @Mixin(GuiGraphicsExtractor.class)
 public interface DrawContextAccessor {

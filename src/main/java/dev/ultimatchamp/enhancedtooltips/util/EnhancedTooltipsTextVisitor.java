@@ -30,6 +30,9 @@ import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.FormattedCharSink;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class EnhancedTooltipsTextVisitor implements FormattedCharSink {
     private final MutableComponent text = Component.empty();
 
@@ -48,5 +51,34 @@ public class EnhancedTooltipsTextVisitor implements FormattedCharSink {
         EnhancedTooltipsTextVisitor visitor = new EnhancedTooltipsTextVisitor();
         text.accept(visitor);
         return visitor.getText();
+    }
+
+    public static String getString(FormattedCharSequence text) {
+        StringBuilder builder = new StringBuilder();
+        text.accept((index, style, codePoint) -> {
+            builder.appendCodePoint(codePoint);
+            return true;
+        });
+        return builder.toString();
+    }
+
+    public static boolean styledEquals(FormattedCharSequence a, FormattedCharSequence b) {
+        StringBuilder textA = new StringBuilder();
+        List<Style> stylesA = new ArrayList<>();
+        a.accept((index, style, codePoint) -> {
+            textA.appendCodePoint(codePoint);
+            stylesA.add(style);
+            return true;
+        });
+
+        StringBuilder textB = new StringBuilder();
+        List<Style> stylesB = new ArrayList<>();
+        b.accept((index, style, codePoint) -> {
+            textB.appendCodePoint(codePoint);
+            stylesB.add(style);
+            return true;
+        });
+
+        return textA.compareTo(textB) == 0 && stylesA.equals(stylesB);
     }
 }
