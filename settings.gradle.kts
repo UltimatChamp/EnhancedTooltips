@@ -31,8 +31,9 @@ stonecutter {
         register("1.21.11", "fabric", "neo")
         register("26.1.2", "fabric", "neo")
         register("26.2", "fabric", "neo")
+        register("26.3", "fabric", "neo")
 
-        vcsVersion = "26.2-fabric"
+        vcsVersion = "26.3-fabric"
     }
 }
 

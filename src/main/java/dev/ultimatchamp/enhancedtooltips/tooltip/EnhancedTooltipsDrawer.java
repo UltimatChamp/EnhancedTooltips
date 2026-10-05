@@ -71,7 +71,7 @@ public class EnhancedTooltipsDrawer {
         int maxWidth = (int) (getMaxWidth() / scale);
         int maxHeight = (int) (getMaxHeight() / scale);
 
-        int spacing = components.size() > 1 ? 4 : 0;
+        int spacing = components.size() > 1 ? 2 : 0;
 
         List<ClientTooltipComponent> lines = new ArrayList<>();
         for (ClientTooltipComponent tooltipComponent : components) {

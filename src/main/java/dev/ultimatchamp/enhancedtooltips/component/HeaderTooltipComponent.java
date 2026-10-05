@@ -62,7 +62,9 @@ public class HeaderTooltipComponent implements EnhancedTooltipsTooltipComponent 
     }
 
     public int getTitleOffset() {
-        return 26;
+        if (config.general.rarityTooltip) return 22;
+        if (config.general.itemBadges && hasBadge) return 26;
+        return 20;
     }
 
     @Override
@@ -86,7 +88,7 @@ public class HeaderTooltipComponent implements EnhancedTooltipsTooltipComponent 
         *///?}
 
         if (config.general.rarityTooltip) {
-            startDrawY += textRenderer.lineHeight + SPACING;
+            startDrawY += textRenderer.lineHeight + 2;
             //? if >1.21.5 {
             TooltipHelper.renderText(context, textRenderer, this.rarityName, startDrawX, startDrawY, -1, true);
             //?} else {
@@ -116,7 +118,7 @@ public class HeaderTooltipComponent implements EnhancedTooltipsTooltipComponent 
         *///?}
 
         if (!config.general.itemBadges) return;
-        if (!config.general.rarityTooltip) y += textRenderer.lineHeight + SPACING;
+        if (!config.general.rarityTooltip) y += textRenderer.lineHeight + 2;
 
         if (hasBadge) drawBadge(textRenderer, this.badgeText, x, y, context, this.badgeColor);
     }

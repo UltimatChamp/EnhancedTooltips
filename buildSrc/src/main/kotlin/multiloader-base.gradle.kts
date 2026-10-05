@@ -120,7 +120,8 @@ publishMods {
         accessToken.set(providers.environmentVariable("MODRINTH_TOKEN"))
 
         when (mcVer) {
-            "26.2" -> minecraftVersions.addAll("26.2")
+            "26.3" -> minecraftVersions.add("26.3")
+            "26.2" -> minecraftVersions.add("26.2")
             "26.1.2" -> minecraftVersions.addAll("26.1", "26.1.1", "26.1.2")
             "1.21.11" -> minecraftVersions.add("1.21.11")
             "1.21.10" -> minecraftVersions.addAll("1.21.9", "1.21.10")
@@ -144,7 +145,8 @@ publishMods {
         accessToken.set(providers.environmentVariable("CURSEFORGE_API_KEY"))
 
         when (mcVer) {
-            "26.2" -> minecraftVersions.addAll("26.2")
+            "26.3" -> minecraftVersions.add("26.3")
+            "26.2" -> minecraftVersions.add("26.2")
             "26.1.2" -> minecraftVersions.addAll("26.1", "26.1.1", "26.1.2")
             "1.21.11" -> minecraftVersions.add("1.21.11")
             "1.21.10" -> minecraftVersions.addAll("1.21.9", "1.21.10")

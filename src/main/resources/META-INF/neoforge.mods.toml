@@ -3,6 +3,7 @@ loaderVersion="*"
 issueTrackerURL="https://github.com/UltimatChamp/EnhancedTooltips/issues"
 displayURL="https://github.com/UltimatChamp/EnhancedTooltips"
 logoFile="assets/${mod_id}/icon.png"
+iconFile="assets/${mod_id}/icon.png"
 authors="${mod_authors}"
 license="${mod_license}"
 

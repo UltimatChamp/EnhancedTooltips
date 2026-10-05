@@ -14,6 +14,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 public class EnhancedTooltipsConfig {
+    public static final int CONFIG_VERSION = 1;
+
+    public int version = CONFIG_VERSION;
+
     public GeneralConfig general = new GeneralConfig();
     public PopUpAnimationConfig popUpAnimation = new PopUpAnimationConfig();
     public ItemPreviewAnimationConfig itemPreviewAnimation = new ItemPreviewAnimationConfig();
@@ -264,8 +268,8 @@ public class EnhancedTooltipsConfig {
     }
 
     public static class HeldItemTooltipConfig {
-        @Comment("Toggles the improved held items tooltips feature.\nON/MINIMAL/OFF (default: ON)")
-        public HeldItemTooltipMode mode = HeldItemTooltipMode.ON;
+        @Comment("Toggles the improved held items tooltips feature.\nFANCY/MINIMAL/VANILLA (default: FANCY)")
+        public HeldItemTooltipMode mode = HeldItemTooltipMode.FANCY;
 
         @Comment("Shows a neat background behind the held item tooltip text.\n(default: true)")
         public boolean showBackground = true;
@@ -279,27 +283,91 @@ public class EnhancedTooltipsConfig {
         @Comment("Hides the item's name from its held item toolip.\n(default: false)")
         public boolean hideItemName = false;
 
-        @Comment("Shows a dynamic tilt animation for the held item tooltip when scrolling the hotbar.\n(default: true)")
-        public boolean tiltAnimation = true;
+        @Comment("Shows the rarity of an item in its held item tooltip.\n(default: true)")
+        public boolean rarityTooltip = true;
 
-        @Comment("Duration of the tilt animation in ms.\n(default: 300)")
-        public int tiltDuration = 300;
+        @Comment("Shows the category of an item in a badge on its held item tooltip.\n(default: true)")
+        public boolean itemBadges = true;
 
-        @Comment("Magnitude of the tilt animation.\n(default: 10.0)")
-        public float tiltMagnitude = 10f;
+        @Comment("Shows the maximum hunger which can be gained from an item in its held item tooltip.\n(default: true)")
+        public boolean hungerTooltip = true;
 
-        @Comment("Smoothness of the tilt animation.\n(default: 2.0)")
-        public float tiltEasing = 2f;
+        @Comment("Shows the maximum saturation which can be gained from an item in its held item tooltip.\n(default: true)")
+        public boolean saturationTooltip = true;
+
+        @Comment("Shows a list of effects applied on consuming an item in its held item tooltip.\nWITH_ICONS/WITHOUT_ICONS/OFF (default: WITH_ICONS)")
+        public EffectsTooltipMode effectsTooltip = EffectsTooltipMode.WITH_ICONS;
+
+        @Comment("Shows the durability of an item in its held item tooltip.\nVALUE/PERCENTAGE/OFF (default: VALUE)")
+        public DurabilityTooltipMode durabilityTooltip = DurabilityTooltipMode.VALUE;
+
+        @Comment("Shows the durability of an item, represented by a bar, in its held item tooltip.\n(default: false)")
+        public boolean durabilityBar = false;
+
+        @Comment("Determines the vertical position of the held item tooltip.\nTOP/BOTTOM (default: BOTTOM)")
+        public RelativeVerticalPosition relVerPos = RelativeVerticalPosition.BOTTOM;
+
+        @Comment("Determines the horizontal position of the held item tooltip.\nLEFT/CENTER/RIGHT (default: CENTER)")
+        public RelativeHorizontalPosition relHorPos = RelativeHorizontalPosition.CENTER;
+
+        @Comment("Offsets the tooltip by the specified amount horizontally.\n(default: 0)")
+        public int offsetX = 0;
+
+        @Comment("Offsets the tooltip by the specified amount vertically.\n(default: 0)")
+        public int offsetY = 0;
+
+        @Comment("Shows a dynamic animation for the held item tooltip when scrolling the hotbar.\nTilts when centered, slides in like a toast when at the sides.\n(default: true)")
+        public boolean animation = true;
+
+        @Comment("Duration of the animation in ms.\n(default: 500)")
+        public int duration = 500;
+
+        @Comment("Magnitude of the animation.\n(default: 10.0)")
+        public float magnitude = 10f;
+
+        @Comment("Smoothness of the animation.\n(default: 2.0)")
+        public float easing = 2f;
     }
 
     public enum HeldItemTooltipMode implements NameableEnum {
-        ON("options.on"),
+        FANCY("options.graphics.fancy"),
         MINIMAL("options.particles.minimal"),
-        OFF("options.off");
+        DEFAULT("resourcePack.vanilla.name");
 
         private final String translationKey;
 
         HeldItemTooltipMode(final String translationKey) {
+            this.translationKey = translationKey;
+        }
+
+        public Component getDisplayName() {
+            return Component.translatable(this.translationKey);
+        }
+    }
+
+    public enum RelativeVerticalPosition implements NameableEnum {
+        TOP("enhancedtooltips.config.heldItemTooltip.relVerPos.top"),
+        BOTTOM("enhancedtooltips.config.heldItemTooltip.relVerPos.bottom");
+
+        private final String translationKey;
+
+        RelativeVerticalPosition(final String translationKey) {
+            this.translationKey = translationKey;
+        }
+
+        public Component getDisplayName() {
+            return Component.translatable(this.translationKey);
+        }
+    }
+
+    public enum RelativeHorizontalPosition implements NameableEnum {
+        LEFT("options.mainHand.left"),
+        CENTER("enhancedtooltips.config.heldItemTooltip.relHorPos.center"),
+        RIGHT("options.mainHand.right");
+
+        private final String translationKey;
+
+        RelativeHorizontalPosition(final String translationKey) {
             this.translationKey = translationKey;
         }
 
@@ -352,7 +420,16 @@ public class EnhancedTooltipsConfig {
                     save(config);
                 } else {
                     var configJson = ensureDefaults(JANKSON.load(configContent));
+                    int configVersion = getConfigVersion(configJson);
+                    if (configVersion < CONFIG_VERSION)
+                        migrateConfig(configJson, configVersion);
+
                     config = JANKSON.fromJson(configJson, EnhancedTooltipsConfig.class);
+
+                    if (config.version != CONFIG_VERSION) {
+                        config.version = CONFIG_VERSION;
+                        save(config);
+                    }
                 }
             }
         } catch (IOException | SyntaxError e) {
@@ -403,6 +480,32 @@ public class EnhancedTooltipsConfig {
         }
 
         return configJson;
+    }
+
+    private static int getConfigVersion(JsonObject configJson) {
+        JsonElement version = configJson.get("version");
+        if (version instanceof JsonPrimitive primitive) {
+            try {
+                return Integer.parseInt(primitive.asString());
+            } catch (NumberFormatException ignored) {}
+        }
+
+        return 0;
+    }
+
+    private static void migrateConfig(JsonObject configJson, int configVersion) {
+        if (configVersion < 1) {
+            JsonObject heldItemTooltip = configJson.getObject("heldItemTooltip");
+            if (heldItemTooltip == null) return;
+
+            JsonElement mode = heldItemTooltip.get("mode");
+            if (mode instanceof JsonPrimitive primitive) {
+                switch (primitive.asString()) {
+                    case "ON" -> heldItemTooltip.put("mode", new JsonPrimitive("FANCY"));
+                    case "OFF" -> heldItemTooltip.put("mode", new JsonPrimitive("DEFAULT"));
+                }
+            }
+        }
     }
 
     public static Screen createConfigScreen(Screen parent) {

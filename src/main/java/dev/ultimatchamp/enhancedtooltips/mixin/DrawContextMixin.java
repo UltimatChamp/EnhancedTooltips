@@ -26,15 +26,23 @@ import org.jetbrains.annotations.Nullable;
 
 @Mixin(GuiGraphicsExtractor.class)
 public class DrawContextMixin {
-    //? if >1.21.11 {
+    //? if >26.2 {
     //? if fabric {
+    @Inject(method = "tooltip", at = @At("HEAD"), cancellable = true)
+    private void enhancedTooltips$drawTooltip(Font font, List<ClientTooltipComponent> lines, int xo, int yo, ClientTooltipPositioner positioner, @Nullable Identifier style, boolean extraSpaceAfterFirstLine, CallbackInfo ci) {
+    //?} else {
+    /*@Inject(method = "tooltip(Lnet/minecraft/client/gui/Font;Ljava/util/List;IILnet/minecraft/client/gui/screens/inventory/tooltip/ClientTooltipPositioner;Lnet/minecraft/resources/Identifier;ZLnet/minecraft/world/item/ItemStack;)V", at = @At("HEAD"), cancellable = true)
+        private void enhancedTooltips$drawTooltip(Font font, List<ClientTooltipComponent> lines, int xo, int yo, ClientTooltipPositioner positioner, @Nullable Identifier style, boolean extraSpaceAfterFirstLine, ItemStack stack, CallbackInfo ci) {
+    *///?}
+    //?} else if >1.21.11 {
+    /*//? if fabric {
     @Inject(method = "tooltip", at = @At("HEAD"), cancellable = true)
     private void enhancedTooltips$drawTooltip(Font font, List<ClientTooltipComponent> lines, int xo, int yo, ClientTooltipPositioner positioner, @Nullable Identifier style, CallbackInfo ci) {
     //?} else {
-    /*@Inject(method = "tooltip(Lnet/minecraft/client/gui/Font;Ljava/util/List;IILnet/minecraft/client/gui/screens/inventory/tooltip/ClientTooltipPositioner;Lnet/minecraft/resources/Identifier;Lnet/minecraft/world/item/ItemStack;)V", at = @At("HEAD"), cancellable = true)
+    /^@Inject(method = "tooltip(Lnet/minecraft/client/gui/Font;Ljava/util/List;IILnet/minecraft/client/gui/screens/inventory/tooltip/ClientTooltipPositioner;Lnet/minecraft/resources/Identifier;Lnet/minecraft/world/item/ItemStack;)V", at = @At("HEAD"), cancellable = true)
         private void enhancedTooltips$drawTooltip(Font font, List<ClientTooltipComponent> lines, int xo, int yo, ClientTooltipPositioner positioner, @Nullable Identifier style, ItemStack stack, CallbackInfo ci) {
-    *///?}
-    //?} else if >1.21.5 {
+    ^///?}
+    *///?} else if >1.21.5 {
     /*//? if fabric {
     @Inject(method = "renderTooltip", at = @At("HEAD"), cancellable = true)
     private void enhancedTooltips$drawTooltip(Font font, List<ClientTooltipComponent> lines, int xo, int yo, ClientTooltipPositioner positioner, @Nullable Identifier style, CallbackInfo ci) {

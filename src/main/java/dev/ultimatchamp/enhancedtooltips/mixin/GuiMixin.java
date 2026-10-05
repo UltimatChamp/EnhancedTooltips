@@ -53,9 +53,9 @@ import net.minecraft.world.effect.MobEffectInstance;
 
 @Mixin(/*? if >26.1.2 {*/Hud/*?} else {*//*Gui*//*?}*/.class)
 public abstract class GuiMixin {
-    @Unique private long enhancedTooltips$tiltStartTime = 0;
-    @Unique private int enhancedTooltips$lastTiltSlot = -1;
-    @Unique private float enhancedTooltips$tiltDirection = 0;
+    @Unique private long enhancedTooltips$startTime = 0;
+    @Unique private int enhancedTooltips$lastSlot = -1;
+    @Unique private float enhancedTooltips$direction = 0;
     @Unique private static final int enhancedTooltips$SPACING = 4;
 
     @Shadow public abstract Font getFont();
@@ -75,10 +75,10 @@ public abstract class GuiMixin {
     )
     private void enhancedTooltips$renderHeldItemTooltipBackground(GuiGraphicsExtractor graphics,/*? if neoforge {*/ /*int yShift,*//*?}*/ CallbackInfo ci) {
         EnhancedTooltipsConfig config = EnhancedTooltipsConfig.load();
-        if (config.heldItemTooltip.mode == EnhancedTooltipsConfig.HeldItemTooltipMode.OFF) return;
+        if (config.heldItemTooltip.mode == EnhancedTooltipsConfig.HeldItemTooltipMode.DEFAULT) return;
 
         List<Component> tooltip;
-        if (config.heldItemTooltip.mode == EnhancedTooltipsConfig.HeldItemTooltipMode.ON) {
+        if (config.heldItemTooltip.mode == EnhancedTooltipsConfig.HeldItemTooltipMode.FANCY) {
             tooltip = Screen.getTooltipFromItem(minecraft, lastToolHighlight);
             TooltipItemStackCache.saveItemStack(ItemStack.EMPTY);
 
@@ -89,22 +89,22 @@ public abstract class GuiMixin {
 
         Font textRenderer = this.getFont();
 
-        int currentSlot = minecraft.player != null ? ((InventoryAccessor) minecraft.player.getInventory()).getSelected() : enhancedTooltips$lastTiltSlot;
-        if (currentSlot != enhancedTooltips$lastTiltSlot) {
-            int delta = currentSlot - enhancedTooltips$lastTiltSlot;
-            if (enhancedTooltips$lastTiltSlot == 8 && currentSlot == 0) {
+        int currentSlot = minecraft.player != null ? ((InventoryAccessor) minecraft.player.getInventory()).getSelected() : enhancedTooltips$lastSlot;
+        if (currentSlot != enhancedTooltips$lastSlot) {
+            int delta = currentSlot - enhancedTooltips$lastSlot;
+            if (enhancedTooltips$lastSlot == 8 && currentSlot == 0) {
                 delta = 1;
-            } else if (enhancedTooltips$lastTiltSlot == 0 && currentSlot == 8) {
+            } else if (enhancedTooltips$lastSlot == 0 && currentSlot == 8) {
                 delta = -1;
             }
 
-            enhancedTooltips$tiltDirection = Math.signum(delta);
-            enhancedTooltips$tiltStartTime = System.currentTimeMillis();
-            enhancedTooltips$lastTiltSlot = currentSlot;
+            enhancedTooltips$direction = Math.signum(delta);
+            enhancedTooltips$startTime = System.currentTimeMillis();
+            enhancedTooltips$lastSlot = currentSlot;
         }
 
         Pair<@NotNull Component, @NotNull Integer> badgeText = BadgesUtils.getBadgeText(lastToolHighlight);
-        if (config.general.itemBadges && !badgeText.left().toFlatList().isEmpty()) {
+        if (config.heldItemTooltip.itemBadges && !badgeText.left().toFlatList().isEmpty()) {
             MutableComponent name = tooltip.getFirst().copy();
             Component badge = badgeText.left().copy().withColor(badgeText.right());
 
@@ -124,10 +124,10 @@ public abstract class GuiMixin {
                 ).getString())
         );
 
-        if (config.general.rarityTooltip)
+        if (config.heldItemTooltip.rarityTooltip)
             tooltip.add(Math.min(1, tooltip.size()), TooltipHelper.getRarityName(lastToolHighlight));
 
-        if (config.heldItemTooltip.mode == EnhancedTooltipsConfig.HeldItemTooltipMode.ON)
+        if (config.heldItemTooltip.mode == EnhancedTooltipsConfig.HeldItemTooltipMode.FANCY)
             enhancedTooltips$addFoodTooltip(tooltip::add);
 
         if (minecraft.options.advancedItemTooltips) {
@@ -136,7 +136,7 @@ public abstract class GuiMixin {
             tooltip.remove(Component.translatable("item.components", lastToolHighlight.getComponents().size()).withStyle(ChatFormatting.DARK_GRAY));
         }
 
-        if ((!config.durability.durabilityTooltip.equals(EnhancedTooltipsConfig.DurabilityTooltipMode.OFF) || config.durability.durabilityBar) && lastToolHighlight.isDamageableItem())
+        if ((!config.heldItemTooltip.durabilityTooltip.equals(EnhancedTooltipsConfig.DurabilityTooltipMode.OFF) || config.heldItemTooltip.durabilityBar) && lastToolHighlight.isDamageableItem())
             tooltip.add(Component.translatable("enhancedtooltips.tooltip.durability").append(enhancedTooltips$getDurabilityText()));
 
         float scale = config.heldItemTooltip.scaleFactor;
@@ -164,14 +164,53 @@ public abstract class GuiMixin {
             tooltip.add(Component.literal("(+" + cutOff.get() + " more...)").withColor(-4539718).withStyle(s -> s.withItalic(true)));
 
         int width = tooltip.stream().mapToInt(textRenderer::width).max().orElse(0);
-        float x = (graphics.guiWidth() - width * scale) / 2;
-        /*? if fabric {*/int yShift = 0;/*?}*/
-        float y = graphics.guiHeight() - Math.max(yShift, 59);
-        y -= (textRenderer.lineHeight + enhancedTooltips$SPACING / 2f) * tooltip.size() * scale - enhancedTooltips$SPACING * 3 + enhancedTooltips$SPACING / 2f;
-        if (minecraft.player.getArmorValue() > 0 &&
+        boolean bottomCenter = config.heldItemTooltip.relHorPos == EnhancedTooltipsConfig.RelativeHorizontalPosition.CENTER
+                && config.heldItemTooltip.relVerPos == EnhancedTooltipsConfig.RelativeVerticalPosition.BOTTOM;
+        int animationNudge = config.heldItemTooltip.animation
+                && config.heldItemTooltip.relHorPos == EnhancedTooltipsConfig.RelativeHorizontalPosition.CENTER ? 10 : 0;
+
+        float x = switch (config.heldItemTooltip.relHorPos) {
+            case LEFT -> enhancedTooltips$SPACING + 2;
+            case RIGHT -> graphics.guiWidth() - width * scale - enhancedTooltips$SPACING - 2;
+            case CENTER -> (graphics.guiWidth() - width * scale) / 2f;
+        };
+
+        float y;
+        if (bottomCenter) {
+            /*? if fabric {*/int yShift = 0;/*?}*/
+            y = graphics.guiHeight() - Math.max(yShift, 59);
+            y -= (textRenderer.lineHeight + enhancedTooltips$SPACING / 2f) * tooltip.size() * scale - enhancedTooltips$SPACING * 3 + enhancedTooltips$SPACING / 2f;
+            if (minecraft.player.getArmorValue() > 0 &&
                 minecraft.gameMode != null &&
                 minecraft.gameMode.canHurtPlayer()
-        ) y -= enhancedTooltips$SPACING * 2;
+            ) y -= enhancedTooltips$SPACING * 2;
+        } else {
+            y = switch (config.heldItemTooltip.relVerPos) {
+                case TOP -> enhancedTooltips$SPACING + animationNudge;
+                case BOTTOM -> graphics.guiHeight() - enhancedTooltips$SPACING
+                        - (textRenderer.lineHeight + enhancedTooltips$SPACING / 2f) * tooltip.size() * scale
+                        - animationNudge;
+            };
+        }
+
+        x += switch (config.heldItemTooltip.relHorPos) {
+            case RIGHT -> -config.heldItemTooltip.offsetX;
+            case LEFT, CENTER -> config.heldItemTooltip.offsetX;
+        };
+        y += switch (config.heldItemTooltip.relVerPos) {
+            case BOTTOM -> -config.heldItemTooltip.offsetY;
+            case TOP -> config.heldItemTooltip.offsetY;
+        };
+
+        if (config.heldItemTooltip.relHorPos != EnhancedTooltipsConfig.RelativeHorizontalPosition.CENTER) {
+            float ease = enhancedTooltips$getEase();
+            if (ease > 0f) {
+                if (config.heldItemTooltip.relHorPos == EnhancedTooltipsConfig.RelativeHorizontalPosition.RIGHT)
+                    x += (graphics.guiWidth() - x + enhancedTooltips$SPACING * 2 * scale) * ease;
+                else
+                    x -= (x + width * scale + enhancedTooltips$SPACING * 2 * scale) * ease;
+            }
+        }
 
         float alpha = this.toolHighlightTimer * 256 / 10f;
         if (alpha > 255) {
@@ -200,8 +239,8 @@ public abstract class GuiMixin {
         Component hungerText = Component.translatable("enhancedtooltips.tooltip.hunger").append(" " + hunger + " ").append(Component.translatable("effect.minecraft.hunger"));
         Component saturationText = Component.translatable("enhancedtooltips.tooltip.saturation", saturation).withColor(0xff00ffff);
 
-        if (EnhancedTooltipsConfig.load().foodAndDrinks.hungerTooltip) list.accept(hungerText);
-        if (EnhancedTooltipsConfig.load().foodAndDrinks.saturationTooltip) list.accept(saturationText);
+        if (EnhancedTooltipsConfig.load().heldItemTooltip.hungerTooltip) list.accept(hungerText);
+        if (EnhancedTooltipsConfig.load().heldItemTooltip.saturationTooltip) list.accept(saturationText);
 
         //? if >1.21.1 {
         Consumable consumableComponent = enhancedTooltips$getConsumableComponent();
@@ -210,7 +249,7 @@ public abstract class GuiMixin {
         List<ConsumeEffect> effects = consumableComponent.onConsumeEffects();
 
         for (ConsumeEffect entry : effects) {
-            if (EnhancedTooltipsConfig.load().foodAndDrinks.effectsTooltip == EnhancedTooltipsConfig.EffectsTooltipMode.OFF) break;
+            if (EnhancedTooltipsConfig.load().heldItemTooltip.effectsTooltip == EnhancedTooltipsConfig.EffectsTooltipMode.OFF) break;
 
             if (!(entry instanceof ApplyStatusEffectsConsumeEffect applyEffectsConsumeEffect)) {
                 continue;
@@ -295,7 +334,7 @@ public abstract class GuiMixin {
     private Component enhancedTooltips$getDurabilityText() {
         int remaining = lastToolHighlight.getMaxDamage() - lastToolHighlight.getDamageValue();
         if (remaining <= 0) return Component.empty();
-        return switch (EnhancedTooltipsConfig.load().durability.durabilityTooltip) {
+        return switch (EnhancedTooltipsConfig.load().heldItemTooltip.durabilityTooltip) {
             case VALUE -> Component.literal(" ")
                     .append(Component.literal(String.valueOf(remaining)).setStyle(Style.EMPTY.withColor(lastToolHighlight.getBarColor())))
                     .append(Component.literal(" / ").setStyle(Style.EMPTY.withColor(-4539718)))
@@ -352,7 +391,7 @@ public abstract class GuiMixin {
         for (Component line : lines) {
             int color = (line.getStyle().getColor() != null ? line.getStyle().getColor().getValue() : 0xFFFFFF) | (alpha << 24);
             TooltipHelper.renderText(graphics, textRenderer, line.copy().withColor(color),
-                    (int) ((graphics.guiWidth() / scale - textRenderer.width(line)) / 2), textY, color, true
+                    (int) (x / scale + (width - textRenderer.width(line)) / 2f), textY, color, true
             );
             textY += textRenderer.lineHeight + enhancedTooltips$SPACING / 2;
         }
@@ -369,14 +408,21 @@ public abstract class GuiMixin {
     }
 
     @Unique
-    private float enhancedTooltips$getTilt() {
-        if (!EnhancedTooltipsConfig.load().heldItemTooltip.tiltAnimation || enhancedTooltips$tiltDirection == 0f) return 0f;
+    private float enhancedTooltips$getEase() {
+        if (!EnhancedTooltipsConfig.load().heldItemTooltip.animation || enhancedTooltips$direction == 0f) return 0f;
 
-        long elapsed = System.currentTimeMillis() - enhancedTooltips$tiltStartTime;
-        float duration = EnhancedTooltipsConfig.load().heldItemTooltip.tiltDuration;
+        long elapsed = System.currentTimeMillis() - enhancedTooltips$startTime;
+        float duration = EnhancedTooltipsConfig.load().heldItemTooltip.duration;
         if (elapsed > duration) return 0f;
 
-        float eased = (float) Math.pow(1f - (elapsed / duration), EnhancedTooltipsConfig.load().heldItemTooltip.tiltEasing);
-        return enhancedTooltips$tiltDirection * EnhancedTooltipsConfig.load().heldItemTooltip.tiltMagnitude * eased;
+        return (float) Math.pow(1f - (elapsed / duration), EnhancedTooltipsConfig.load().heldItemTooltip.easing);
+    }
+
+    @Unique
+    private float enhancedTooltips$getTilt() {
+        if (EnhancedTooltipsConfig.load().heldItemTooltip.relHorPos != EnhancedTooltipsConfig.RelativeHorizontalPosition.CENTER)
+            return 0f;
+
+        return enhancedTooltips$direction * EnhancedTooltipsConfig.load().heldItemTooltip.magnitude * enhancedTooltips$getEase();
     }
 }
