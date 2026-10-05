@@ -1,19 +1,19 @@
-🗃️**Detailed Changelog: [1.9.1 --> 1.10.0](https://github.com/UltimatChamp/EnhancedTooltips/compare/1.9.1+fabric.26.1.2...1.10.0+fabric.26.2)**
+🗃️**Detailed Changelog: [1.10.0 --> 1.11.0](https://github.com/UltimatChamp/EnhancedTooltips/compare/1.10.0+fabric.26.2...1.11.0+fabric.26.3)**
 
 ---
 
 ### 💡Added
 
-- Support for **Minecraft** `26.2`.
+- Support for **Minecraft** `26.3`.
+- Various options to adjust the position of the **Held Item Tooltip**.
+  - The tooltip can now also be placed on the top or bottom, and to the left or right.
+  - A new toast-slide animation is played when the tooltip is at the corner, otherwise, the tilt animation is played.
+  - Offset options for fine-tuning, to help improve compatibility with resource-packs and mods. 
 
 ---
 
 ### 🛠️Changes
 
-- Improved compatibility with **Fresh Animations**.
-- Disabled cape in the **Armor Preview** tooltip when **WaveyCapes** is installed. [**[#80]**](https://github.com/UltimatChamp/EnhancedTooltips/issues/80)
-- Fixed tooltip borders not rendering for items with **custom rarities**. [**[#84]**](https://github.com/UltimatChamp/EnhancedTooltips/issues/84)
-- Improved the tooltip positioning system to address some edge-cases.
-    - The **Model Viewer** tooltip now adjusts itself, instead of always being positioned to the left.
-    - Same for tooltip paging.
+- **Held Item Tooltip** now has its own config category. [**[#45]**](https://github.com/UltimatChamp/EnhancedTooltips/issues/45)
+- Tooltips are now more compact. [**[#88]**](https://github.com/UltimatChamp/EnhancedTooltips/issues/88)
 - Some other minor changes.
