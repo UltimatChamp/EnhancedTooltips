@@ -4,14 +4,17 @@ on:
   workflow_dispatch:
   push:
 
+permissions:
+  contents: read
+
 jobs:
   modrinth-desc:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout sources
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
-      - uses: funnyboy-roks/modrinth-auto-desc@v1.6
+      - uses: funnyboy-roks/modrinth-auto-desc@v1.7
         with:
           auth-token: ${{ secrets.MODRINTH_TOKEN }}
           slug: 'EnhancedTooltips'
