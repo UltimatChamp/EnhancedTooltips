@@ -494,6 +494,7 @@ public class EnhancedTooltipsConfig {
     }
 
     private static void migrateConfig(JsonObject configJson, int configVersion) {
+        EnhancedTooltips.LOGGER.info("[{}] Migrating config v{} --> v{}", EnhancedTooltips.MOD_NAME, configVersion, CONFIG_VERSION);
         if (configVersion < 1) {
             JsonObject heldItemTooltip = configJson.getObject("heldItemTooltip");
             if (heldItemTooltip == null) return;

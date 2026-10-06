@@ -10,7 +10,9 @@ repositories {
 
 neoForge {
     version = project.property("deps.neoforge") as String
+
     validateAccessTransformers = true
+    accessTransformers.from(rootProject.file("src/main/resources/META-INF/accesstransformer.cfg"))
 
     runs {
         register("client") {
